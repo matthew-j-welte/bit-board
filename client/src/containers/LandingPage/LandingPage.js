@@ -8,6 +8,10 @@ import {
   Responsive,
   Segment,
   Visibility,
+  Form,
+  Grid,
+  Image,
+  Message
 } from 'semantic-ui-react'
 
 import InfoBox from '../../components/InfoBox/InfoBox'
@@ -17,16 +21,40 @@ import axios from "axios";
 const endpoint = "http://localhost:8080"
 const getWidth = () => window.innerWidth
 
+const LoginForm = () => (
+  <Grid textAlign='center' verticalAlign='middle'>
+    <Grid.Column style={{ maxWidth: 450 }}>
+      <Form size='large'>
+        <Segment stacked>
+          <Form.Input fluid icon='user' iconPosition='left' placeholder='E-mail address' />
+          <Form.Input
+            fluid
+            icon='lock'
+            iconPosition='left'
+            placeholder='Password'
+            type='password'
+          />
+          <Button color='teal' fluid size='large'>
+            Login
+          </Button>
+        </Segment>
+      </Form>
+      <Message>
+        New to us? <a href='#'>Sign Up</a>
+      </Message>
+    </Grid.Column>
+  </Grid>
+)
+
 const HomepageHeading = (props) => (
     <Container text>
       <Header
         as='h1'
-        color="blue"
+        color="teal"
         content='GoBook'
         inverted
         style={{
           fontSize: '10em',
-          fontWeight: 'normal',
           marginBottom: 0,
           marginTop: '1em',
         }}
@@ -38,25 +66,13 @@ const HomepageHeading = (props) => (
         style={{
           fontSize: '1.7em',
           fontWeight: 'bold',
-          marginTop: '0.2em',
+          marginTop: '0em',
         }}
       />
-      <Button primary size='huge'>
-        Begin
-        <Icon
-          fitted 
-          name='power off'
-          style={{padding: 4}}
-        />
-      </Button>
+      <LoginForm/>
     </Container>
 )
 
-
-/* Heads up!
- * Neither Semantic UI nor Semantic UI React offer a responsive navbar, however, it can be implemented easily.
- * It can be more complicated, but you can create really flexible markup.
- */
 class LandingPage extends Component {
   constructor(props) {
     super(props);
@@ -115,9 +131,9 @@ class LandingPage extends Component {
                 <Menu.Item as='a'>Careers</Menu.Item>
                 <Menu.Item position='right'>
                     <Button.Group>
-                        <Button as='a' color="blue">Signup</Button>
+                        <Button as='a' color="teal">Signup</Button>
                         <Button.Or />
-                        <Button as='a' color="blue">Login</Button>
+                        <Button as='a' color="teal">Login</Button>
                     </Button.Group>
                 </Menu.Item>
               </Container>
