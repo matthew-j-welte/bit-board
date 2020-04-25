@@ -10,6 +10,8 @@ import {
   Visibility,
 } from 'semantic-ui-react'
 
+import InfoBox from '../../components/InfoBox/InfoBox'
+
 import axios from "axios";
 
 const endpoint = "http://localhost:8080"
@@ -94,7 +96,7 @@ class LandingPage extends Component {
           <Segment
             inverted
             textAlign='center'
-            style={{ minHeight: 1500, padding: '1em 0em' }}
+            style={{ minHeight: 1500, padding: '2em 0em' }}
             vertical
           >
             <Menu
@@ -121,6 +123,15 @@ class LandingPage extends Component {
               </Container>
             </Menu>
             <HomepageHeading userCount={this.state.userCount}/>
+            <InfoBox
+              containerStyle={{padding: '8em 0em 0em 0em' }}
+              header="Explore"
+              infoText="Viverra ipsum nunc aliquet bibendum enim facilisis gravida neque convallis. Mauris a diam maecenas sed enim ut sem viverra. In metus vulputate eu scelerisque felis. Sed augue lacus viverra vitae congue. Sed risus ultricies tristique nulla. In massa tempor nec feugiat nisl pretium fusce. Non consectetur a erat nam at. Aliquet nec ullamcorper sit amet risus nullam. Ipsum dolor sit amet consectetur adipiscing elit duis tristique. Nunc consequat interdum varius sit. Ut lectus arcu bibendum at varius. Facilisis mauris sit amet massa. Eget nulla facilisi etiam dignissim. Orci porta non pulvinar neque laoreet suspendisse interdum. Id ornare arcu odio ut sem nulla pharetra diam sit. Ut enim blandit volutpat maecenas volutpat blandit. Mi in nulla posuere sollicitudin aliquam. Quis blandit turpis cursus in. Eu facilisis sed odio morbi quis commodo odio aenean. Pharetra diam sit amet nisl suscipit adipiscing."
+            />
+            <InfoBox
+              header="Rank Up"
+              infoText="Viverra ipsum nunc aliquet bibendum enim facilisis gravida neque convallis. Mauris a diam maecenas sed enim ut sem viverra. In metus vulputate eu scelerisque felis. Sed augue lacus viverra vitae congue. Sed risus ultricies tristique nulla. In massa tempor nec feugiat nisl pretium fusce. Non consectetur a erat nam at. Aliquet nec ullamcorper sit amet risus nullam. Ipsum dolor sit amet consectetur adipiscing elit duis tristique. Nunc consequat interdum varius sit. Ut lectus arcu bibendum at varius. Facilisis mauris sit amet massa. Eget nulla facilisi etiam dignissim. Orci porta non pulvinar neque laoreet suspendisse interdum. Id ornare arcu odio ut sem nulla pharetra diam sit. Ut enim blandit volutpat maecenas volutpat blandit. Mi in nulla posuere sollicitudin aliquam. Quis blandit turpis cursus in. Eu facilisis sed odio morbi quis commodo odio aenean. Pharetra diam sit amet nisl suscipit adipiscing."
+            />
           </Segment>
         </Visibility>
       </Responsive>
