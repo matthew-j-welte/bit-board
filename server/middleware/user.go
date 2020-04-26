@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"../models/user"
+	"github.com/gorilla/mux"
 )
 
 var inMemoryUserDB map[int]string
@@ -40,4 +41,25 @@ func GetUserCount(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Initialized userCount struct")
 	fmt.Println(userCount)
 	json.NewEncoder(w).Encode(userCount)
+}
+
+// GetUserStatus get the status of a user
+func GetUserStatus(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	params := mux.Vars(r)
+	id := params["id"]
+	fmt.Println("Getting status for ID:")
+	fmt.Println(id)
+
+	userStatus := user.Status{
+		CurrentBook:          "The Go Programming Language",
+		PersonaLvl:           12,
+		DiscoverCombinations: 123}
+
+	fmt.Println("Initialized userStatus struct")
+	fmt.Println(userStatus)
+	json.NewEncoder(w).Encode(userStatus)
 }

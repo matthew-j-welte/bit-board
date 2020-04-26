@@ -15,5 +15,9 @@ func Router() *mux.Router {
 	router.HandleFunc(
 		"/api/users/count",
 		middleware.GetUserCount).Methods("GET", "OPTIONS")
+
+	router.HandleFunc(
+		"/api/user/{id}/status",
+		middleware.GetUserStatus).Methods("GET", "OPTIONS")
 	return router
 }

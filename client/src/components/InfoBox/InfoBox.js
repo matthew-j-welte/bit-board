@@ -14,7 +14,7 @@ const defaultProps = {
 
 const InfoBox = (props)  => (
     <Container style={props.containerStyle}>
-        <Divider horizontal inverted>
+        <Divider horizontal {...props}>
             <p style={props.headerStyle}>
                 {props.header}
             </p>
