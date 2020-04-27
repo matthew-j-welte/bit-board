@@ -15,9 +15,8 @@ import LoginForm from '../../components/LoginForm/LoginForm'
 
 import GoBookLogo from '../../assets/images/GoBook.svg'
 
-import axios from "axios";
+import axios from "../../axios";
 
-const endpoint = "http://localhost:8080"
 const getWidth = () => window.innerWidth
 
 const HomepageHeading = (props) => (
@@ -46,7 +45,7 @@ class LandingPage extends Component {
   }
 
   setUserCount = () => {
-    axios.get(endpoint + "/api/users/count").then(res => {
+    axios.get("/api/users/count").then(res => {
       if (res.data) {
         this.setState({
           userCount: res.data.count

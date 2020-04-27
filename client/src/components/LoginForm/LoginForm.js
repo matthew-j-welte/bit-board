@@ -5,17 +5,17 @@ import {
   Form,
   Grid,
   Message,
-  Image
+  Image,
 } from 'semantic-ui-react'
 
-import GoBookIcon from '../../assets/images/G.svg'
+import DarkGoBookLogo from '../../assets/images/DarkGoBook.svg'
 
 const LoginForm = () => (
   <Grid textAlign='center' verticalAlign='middle'>
     <Grid.Column style={{ maxWidth: 450 }}>
       <Form size='large'>
         <Segment stacked>
-          <Image fluid centered size="tiny" src={GoBookIcon} />
+          <Image fluid centered size="small" style={{marginBottom: "2em"}} src={DarkGoBookLogo} />
           <Form.Input fluid icon='user' iconPosition='left' placeholder='E-mail address' />
           <Form.Input
             fluid

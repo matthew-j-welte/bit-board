@@ -1,24 +1,18 @@
 import React, { Component } from 'react'
 
 import { 
-  Grid, 
-  Segment,
   Card,
   Icon,
   Image, 
-  Header, 
   Container 
 } from 'semantic-ui-react'
 
-import axios from 'axios'
+import axios from '../../axios'
 
 import PersonaCoverImage from '../../assets/images/persona-cover.png'
 import BookCoverImage from '../../assets/images/book-cover.png'
 import DiscoverCoverImage from '../../assets/images/discover-cover.png'
-
 import GoBookLogo from '../../assets/images/DarkGoBook.svg'
-
-const endpoint = "http://localhost:8080"
 
 const AppTopicCard = (props) => (
   <Card raised href="#">
@@ -83,7 +77,7 @@ class HomePage extends Component {
   }
 
   setCardFooterValues = () => {
-    const uri = endpoint + "/api/user/" + this.state.userId + "/status"
+    const uri = "/api/user/" + this.state.userId + "/status"
     axios.get(uri).then(res => {
       if (res.data) {
         this.setState({
