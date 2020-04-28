@@ -12,10 +12,10 @@ import axios from '../../axios'
 import PersonaCoverImage from '../../assets/images/persona-cover.png'
 import BookCoverImage from '../../assets/images/book-cover.png'
 import DiscoverCoverImage from '../../assets/images/discover-cover.png'
-import GoBookLogo from '../../assets/images/DarkGoBook.svg'
+import BitBoardLogo from '../../assets/images/BitBoard.svg'
 
 const AppTopicCard = (props) => (
-  <Card raised href="#">
+  <Card style={props.style} raised href="#">
     <Image style={{padding: "1em"}} src={props.coverImage} wrapped ui={false} />
     <Card.Content textAlign="center">
       <Card.Header>{props.header}</Card.Header>
@@ -32,38 +32,49 @@ const AppTopicCard = (props) => (
   </Card>
 )
 
-const HomepageCenter = (props) => {
-  
-  
-  return  (
-    <Container textAlign="center">
-      <Image centered size="huge" src={GoBookLogo}/>
-      <Card.Group centered stackable itemsPerRow={3}>
-        <AppTopicCard 
-          coverImage={BookCoverImage}
-          header="Bookshelf" 
-          infoText="Take a look through your virtual bookshelf - View all of the books you have read or hope to read"
-          footer={props.currentBook != null ? "Currently Reading: " + props.currentBook : "Pickup a book today"}
-          icon="book"
-        />
-        <AppTopicCard 
-          coverImage={PersonaCoverImage}
-          header="Persona" 
-          infoText="View and manage your current Persona. By leveling up you can unlock new looks and artifacts for your Persona to showcase to your followers"
-          footer={props.personaLvl != null ? "Persona Level: " + props.personaLvl : "Start Leveling Up"}
-          icon="exchange"
-        />
-        <AppTopicCard 
-          coverImage={DiscoverCoverImage}
-          header="Discover" 
-          infoText="Find a new and exciting read by leveraging our compiled recommendations based off of what you like and what your goals are. You can also find books based on a particular persona skill category"
-          footer={props.discoverCombinations != null ? "Over " + props.discoverCombinations + " suggestions found!" : "Explore our reccomendations"}
-          icon="rocket"
-        />
-      </Card.Group>
-    </Container>
-  );
-}
+const HomepageCenter = (props) => (
+  <Container textAlign="center">
+    <Image centered size="huge" src={BitBoardLogo}/>
+    <Card.Group centered stackable itemsPerRow={3}>
+      <AppTopicCard 
+        coverImage={BookCoverImage}
+        header="Repository" 
+        infoText="Take a look through your virtual bookshelf - View all of the books you have read or hope to read"
+        footer={props.currentBook != null ? "Currently Reading: " + props.currentBook : "Pickup a book today"}
+        icon="book"
+      />
+      <AppTopicCard 
+        coverImage={PersonaCoverImage}
+        header="Persona" 
+        infoText="View and manage your current Persona. By leveling up you can unlock new looks and artifacts for your Persona to showcase to your followers"
+        footer={props.personaLvl != null ? "Persona Level: " + props.personaLvl : "Start Leveling Up"}
+        icon="exchange"
+      />
+      <AppTopicCard 
+        coverImage={DiscoverCoverImage}
+        header="Learn" 
+        infoText="Find a new and exciting read by leveraging our compiled recommendations based off of what you like and what your goals are. You can also find books based on a particular persona skill category"
+        footer={props.discoverCombinations != null ? "Over " + props.discoverCombinations + " suggestions found!" : "Explore our reccomendations"}
+        icon="rocket"
+      />
+      <AppTopicCard 
+        style={{minHeight: 250}}
+        coverImage={BookCoverImage}
+        header="Code" 
+        infoText="Take a look through your virtual bookshelf - View all of the books you have read or hope to read"
+        footer={props.currentBook != null ? "Currently Reading: " + props.currentBook : "Pickup a book today"}
+        icon="book"
+      />
+      <AppTopicCard 
+        coverImage={PersonaCoverImage}
+        header="Network" 
+        infoText="View and manage your current Persona. By leveling up you can unlock new looks and artifacts for your Persona to showcase to your followers"
+        footer={props.personaLvl != null ? "Persona Level: " + props.personaLvl : "Start Leveling Up"}
+        icon="exchange"
+      />
+    </Card.Group>
+  </Container>
+) 
 
 class HomePage extends Component {
   constructor(props) {

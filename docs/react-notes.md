@@ -86,3 +86,16 @@ Otherwise for unique pages its prolly best to just do exact
   from your bookshelf or when exploring - will just have to do a dynamic route
 
 - Implement Lazy Loading with at least the App.js page
+
+
+
+### Thoughts on switching to CS themed app instead of books
+- Bookshelf -> Active Projects
+- Persona -> Persona
+- Explore -> Learn/Discover - Have suggested articles/books videos etc..
+- Code -> Maybe a 4th option for practicing some coding
+
+- For the code editor - have a docker container or pod that is spun up fresh for
+  each execution of code
+  Or maybe spin it up when they enter the editor and just do a clean up (or restart)
+  every time code is executed. This should minimize the risk of injection attacks

@@ -13,7 +13,7 @@ import {
 import InfoBox from '../../components/InfoBox/InfoBox'
 import LoginForm from '../../components/LoginForm/LoginForm'
 
-import GoBookLogo from '../../assets/images/GoBook.svg'
+import BitBoardLogo from '../../assets/images/BitBoard.svg'
 
 import axios from "../../axios";
 
@@ -21,7 +21,7 @@ const getWidth = () => window.innerWidth
 
 const HomepageHeading = (props) => (
     <Container>
-      <Image centered size="massive" style={{padding: "1em 1em 6em 1em"}} src={GoBookLogo}/>
+      <Image centered size="massive" style={{padding: "1em 1em 6em 1em"}} src={BitBoardLogo}/>
       <Header
         as='h3'
         content={"Over " + props.userCount + " users and counting!"}
@@ -71,32 +71,9 @@ class LandingPage extends Component {
           <Segment
             inverted
             textAlign='center'
-            style={{ minHeight: 1500, padding: '2em 0em' }}
+            style={{ minHeight: 1500, padding: '0em 0em 6em 0em' }}
             vertical
           >
-            <Menu
-              fixed={fixed ? 'top' : null}
-              inverted={!fixed}
-              pointing={!fixed}
-              secondary={!fixed}
-              size='large'
-            >
-              <Container>
-                <Menu.Item as='a' active>
-                  Home
-                </Menu.Item>
-                <Menu.Item as='a'>About</Menu.Item>
-                <Menu.Item as='a'>Company</Menu.Item>
-                <Menu.Item as='a'>Careers</Menu.Item>
-                <Menu.Item position='right'>
-                    <Button.Group>
-                        <Button as='a' color="teal">Signup</Button>
-                        <Button.Or />
-                        <Button as='a' color="teal">Login</Button>
-                    </Button.Group>
-                </Menu.Item>
-              </Container>
-            </Menu>
             <HomepageHeading userCount={this.state.userCount}/>
             <InfoBox
               containerStyle={{padding: '8em 0em 0em 0em' }}

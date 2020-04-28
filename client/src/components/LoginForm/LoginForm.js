@@ -8,14 +8,14 @@ import {
   Image,
 } from 'semantic-ui-react'
 
-import DarkGoBookLogo from '../../assets/images/DarkGoBook.svg'
+import BitBoardLogo from '../../assets/images/BB.png'
 
 const LoginForm = () => (
   <Grid textAlign='center' verticalAlign='middle'>
     <Grid.Column style={{ maxWidth: 450 }}>
       <Form size='large'>
         <Segment stacked>
-          <Image fluid centered size="small" style={{marginBottom: "2em"}} src={DarkGoBookLogo} />
+          <Image fluid centered size="tiny" style={{marginBottom: "2em"}} src={BitBoardLogo} />
           <Form.Input fluid icon='user' iconPosition='left' placeholder='E-mail address' />
           <Form.Input
             fluid
