@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"../models/persona"
 	"../models/user"
 	"../models/workspace"
 	"github.com/gorilla/mux"
@@ -12,6 +13,7 @@ import (
 
 var inMemoryUserDB map[int]string
 var inMemoryWorkspaceDB []workspace.Project
+var inMemoryPersonaSkills []persona.Skill
 
 func init() {
 	inMemoryUserDB = map[int]string{
@@ -91,6 +93,70 @@ func init() {
 			Description: "A deep dive into advanced data structures - this takes things above and beyond a common DS course",
 			Phase:       "Published",
 			ProjectType: "Writing"}}
+
+	inMemoryPersonaSkills = []persona.Skill{
+		{
+			Level:    32,
+			Percent:  83,
+			Name:     "Python",
+			Category: "Software"},
+		{
+			Level:    8,
+			Percent:  53,
+			Name:     "GoLang",
+			Category: "Software"},
+		{
+			Level:    84,
+			Percent:  92,
+			Name:     "Reading",
+			Category: "Soft"},
+		{
+			Level:    62,
+			Percent:  16,
+			Name:     "Writing",
+			Category: "Soft"},
+		{
+			Level:    17,
+			Percent:  55,
+			Name:     "Algorithms",
+			Category: "Software"},
+		{
+			Level:    22,
+			Percent:  74,
+			Name:     "Machine Learning",
+			Category: "Software"},
+		{
+			Level:    94,
+			Percent:  63,
+			Name:     "Communication",
+			Category: "Soft"},
+		{
+			Level:    31,
+			Percent:  8,
+			Name:     "Consistency",
+			Category: "Soft"},
+		{
+			Level:    34,
+			Percent:  37,
+			Name:     "Linux",
+			Category: "Software"},
+		{
+			Level:    12,
+			Percent:  88,
+			Name:     "Javascript",
+			Category: "Software"},
+		{
+			Level:    32,
+			Percent:  72,
+			Name:     "Video Learning",
+			Category: "Soft"},
+		{
+			Level:    32,
+			Percent:  28,
+			Name:     "Courses",
+			Category: "Soft"},
+	}
+
 	fmt.Println("In memory db initialized")
 }
 
@@ -140,4 +206,18 @@ func GetWorkspaceCollection(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(id)
 
 	json.NewEncoder(w).Encode(inMemoryWorkspaceDB)
+}
+
+// GetPersonaSkills collects the persona skill info
+func GetPersonaSkills(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	params := mux.Vars(r)
+	id := params["id"]
+	fmt.Println("Getting skills for ID:")
+	fmt.Println(id)
+
+	json.NewEncoder(w).Encode(inMemoryPersonaSkills)
 }
