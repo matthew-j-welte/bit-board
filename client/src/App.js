@@ -8,6 +8,7 @@ const HomePage = lazyLoader(() => import('./containers/HomePage/HomePage'))
 const LandingPage = lazyLoader(() => import('./containers/LandingPage/LandingPage'))
 const WorkspacePage = lazyLoader(() => import('./containers/WorkspacePage/WorkspacePage'))
 const PersonaPage = lazyLoader(() => import('./containers/PersonaPage/PersonaPage'))
+const LearnPage = lazyLoader(() => import('./containers/LearnPage/LearnPage'))
 
 
 const App = () => (
@@ -18,6 +19,7 @@ const App = () => (
       <Route path="/home" exact component={HomePage}/>
       <Route path="/workspace" exact component={WorkspacePage}/>
       <Route path="/persona" exact component={PersonaPage}/>
+      <Route path="/learn" exact component={LearnPage}/>
     </Switch>
   </BrowserRouter>
 )
