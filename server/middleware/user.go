@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"../models/learn"
 	"../models/persona"
 	"../models/user"
 	"../models/workspace"
@@ -14,6 +15,7 @@ import (
 var inMemoryUserDB map[int]string
 var inMemoryWorkspaceDB []workspace.Project
 var inMemoryPersonaSkills []persona.Skill
+var inMemoryLearnResources []learn.Resource
 
 func init() {
 	inMemoryUserDB = map[int]string{
@@ -157,6 +159,150 @@ func init() {
 			Category: "Soft"},
 	}
 
+	inMemoryLearnResources = []learn.Resource{
+		{
+			ID:          "100",
+			Title:       "Bear Waves Hello",
+			Author:      "Grizzly The Bear",
+			Description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining",
+			Viewers:     50231,
+			Comments: []learn.Comment{
+				{
+					Author:     "Some author",
+					DatePosted: 1588308858,
+					Content:    "I have a comment on this - you really suck!"},
+				{
+					Author:     "B autorrr",
+					DatePosted: 1588253858,
+					Content:    "I have a comment on this - you dont suck!"},
+				{
+					Author:     "AAA Author",
+					DatePosted: 1585301858,
+					Content:    "I have a comment on this - I suck!"}},
+			Skills: []persona.Skill{
+				{
+					Level:    33,
+					Percent:  39,
+					Name:     "Golang",
+					Category: "software"},
+				{
+					Level:    12,
+					Percent:  19,
+					Name:     "Communication",
+					Category: "soft"},
+				{
+					Level:    21,
+					Percent:  64,
+					Name:     "Computer Vision",
+					Category: "software"}},
+			Placeholder: "color-cloud",
+			VideoID:     "O6Xo21L0ybE",
+			Type:        "videos"},
+		{
+			ID:          "200",
+			Title:       "The C++ Programming Language",
+			Author:      "Bjarne Stroustrop",
+			Description: "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary, making this the first true generator on the Internet. It uses a dictionary of over 200 Latin words, combined with a handful of model sentence structures, to generate Lorem Ipsum which looks reasonable. The generated Lorem Ipsum is therefore always free from repetition, injected humour, or non-characteristic words etc.",
+			Viewers:     21080,
+			Comments: []learn.Comment{
+				{
+					Author:     "Some author",
+					DatePosted: 1588308858,
+					Content:    "I have a comment on this - you really suck!"},
+				{
+					Author:     "B autorrr",
+					DatePosted: 1588253858,
+					Content:    "I have a comment on this - you dont suck!"}},
+			Skills: []persona.Skill{
+				{
+					Level:    33,
+					Percent:  39,
+					Name:     "Golang",
+					Category: "software"},
+				{
+					Level:    12,
+					Percent:  19,
+					Name:     "Communication",
+					Category: "soft"},
+				{
+					Level:    21,
+					Percent:  64,
+					Name:     "Computer Vision",
+					Category: "software"}},
+			Image: "cpp-book",
+			Type:  "books"},
+		{
+			ID:          "100",
+			Title:       "Bear Waves Hello",
+			Author:      "Grizzly The Bear",
+			Description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining",
+			Viewers:     50231,
+			Comments: []learn.Comment{
+				{
+					Author:     "Some author",
+					DatePosted: 1588308858,
+					Content:    "I have a comment on this - you really suck!"},
+				{
+					Author:     "B autorrr",
+					DatePosted: 1588253858,
+					Content:    "I have a comment on this - you dont suck!"},
+				{
+					Author:     "AAA Author",
+					DatePosted: 1585301858,
+					Content:    "I have a comment on this - I suck!"}},
+			Skills: []persona.Skill{
+				{
+					Level:    33,
+					Percent:  39,
+					Name:     "Golang",
+					Category: "software"},
+				{
+					Level:    12,
+					Percent:  19,
+					Name:     "Communication",
+					Category: "soft"},
+				{
+					Level:    21,
+					Percent:  64,
+					Name:     "Computer Vision",
+					Category: "software"}},
+			Placeholder: "color-cloud",
+			VideoID:     "O6Xo21L0ybE",
+			Type:        "videos"},
+		{
+			ID:          "200",
+			Title:       "The C++ Programming Language",
+			Author:      "Bjarne Stroustrop",
+			Description: "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary, making this the first true generator on the Internet. It uses a dictionary of over 200 Latin words, combined with a handful of model sentence structures, to generate Lorem Ipsum which looks reasonable. The generated Lorem Ipsum is therefore always free from repetition, injected humour, or non-characteristic words etc.",
+			Viewers:     21080,
+			Comments: []learn.Comment{
+				{
+					Author:     "Some author",
+					DatePosted: 1588308858,
+					Content:    "I have a comment on this - you really suck!"},
+				{
+					Author:     "B autorrr",
+					DatePosted: 1588253858,
+					Content:    "I have a comment on this - you dont suck!"}},
+			Skills: []persona.Skill{
+				{
+					Level:    33,
+					Percent:  39,
+					Name:     "Golang",
+					Category: "software"},
+				{
+					Level:    12,
+					Percent:  19,
+					Name:     "Communication",
+					Category: "soft"},
+				{
+					Level:    21,
+					Percent:  64,
+					Name:     "Computer Vision",
+					Category: "software"}},
+			Image: "cpp-book",
+			Type:  "books"}}
+
 	fmt.Println("In memory db initialized")
 }
 
@@ -220,4 +366,18 @@ func GetPersonaSkills(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(id)
 
 	json.NewEncoder(w).Encode(inMemoryPersonaSkills)
+}
+
+// GetLearningResources collects the persona skill info
+func GetLearningResources(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	params := mux.Vars(r)
+	id := params["id"]
+	fmt.Println("Getting resources for ID:")
+	fmt.Println(id)
+
+	json.NewEncoder(w).Encode(inMemoryLearnResources)
 }

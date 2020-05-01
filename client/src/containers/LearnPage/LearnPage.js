@@ -8,6 +8,11 @@ import ColorCloudBkg from '../../assets/images/color-cloud.png'
 import CppBook from '../../assets/images/cpp-book.jpg'
 import AIImage from '../../assets/images/ai-placeholder.jpg'
 
+const imageMap = {
+  "cpp-book": CppBook,
+  "color-cloud": ColorCloudBkg
+}
+
 const LearningResourceRow = (props) => (
   <Grid.Row>
     <Grid.Column width={props.graphicColWidth}>
@@ -25,7 +30,9 @@ const LearningResourceRow = (props) => (
     </Grid.Column>
     <Grid.Column width={5}>
       <Segment>
-        {props.comments}
+        <Feed>
+          {props.comments}
+        </Feed>
       </Segment>
     </Grid.Column>
     <Grid.Column width={3}>
@@ -76,90 +83,100 @@ class LearnPage extends Component {
     super(props);
     this.state = {
       userId: "100",
-      activeItem: "videos"
+      activeItem: "videos",
+      resources: []
     }
   }
 
   handleItemClick = (e, { name }) => this.setState({ activeItem: name })
 
-  componentDidMount() {
-    console.log("Did mount");
+  getResources() {
+    const uri = "/api/user/" + this.state.userId + "/learn/resources"
+    axios.get(uri).then(res => {
+      if (res.data) {
+        this.setState({
+          resources: [...res.data.slice()]
+        })
+      }
+    })
   }
+
+
+  renderResourceSkills(skills) {
+    return skills.map(skill => (
+      <Item.Group>
+        <Item>
+          <Item.Image size='mini' src='https://react.semantic-ui.com/images/avatar/large/jenny.jpg' />
+          <Item.Content verticalAlign='middle'>
+            {skill["name"]}
+          </Item.Content>
+        </Item>
+      </Item.Group>
+    ))
+  }
+
+  renderResourceFeed(comments) {
+    return comments.map(comment => {
+      const elapsedTime = (new Date().getTime() / 1000) - comment["datePosted"]
+      const dayEstimate = Math.round(elapsedTime / 86400)
+      const datePrompt = dayEstimate > 0 ? `Posted ${dayEstimate} day${dayEstimate == 1 ? "" : "s"} ago` : "Posted Today"
+      return (
+        <Feed.Event
+          icon="pencil"
+          date={datePrompt}
+          summary={comment["content"]}
+        />
+      )
+    })
+  }
+
+  renderResourceRow(resource) {
+    if (resource["type"] === "videos"){
+      return (
+        <VideoLearningResourceRow
+          videoId={resource["videoId"]}
+          placeholderImage={imageMap[resource["placeholder"]]}
+          videoSource="youtube"
+          author={resource["author"]}
+          title={resource["title"]}
+          description={resource["description"]}
+          userCount={resource["viewers"]}
+          comments={this.renderResourceFeed(resource["comments"])}
+          associatedSkills={this.renderResourceSkills(resource["skills"])}
+        />
+      )
+    }
+    else {
+      return (
+        <ReadingLearningResourceRow
+          image={imageMap[resource["image"]]}
+          author={resource["author"]}
+          title={resource["title"]}
+          description={resource["description"]}
+          userCount={resource["viewers"]}
+          comments={this.renderResourceFeed(resource["comments"])}
+          associatedSkills={this.renderResourceSkills(resource["skills"])}
+        />
+      )
+    }
+  }
+
+  genResources() {
+    return this.state.resources.map(resource => {
+      if (resource["type"] === this.state.activeItem) {
+        return this.renderResourceRow(resource)
+      }
+    });
+  }
+
+
+  componentDidMount() {
+    this.getResources()
+  }
+
 
   render() {
     const { activeItem } = this.state;
-
-    const mockComments = (
-      <Feed>
-        <Feed.Event
-          icon='pencil'
-          date='Today'
-          summary="This is supposed to be some moderately lengty comment giving a description of what was seen on this video and what they think"
-        />
-      </Feed>
-    );
-
-    const mockSkills = (
-    <Item.Group>
-      <Item>
-        <Item.Image size='mini' src='https://react.semantic-ui.com/images/avatar/large/jenny.jpg' />
-        <Item.Content verticalAlign='middle'>
-          Kubernetes
-        </Item.Content>
-      </Item>
-    </Item.Group>
-    )
-
-    const compV = (
-      <VideoLearningResourceRow
-        videoId="O6Xo21L0ybE"
-        placeholderImage={ColorCloudBkg}
-        videoSource="youtube"
-        author="Grizzly Bear"
-        title="Bear Waves Hello"
-        description="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining"
-        userCount={45934}
-        comments={mockComments}
-        associatedSkills={mockSkills}
-      />
-    )
-
-    const compB = (
-      <ReadingLearningResourceRow
-        image={CppBook}
-        author="Bjarne Stroustrup"
-        title="The C++ Programming Language"
-        description='Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32'
-        userCount={22080}
-        comments={mockComments}
-        associatedSkills={mockSkills}
-      />
-    )
-
-    const compA = (
-      <ReadingLearningResourceRow
-        image={AIImage}
-        author="Lex Fridman"
-        title="Advanced Neural Networks"
-        description="There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary, making this the first true generator on the Internet. It uses a dictionary of over 200 Latin words, combined with a handful of model sentence structures, to generate Lorem Ipsum which looks reasonable. The generated Lorem Ipsum is therefore always free from repetition, injected humour, or non-characteristic words etc."
-        userCount={1892}
-        comments={mockComments}
-        associatedSkills={mockSkills}
-      />
-    )
-
-
-    let resources = undefined
-    if (this.state.activeItem === "videos") {
-      resources = compV
-    }
-    else if (this.state.activeItem === "books") {
-      resources = compB
-    }
-    else if (this.state.activeItem === "articles") {
-      resources = compA
-    }
-
     const menuBar = (
       <Menu color="teal" icon="labeled" widths={3}>
         <Menu.Item
@@ -196,7 +213,7 @@ class LearnPage extends Component {
         </Segment>
         <Segment style={{minHeight: "1200px", margin: "2em 10em 5em 10em"}}>
           <Grid stretched columns='equal'>
-            {resources}
+            {this.genResources()}
           </Grid>
         </Segment>
       </Segment>

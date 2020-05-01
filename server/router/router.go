@@ -28,5 +28,9 @@ func Router() *mux.Router {
 		"/api/user/{id}/persona/skills",
 		middleware.GetPersonaSkills).Methods("GET", "OPTIONS")
 
+	router.HandleFunc(
+		"/api/user/{id}/learn/resources",
+		middleware.GetLearningResources).Methods("GET", "OPTIONS")
+
 	return router
 }
