@@ -32,5 +32,9 @@ func Router() *mux.Router {
 		"/api/user/{id}/learn/resources",
 		middleware.GetLearningResources).Methods("GET", "OPTIONS")
 
+	router.HandleFunc(
+		"/api/user/{id}/code/submit/{language}",
+		middleware.PostCodeSubmission).Methods("POST", "OPTIONS")
+
 	return router
 }

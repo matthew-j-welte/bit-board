@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"../models/code"
 	"../models/learn"
 	"../models/persona"
 	"../models/user"
@@ -380,4 +381,25 @@ func GetLearningResources(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(id)
 
 	json.NewEncoder(w).Encode(inMemoryLearnResources)
+}
+
+// PostCodeSubmission accepts code and runs it
+func PostCodeSubmission(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	params := mux.Vars(r)
+	id := params["id"]
+	lang := params["language"]
+
+	fmt.Println(id)
+	fmt.Println(lang)
+
+	var codeContents code.Submission
+	_ = json.NewDecoder(r.Body).Decode(&codeContents)
+	fmt.Println(codeContents)
+	fmt.Println(codeContents.Code["main.py"])
+	json.NewEncoder(w).Encode(true)
 }
