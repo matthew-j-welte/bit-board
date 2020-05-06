@@ -1,0 +1,20 @@
+- hosts: localhost
+
+  tasks:
+  - name: Start the Backend Database
+    docker_container:
+      name: bitboardDatabase
+      image: mongo:latest
+      ports:
+        - "27018:27017"
+      volumes:
+        - ./database/data:/data/db
+    become: yes
+
+  - name: Compile Go Server
+    command: go build main.go
+    args:
+      chdir: ./server
+
+# Add in tasks for starting server and client in container
+# and creating volume mounts to local drive

@@ -17,6 +17,7 @@ import ColorCloudBkg from '../../assets/images/color-cloud.png'
 const phaseToColorMap = {
   Development: "#f3ffde",
   Production: "#f1e6fa",
+  Drafting: "#f3ffde",
   Published: "#f1e6fa"
 }
 
