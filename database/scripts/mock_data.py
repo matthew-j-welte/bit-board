@@ -32,6 +32,9 @@ class RandomResourceModel(RandomModel):
     self.description = TextLorem(trange=(1,1)).text()
     self.viewers = random.randint(200, 10000)
     self.comments = [comment.to_json() for comment in n_inits(random.randint(1,5), RandomComment, usr_list)]
+    _skills = ["Python", "Database", "Communication", "Verbal", "Reading", "Focus", "Problem Solving", "Algorithms"]
+    rand = random.randint(1, len(_skills))
+    self.skills = _skills[0:rand]
     self.placeholder = "color-cloud"
     self.videoId = "O6Xo21L0ybE"
     self.image = "cpp-book"
@@ -97,7 +100,7 @@ class RandomUserModel(RandomModel):
     self._id = self._gen_id()
     self.name = names.get_full_name()
     self.persona_lvl = random.randint(1, 99)
-    self.code_submissions = [code.to_json() for code in n_inits(random.randint(10, 25), RandomProject)]
+    self.code_submissions = [code.to_json() for code in n_inits(random.randint(10, 25), RandomCodeSubmission)]
     self.skills = [skill.to_json() for skill in n_inits(random.randint(8, 14), RandomSkill)]
     self.projects = [proj.to_json() for proj in n_inits(random.randint(20, 45), RandomProject)]
 
@@ -122,7 +125,7 @@ def mock():
   users = n_inits(2, RandomUserModel)
   populate_data_into_collection(db.users, users)
 
-  resources = n_inits(2, RandomResourceModel, users)
+  resources = n_inits(25, RandomResourceModel, users)
   populate_data_into_collection(db.resources, resources)
   
 

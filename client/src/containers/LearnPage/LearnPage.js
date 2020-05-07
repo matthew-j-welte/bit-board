@@ -82,7 +82,7 @@ class LearnPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      userId: "100",
+      userId: "cc407258acba468590a3399af7d7f5c4",
       activeItem: "videos",
       resources: []
     }
@@ -94,6 +94,7 @@ class LearnPage extends Component {
     const uri = "/api/user/" + this.state.userId + "/learn/resources"
     axios.get(uri).then(res => {
       if (res.data) {
+        console.log(res.data)
         this.setState({
           resources: [...res.data.slice()]
         })

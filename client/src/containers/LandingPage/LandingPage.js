@@ -48,7 +48,7 @@ class LandingPage extends Component {
     axios.get("/api/users/count").then(res => {
       if (res.data) {
         this.setState({
-          userCount: res.data.count
+          userCount: res.data
         });
       }
     });

@@ -41,7 +41,7 @@ class WorkspacePage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      userId: 100,
+      userId: "cc407258acba468590a3399af7d7f5c4",
       projectCount: 0,
       projects: []
     }
@@ -51,6 +51,8 @@ class WorkspacePage extends Component {
     const uri = "/api/user/" + this.state.userId + "/workspace/projects"
     axios.get(uri).then(res => {
       if (res.data) {
+        console.log(res.data)
+        console.log([...res.data.slice()])
         this.setState({
           projects: [...res.data.slice()]
         })
@@ -69,7 +71,7 @@ class WorkspacePage extends Component {
     this.state.projects.forEach((project) => {
       const card = (
         <Card 
-          key={project.id} 
+          key={project._id} 
           raised 
           href="#"
           style={{borderStyle:"ridge", borderColor: phaseToColorMap[project.phase], borderRadius: "2em"}} 
@@ -94,10 +96,10 @@ class WorkspacePage extends Component {
           </Card.Content>
         </Card>
       );
-      if (project.projectType == "Code") {
+      if (project.type == "Code") {
         codeProjects.push(card)
       }
-      else if(project.projectType == "Writing") {
+      else if(project.type == "Writing") {
         writingProjects.push(card)
       }
     });

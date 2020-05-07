@@ -20,7 +20,7 @@ const skillTypeToColor = {
     0: "blue",
     1: "teal"
   },
-  Soft: {
+  "Soft Skills": {
     0: "violet",
     1: "purple"
   }
@@ -56,7 +56,7 @@ class PersonaPage extends Component {
     super(props);
     this.state = {
       skills: [],
-      userId: "100",
+      userId: "cc407258acba468590a3399af7d7f5c4",
       personaLvl: 0,
       personaLvlPercent: 67
     }
@@ -66,6 +66,7 @@ class PersonaPage extends Component {
     const uri = "/api/user/" + this.state.userId + "/persona/skills"
     axios.get(uri).then(res => {
       if (res.data) {
+        console.log(res.data)
         this.setState({
           skills: [...res.data.slice()]
         })
@@ -110,7 +111,7 @@ class PersonaPage extends Component {
         extraProps.push("active")
       }
       const progress = (
-        <Container>
+        <Container key={skill._id}>
           <Divider/>
           <Progress 
             active={_active}
