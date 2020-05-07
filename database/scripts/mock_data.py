@@ -7,11 +7,6 @@ import uuid
 from lorem.text import TextLorem
 import names
 
-"""
-	inMemoryUserDB = map[int]string{
-		1: "Matt",
-		2: "Matt"}
-"""
 
 class RandomModel:
   def _gen_id(self):
@@ -30,18 +25,17 @@ class RandomModel:
 
 # ---------------------- RESOURCE MODELS ------------------------- #
 class RandomResourceModel(RandomModel):
-  def __init__(self, comments):
+  def __init__(self, usr_list):
     self._id = self._gen_id()
     self.title = TextLorem(srange=(2,5)).sentence()
     self.author = names.get_full_name()
     self.description = TextLorem(trange=(1,1)).text()
     self.viewers = random.randint(200, 10000)
-    self.comments = [comments.pop()._id for _ in range(random.randrange(3, 6))]
+    self.comments = [comment.to_json() for comment in n_inits(random.randint(1,5), RandomComment, usr_list)]
     self.placeholder = "color-cloud"
     self.videoId = "O6Xo21L0ybE"
     self.image = "cpp-book"
     self.type = random.choice(("books", "articles", "videos"))
-
 
 class RandomComment(RandomModel):
   def __init__(self, usr_list):
@@ -98,29 +92,24 @@ class RandomCodeSubmission(RandomModel):
 
 
 class RandomUserModel(RandomModel):
-  def __init__(self, codes, skills, projs):
+  def __init__(self):
+
     self._id = self._gen_id()
     self.name = names.get_full_name()
     self.persona_lvl = random.randint(1, 99)
-    self.code_submissions = [codes.pop()._id for _ in range(random.randrange(10, 20))]
-    self.skills = [skills.pop()._id for _ in range(random.randrange(8, 14))]
-    self.projects = [projs.pop()._id for _ in range(random.randrange(15, 40))]
+    self.code_submissions = [code.to_json() for code in n_inits(random.randint(10, 25), RandomProject)]
+    self.skills = [skill.to_json() for skill in n_inits(random.randint(8, 14), RandomSkill)]
+    self.projects = [proj.to_json() for proj in n_inits(random.randint(20, 45), RandomProject)]
 
 def populate_data_into_collection(coll, data):
-  for ind, record in enumerate(data):
-    inserted_id = coll.insert_one(record.__dict__).inserted_id
-    data[ind].inserted_id = inserted_id
+  coll.insert_many([record.__dict__ for record in data])
 
 def n_inits(n, Class, *args):
   return [Class(*args) for _ in range(n)]
 
 class Database:
   def __init__(self, db):
-    self.projects = db.get_collection("projects")
-    self.code_submissions = db.get_collection("code-submissions")
-    self.skills = db.get_collection("skills")
     self.users = db.get_collection("users")
-    self.comments = db.get_collection("comments")
     self.resources = db.get_collection("resources")
 
   def drop_all(self):
@@ -129,22 +118,11 @@ class Database:
 
 def mock():
   db = Database(database)
-  projects = n_inits(100, RandomProject)
-  populate_data_into_collection(db.projects, projects)
 
-  code_submissions = n_inits(100, RandomCodeSubmission)
-  populate_data_into_collection(db.code_submissions, code_submissions)
-
-  skills = n_inits(100, RandomSkill)
-  populate_data_into_collection(db.skills, skills)
-
-  users = n_inits(2, RandomUserModel, code_submissions, skills, projects)
+  users = n_inits(2, RandomUserModel)
   populate_data_into_collection(db.users, users)
 
-  comments = n_inits(100, RandomComment, users)
-  populate_data_into_collection(db.comments, comments)
-
-  resources = n_inits(2, RandomResourceModel, comments)
+  resources = n_inits(2, RandomResourceModel, users)
   populate_data_into_collection(db.resources, resources)
   
 
