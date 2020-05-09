@@ -19,5 +19,8 @@ func DecodeAll(cur *mongo.Cursor) []bson.M {
 		}
 		decodeSlice = append(decodeSlice, result)
 	}
+	if err := cur.Err(); err != nil {
+		log.Fatal(err)
+	}
 	return decodeSlice
 }

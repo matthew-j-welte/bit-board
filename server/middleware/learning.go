@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 
 	"./dataaccess"
@@ -20,21 +19,12 @@ func GetLearningResources(db *mongo.Database, w http.ResponseWriter, r *http.Req
 	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
 	params := mux.Vars(r)
 	id := params["id"]
-	fmt.Println("Getting resources for ID:")
-	fmt.Println(id)
+	fmt.Printf("Getting Learning Resources for ID: %s\n", id)
 
-	cur, err := dataaccess.GetResources(db.Collection(resourceCollectionName))
-	if err != nil {
-		log.Fatal(err)
-	}
-
+	cur := dataaccess.GetResources(db.Collection(resourceCollectionName))
 	resources := mwareutils.DecodeAll(cur)
-	if err := cur.Err(); err != nil {
-		log.Fatal(err)
-	}
 	defer cur.Close(context.Background())
 
 	json.NewEncoder(w).Encode(resources)

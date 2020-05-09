@@ -1,17 +1,15 @@
 package middleware
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 
 	"../models/users"
+	"./dataaccess"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 const userCollectionName = "users"
@@ -20,13 +18,8 @@ const userCollectionName = "users"
 func GetUserCount(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-
-	userCount, err := db.Collection(userCollectionName).CountDocuments(context.Background(), bson.M{})
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(userCount)
-	json.NewEncoder(w).Encode(userCount)
+	json.NewEncoder(w).Encode(
+		dataaccess.CountRecords(db.Collection(userCollectionName)))
 }
 
 // GetWorkspaceCollection get the collection of projects for a users workspace
@@ -37,18 +30,11 @@ func GetWorkspaceCollection(db *mongo.Database, w http.ResponseWriter, r *http.R
 
 	params := mux.Vars(r)
 	id := params["id"]
-	fmt.Println("Getting status for ID:")
-	fmt.Println(id)
+	fmt.Printf("Getting Workspace projects for UserID: %s\n", id)
 
-	var result bson.M
-	err := db.Collection(userCollectionName).FindOne(
-		context.Background(),
-		bson.D{{"_id", id}},
-		options.FindOne().SetProjection(bson.D{{"_id", 0}, {"projects", 1}})).Decode(&result)
-
-	if err != nil {
-		log.Fatal(err)
-	}
+	result := dataaccess.FindOneRecordWithProjection(
+		db.Collection(userCollectionName),
+		id, bson.D{{"_id", 0}, {"projects", 1}})
 
 	json.NewEncoder(w).Encode(result["projects"])
 }
@@ -61,18 +47,11 @@ func GetPersonaSkills(db *mongo.Database, w http.ResponseWriter, r *http.Request
 
 	params := mux.Vars(r)
 	id := params["id"]
-	fmt.Println("Getting skills for ID:")
-	fmt.Println(id)
+	fmt.Printf("Getting Persona Skills for UserID: %s\n", id)
 
-	var result bson.M
-	err := db.Collection(userCollectionName).FindOne(
-		context.Background(),
-		bson.D{{"_id", id}},
-		options.FindOne().SetProjection(bson.D{{"_id", 0}, {"skills", 1}})).Decode(&result)
-
-	if err != nil {
-		log.Fatal(err)
-	}
+	result := dataaccess.FindOneRecordWithProjection(
+		db.Collection(userCollectionName),
+		id, bson.D{{"_id", 0}, {"skills", 1}})
 
 	json.NewEncoder(w).Encode(result["skills"])
 }
