@@ -1,10 +1,12 @@
 package users
 
+import "../common"
+
 // Project a user project
 type Project struct {
-	ID          string `json:"_id"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	Phase       string `json:"phase"`
-	ProjectType string `json:"projectType"`
+	common.UID
+	Description string
+	Phase       string
+	Title       string
+	Type        string
 }

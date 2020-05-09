@@ -1,7 +1,9 @@
 package users
 
+import "../common"
+
 // Submission represents a code submission
 type Submission struct {
-	ID   string            `json:"_id"`
-	Code map[string]string `json:"code"`
+	common.UID
+	Code map[string]string
 }
