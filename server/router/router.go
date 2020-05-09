@@ -8,7 +8,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 
 	"../middleware"
-	"../middleware/collections"
 	"github.com/gorilla/mux"
 )
 
@@ -34,31 +33,31 @@ func Router() *mux.Router {
 	userCountRoute := route{
 		URI:         "/api/users/count",
 		RESTMethods: []string{"GET", "OPTIONS"},
-		Handler:     collections.GetUserCount}
+		Handler:     middleware.GetUserCount}
 	handleRoute(router, userCountRoute)
 
 	userWorkspaceRoute := route{
 		URI:         "/api/user/{id}/workspace/projects",
 		RESTMethods: []string{"GET", "OPTIONS"},
-		Handler:     collections.GetWorkspaceCollection}
+		Handler:     middleware.GetWorkspaceCollection}
 	handleRoute(router, userWorkspaceRoute)
 
 	userSkillsRoute := route{
 		URI:         "/api/user/{id}/persona/skills",
 		RESTMethods: []string{"GET", "OPTIONS"},
-		Handler:     collections.GetPersonaSkills}
+		Handler:     middleware.GetPersonaSkills}
 	handleRoute(router, userSkillsRoute)
 
 	userCodeSubmissionRoute := route{
 		URI:         "/api/user/{id}/code/submit/{language}",
 		RESTMethods: []string{"POST", "OPTIONS"},
-		Handler:     collections.PostCodeSubmission}
+		Handler:     middleware.PostCodeSubmission}
 	handleRoute(router, userCodeSubmissionRoute)
 
 	resourcesLearningRoute := route{
 		URI:         "/api/user/{id}/learn/resources",
 		RESTMethods: []string{"GET", "OPTIONS"},
-		Handler:     collections.GetLearningResources}
+		Handler:     middleware.GetLearningResources}
 	handleRoute(router, resourcesLearningRoute)
 
 	return router
