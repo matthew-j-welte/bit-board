@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"testutils"
+	"github.com/matthew-j-welte/bit-board/server/testutils"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -18,14 +18,6 @@ import (
 
 type successMongoConnection struct{}
 type failServerInitMongoConnection struct{}
-
-func discardLogger() *log.Logger {
-	return testutils.GetDiscardLogger()
-}
-
-func getMockLogger() *log.Logger {
-	return log.New(os.Stdout, " MOCK:", 0)
-}
 
 func (m successMongoConnection) connectToServer(ctx context.Context, mongoClient *mongo.Client) error {
 	return nil
@@ -36,7 +28,7 @@ func (m successMongoConnection) testServerConnection(ctx context.Context, mongoC
 }
 
 func (m successMongoConnection) getLogger() *log.Logger {
-	return discardLogger()
+	return testutils.GetDiscardLogger()
 }
 
 func TestInitializeSuccess(t *testing.T) {
@@ -56,14 +48,16 @@ func (m failServerInitMongoConnection) testServerConnection(ctx context.Context,
 }
 
 func (m failServerInitMongoConnection) getLogger() *log.Logger {
-	return getMockLogger()
+	return testutils.GetMockLogger()
 }
 
 func TestInitializeFailure(t *testing.T) {
 	var mockMongoConnector serverConnector
 	mockMongoConnector = failServerInitMongoConnection{}
+	osConditionKey := "FATAL_BACKGROUND_PROCESS"
+	osConditionVal := "yes"
 
-	if os.Getenv("FATAL_BACKGROUND_PROCESS") == "yes" {
+	if os.Getenv(osConditionKey) == osConditionVal {
 		initialize(options.Client().ApplyURI(mongoURI), mockMongoConnector)
 		return
 	}
