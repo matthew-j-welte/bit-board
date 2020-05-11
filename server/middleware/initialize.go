@@ -41,7 +41,6 @@ func initialize(clientOptions *options.ClientOptions, serverConnectorHelper serv
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
-	logger.Println("Passed ctx")
 	if err := serverConnectorHelper.connectToServer(ctx, mongoClient); err != nil {
 		logger.Fatal(err)
 	}
