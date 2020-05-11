@@ -2,8 +2,8 @@ package middleware
 
 import (
 	"context"
-	"fmt"
 	"log"
+	"os"
 	"time"
 
 	_ "./dataaccess" // import dataaccess helpers
@@ -17,10 +17,21 @@ const dbName = "bitboard-dev"
 
 var client *mongo.Client
 
+type dBInitializer struct {
+	client        *mongo.Client
+	clientOptions *options.ClientOptions
+	logger        *log.Logger
+}
+
 func init() {
+	logger := log.New(os.Stdout, "SERVER: ", log.Ldate|log.Ltime|log.Lshortfile)
 	clientOptions := options.Client().ApplyURI(mongoURI)
+	client = initMongoClient(client, clientOptions, logger)
+}
+
+func (initializer dBInitializer) initialize() *mongo.Client {
 	var err error
-	client, err = mongo.NewClient(clientOptions)
+	mongoClient, err = mongo.NewClient(clientOptions)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -28,19 +39,24 @@ func init() {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
-	err = client.Connect(ctx)
-
-	if err != nil {
-		log.Fatal(err)
+	if err := connectToServer(ctx, mongoClient); err != nil {
+		logger.Fatal(err)
 	}
 
-	err = client.Ping(context.Background(), nil)
-
-	if err != nil {
-		log.Fatal(err)
+	logger.Println("Attempting to connect to mongo server...")
+	if err := testServerConnection(ctx, mongoClient); err != nil {
+		logger.Fatal(err)
 	}
+	logger.Println("Successfully Connected to MongoDB")
+	return mongoClient
+}
 
-	fmt.Println("Connected to MongoDB")
+func connectToServer(ctx context.Context, mongoClient *mongo.Client) error {
+	return mongoClient.Connect(ctx)
+}
+
+func testServerConnection(ctx context.Context, mongoClient *mongo.Client) error {
+	return mongoClient.Ping(ctx, nil)
 }
 
 // MongoDatabase returns the singleton database instance
