@@ -19,7 +19,7 @@ func GetMockLogger() *log.Logger {
 }
 
 func CatchOSExit(testName, osKey, osVal, expectedLog string) error {
-	cmd := exec.Command(os.Args[0], fmt.Sprint("-test.run=%s", testName))
+	cmd := exec.Command(os.Args[0], fmt.Sprintf("-test.run=%s", testName))
 	cmd.Env = append(os.Environ(), fmt.Sprintf("%s=%s", osKey, osVal))
 	stdout, _ := cmd.StdoutPipe()
 	if err := cmd.Start(); err != nil {

@@ -3,11 +3,8 @@ package middleware
 import (
 	"context"
 	"errors"
-	"io/ioutil"
 	"log"
 	"os"
-	"os/exec"
-	"strings"
 	"testing"
 
 	"github.com/matthew-j-welte/bit-board/server/testutils"
@@ -62,25 +59,8 @@ func TestInitializeFailure(t *testing.T) {
 		return
 	}
 
-	cmd := exec.Command(os.Args[0], "-test.run=TestInitializeFailure")
-	cmd.Env = append(os.Environ(), "FATAL_BACKGROUND_PROCESS=yes")
-	stdout, _ := cmd.StdoutPipe()
-	if err := cmd.Start(); err != nil {
-		t.Fatal(err)
-	}
-
-	// Check that the log fatal message is what we expected
-	stdoutBinary, _ := ioutil.ReadAll(stdout)
-	actualStdout := string(stdoutBinary)
-	expected := "connectToServer FAILED"
-	actualLogMsg := actualStdout[:len(actualStdout)-1]
-	if !strings.HasSuffix(actualLogMsg, expected) {
-		t.Fatalf("Unexpected log message. Got %s but should contain %s", actualLogMsg, expected)
-	}
-
-	// Check that the program exited
-	err := cmd.Wait()
-	if e, ok := err.(*exec.ExitError); !ok || e.Success() {
-		t.Fatalf("Process ran with err %v, want exit status 1", err)
+	err := testutils.CatchOSExit("TestInitializeFailure", osConditionKey, osConditionVal, "connectToServer FAILED")
+	if err != nil {
+		t.Error(err)
 	}
 }
