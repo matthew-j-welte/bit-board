@@ -14,7 +14,6 @@ import (
 )
 
 type successMongoConnection struct{}
-type failServerInitMongoConnection struct{}
 
 func (m successMongoConnection) connectToServer(ctx context.Context, mongoClient *mongo.Client) error {
 	return nil
@@ -36,30 +35,63 @@ func TestInitializeSuccess(t *testing.T) {
 	}
 }
 
-func (m failServerInitMongoConnection) connectToServer(ctx context.Context, mongoClient *mongo.Client) error {
+type failMongoServerInit struct{}
+
+func (m failMongoServerInit) connectToServer(ctx context.Context, mongoClient *mongo.Client) error {
 	return errors.New("connectToServer FAILED")
 }
 
-func (m failServerInitMongoConnection) testServerConnection(ctx context.Context, mongoClient *mongo.Client) error {
+func (m failMongoServerInit) testServerConnection(ctx context.Context, mongoClient *mongo.Client) error {
 	return nil
 }
 
-func (m failServerInitMongoConnection) getLogger() *log.Logger {
+func (m failMongoServerInit) getLogger() *log.Logger {
 	return testutils.GetMockLogger()
 }
 
 func TestInitializeFailure(t *testing.T) {
 	var mockMongoConnector serverConnector
-	mockMongoConnector = failServerInitMongoConnection{}
-	osConditionKey := "FATAL_BACKGROUND_PROCESS"
-	osConditionVal := "yes"
+	mockMongoConnector = failMongoServerInit{}
+	osKey := "FATAL_BACKGROUND_PROCESS"
+	osVal := "yes"
 
-	if os.Getenv(osConditionKey) == osConditionVal {
+	if os.Getenv(osKey) == osVal {
 		initialize(options.Client().ApplyURI(mongoURI), mockMongoConnector)
 		return
 	}
 
-	err := testutils.CatchOSExit("TestInitializeFailure", osConditionKey, osConditionVal, "connectToServer FAILED")
+	err := testutils.CatchOSExit("TestInitializeFailure", osKey, osVal, "connectToServer FAILED")
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+type failMongoServerConnect struct{}
+
+func (m failMongoServerConnect) connectToServer(ctx context.Context, mongoClient *mongo.Client) error {
+	return errors.New("server ping FAILED")
+}
+
+func (m failMongoServerConnect) testServerConnection(ctx context.Context, mongoClient *mongo.Client) error {
+	return nil
+}
+
+func (m failMongoServerConnect) getLogger() *log.Logger {
+	return testutils.GetMockLogger()
+}
+
+func TestServerConnectionFailure(t *testing.T) {
+	var mockMongoConnector serverConnector
+	mockMongoConnector = failMongoServerConnect{}
+	osKey := "FATAL_BACKGROUND_PROCESS"
+	osVal := "yes"
+
+	if os.Getenv(osKey) == osVal {
+		initialize(options.Client().ApplyURI(mongoURI), mockMongoConnector)
+		return
+	}
+
+	err := testutils.CatchOSExit("TestServerConnectionFailure", osKey, osVal, "server ping FAILED")
 	if err != nil {
 		t.Error(err)
 	}
