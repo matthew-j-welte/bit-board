@@ -2,7 +2,6 @@ package dataaccess
 
 import (
 	"context"
-	"log"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -10,46 +9,30 @@ import (
 )
 
 // GetResources get all learning resources
-func GetResources(coll *mongo.Collection) *mongo.Cursor {
-	cur, err := coll.Find(context.Background(), bson.D{})
-	if err != nil {
-		log.Fatal(err)
-	}
-	return cur
+func GetResources(coll *mongo.Collection) (*mongo.Cursor, error) {
+	return coll.Find(context.Background(), bson.D{})
 }
 
 // CountRecords returns the amount of documents in a table
-func CountRecords(coll *mongo.Collection) int64 {
-	recCount, err := coll.CountDocuments(context.Background(), bson.M{})
-	if err != nil {
-		log.Fatal(err)
-	}
-	return recCount
+func CountRecords(coll *mongo.Collection) (int64, error) {
+	return coll.CountDocuments(context.Background(), bson.M{})
 }
 
-// FindOneRecordWithProjection query a single record in the db
-func FindOneRecord(coll *mongo.Collection, id string) bson.M {
+// FindOneRecord query a single record in the db
+func FindOneRecord(coll *mongo.Collection, id string) (bson.M, error) {
 	var result bson.M
 	err := coll.FindOne(
 		context.Background(),
 		bson.D{{"_id", id}}).Decode(&result)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-	return result
+	return result, err
 }
 
 // FindOneRecordWithProjection query a single record in the db with a projection expr
-func FindOneRecordWithProjection(coll *mongo.Collection, id string, projection bson.D) bson.M {
+func FindOneRecordWithProjection(coll *mongo.Collection, id string, projection bson.D) (bson.M, error) {
 	var result bson.M
 	err := coll.FindOne(
 		context.Background(),
 		bson.D{{"_id", id}},
 		options.FindOne().SetProjection(projection)).Decode(&result)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-	return result
+	return result, err
 }

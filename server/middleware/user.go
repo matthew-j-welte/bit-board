@@ -3,6 +3,7 @@ package middleware
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
 	"../models/users"
@@ -18,8 +19,11 @@ const userCollectionName = "users"
 func GetUserCount(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	json.NewEncoder(w).Encode(
-		dataaccess.CountRecords(db.Collection(userCollectionName)))
+	count, err := dataaccess.CountRecords(db.Collection(userCollectionName))
+	if err != nil {
+		log.Printf("Error when getting user count: %s", err)
+	}
+	json.NewEncoder(w).Encode(count)
 }
 
 // GetWorkspaceCollection get the collection of projects for a users workspace
@@ -32,10 +36,13 @@ func GetWorkspaceCollection(db *mongo.Database, w http.ResponseWriter, r *http.R
 	id := params["id"]
 	fmt.Printf("Getting Workspace projects for UserID: %s\n", id)
 
-	result := dataaccess.FindOneRecordWithProjection(
+	result, err := dataaccess.FindOneRecordWithProjection(
 		db.Collection(userCollectionName),
 		id, bson.D{{"_id", 0}, {"projects", 1}})
 
+	if err != nil {
+		log.Printf("Error when getting workspace: %s", err)
+	}
 	json.NewEncoder(w).Encode(result["projects"])
 }
 
@@ -49,9 +56,13 @@ func GetPersonaSkills(db *mongo.Database, w http.ResponseWriter, r *http.Request
 	id := params["id"]
 	fmt.Printf("Getting Persona Skills for UserID: %s\n", id)
 
-	result := dataaccess.FindOneRecordWithProjection(
+	result, err := dataaccess.FindOneRecordWithProjection(
 		db.Collection(userCollectionName),
 		id, bson.D{{"_id", 0}, {"skills", 1}})
+
+	if err != nil {
+		log.Printf("Error when getting user skills: %s", err)
+	}
 
 	json.NewEncoder(w).Encode(result["skills"])
 }

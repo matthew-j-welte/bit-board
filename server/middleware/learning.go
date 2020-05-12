@@ -3,12 +3,11 @@ package middleware
 import (
 	"context"
 	"encoding/json"
-	"fmt"
+	"log"
 	"net/http"
 
 	"./dataaccess"
-	mwareutils "./utils"
-	"github.com/gorilla/mux"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -19,13 +18,31 @@ func GetLearningResources(db *mongo.Database, w http.ResponseWriter, r *http.Req
 	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-	params := mux.Vars(r)
-	id := params["id"]
-	fmt.Printf("Getting Learning Resources for ID: %s\n", id)
+	w.WriteHeader(http.StatusOK)
 
-	cur := dataaccess.GetResources(db.Collection(resourceCollectionName))
-	resources := mwareutils.DecodeAll(cur)
-	defer cur.Close(context.Background())
-
+	resources, err := getLearningResources(db.Collection(resourceCollectionName))
+	if err != nil {
+		log.Printf("An error occured: %s", err)
+		w.WriteHeader(http.StatusPartialContent)
+	}
 	json.NewEncoder(w).Encode(resources)
+}
+
+func getLearningResources(coll *mongo.Collection) ([]bson.M, error) {
+	cur, err := dataaccess.GetResources(coll)
+	defer cur.Close(context.Background())
+	if err != nil {
+		return nil, cur.Err()
+	}
+
+	var resources []bson.M
+	for cur.Next(context.Background()) {
+		var result bson.M
+		err := cur.Decode(&result)
+		if err != nil {
+			return resources, cur.Err()
+		}
+		resources = append(resources, result)
+	}
+	return resources, cur.Err()
 }
