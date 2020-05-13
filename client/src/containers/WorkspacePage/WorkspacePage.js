@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Container } from 'semantic-ui-react'
 
 import axios from '../../axios'
+import ProjectGroup from './components/Projects/Projects'
 
 class WorkspacePage extends Component {
   constructor(props) {

@@ -8,7 +8,7 @@ import {
   Divider
 } from 'semantic-ui-react'
 
-import Project from 'Project/Project'
+import Project from './Project/Project'
 
 const ProjectGroup = (props) => {
     const projects = props.projects.map(project => (
