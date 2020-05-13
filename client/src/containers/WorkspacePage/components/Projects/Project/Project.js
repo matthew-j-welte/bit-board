@@ -6,6 +6,8 @@ import {
   Image
 } from 'semantic-ui-react'
 
+import ColorCloudBkg from '../../../../../assets/images/color-cloud.png'
+
 const phaseToColorMap = {
     Development: "#f3ffde",
     Production: "#f1e6fa",

@@ -3,6 +3,11 @@ import React, { Component } from 'react'
 import { Menu, Icon, Segment, Grid, Feed, Item } from 'semantic-ui-react'
 
 import axios from '../../axios'
+import { 
+  VideoLearningResourceRow, 
+  ReadingLearningResourceRow 
+} from './components/LearningResources'
+
 
 import ColorCloudBkg from '../../assets/images/color-cloud.png'
 import CppBook from '../../assets/images/cpp-book.jpg'

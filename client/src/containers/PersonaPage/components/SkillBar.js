@@ -21,7 +21,7 @@ const skillTypeToColor = {
     }
   }
   
-getSkillColorShade = (percent, cat) => {
+const getSkillColorShade = (percent, cat) => {
     const shades = skillTypeToColor[cat]
     if (percent < 50) {
       return [shades[0], false]
@@ -30,7 +30,7 @@ getSkillColorShade = (percent, cat) => {
   }
   
 const SkillBar = (props) => {
-    skills = props.skills.map(skill => {
+    const skills = props.skills.map(skill => {
     let shade, _active
       [shade, _active] = getSkillColorShade(skill.percent, skill.category)
       return (

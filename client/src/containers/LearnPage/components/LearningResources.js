@@ -67,5 +67,7 @@ const LearningResourceRow = (props) => (
     />
   )
 
-export default VideoLearningResourceRow
-export default ReadingLearningResourceRow
+export {
+  VideoLearningResourceRow,
+  ReadingLearningResourceRow
+}

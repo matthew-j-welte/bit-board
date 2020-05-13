@@ -37,13 +37,13 @@ class WorkspacePage extends Component {
           title="Software Development Projects"
           subheader="Manage your Code"
           icon="code branch"
-          cards={this.state.projects.filter(project => (project.type === 'Code'))}
+          projects={this.state.projects.filter(project => project.type === 'Code')}
         />
         <ProjectGroup
           title="Writing Projects"
           subheader="Review your Writing"
           icon="pencil"
-          cards={this.state.projects.filter(project => (project.type === 'Writing'))}
+          projects={this.state.projects.filter(project => project.type === 'Writing')}
         />
       </Container>
     )

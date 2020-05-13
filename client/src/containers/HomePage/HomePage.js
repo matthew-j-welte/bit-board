@@ -33,8 +33,7 @@ const AppTopicCard = (props) => (
 )
 
 const HomepageCenter = (props) => (
-  <Container textAlign="center">
-    <Image centered size="huge" src={BitBoardLogo}/>
+  <Container style={{marginTop: "5em"}} textAlign="center">
     <Card.Group centered stackable itemsPerRow={3}>
       <AppTopicCard 
         coverImage={BookCoverImage}

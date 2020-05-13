@@ -6,9 +6,9 @@ import {
   Image
 } from 'semantic-ui-react'
 
-
-import SkillBar from './components/SkillBar'
 import axios from '../../axios'
+import SkillBar from './components/SkillBar'
+import PersonaLevelBox from './components/PersonaLevelBox'
 
 import DummyModel from '../../assets/images/dummy-model.png'
 
