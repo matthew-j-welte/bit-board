@@ -1,79 +1,46 @@
 import React, { Component } from 'react'
 
-import { 
-  Card,
-  Icon,
-  Image, 
-  Container 
-} from 'semantic-ui-react'
+import {  Segment } from 'semantic-ui-react'
 
 import axios from '../../axios'
 
-import PersonaCoverImage from '../../assets/images/persona-cover.png'
-import BookCoverImage from '../../assets/images/book-cover.png'
-import DiscoverCoverImage from '../../assets/images/discover-cover.png'
-import BitBoardLogo from '../../assets/images/BitBoard.svg'
+import CodePagePreview from '../../assets/images/code-background.png'
+import PersonaPagePreview from '../../assets/images/statistics-image.jpg'
+import LearningPagePreview from '../../assets/images/learning-network.jpg'
+import WorkspacePagePreview from '../../assets/images/cloud-image.jpg'
 
-const AppTopicCard = (props) => (
-  <Card style={props.style} raised href="#">
-    <Image style={{padding: "1em"}} src={props.coverImage} wrapped ui={false} />
-    <Card.Content textAlign="center">
-      <Card.Header>{props.header}</Card.Header>
-      <Card.Description>
-        {props.infoText}
-      </Card.Description>
-    </Card.Content>
-    <Card.Content textAlign="center" extra>
-      <a>
-        <Icon name={props.icon}/>
-        {props.footer}
-      </a>
-    </Card.Content>
-  </Card>
-)
+import Carousel from './carousel/Carousel'
 
-const HomepageCenter = (props) => (
-  <Container style={{marginTop: "5em"}} textAlign="center">
-    <Card.Group centered stackable itemsPerRow={3}>
-      <AppTopicCard 
-        coverImage={BookCoverImage}
-        header="Repository" 
-        infoText="Take a look through your virtual bookshelf - View all of the books you have read or hope to read"
-        footer={props.currentBook != null ? "Currently Reading: " + props.currentBook : "Pickup a book today"}
-        icon="book"
-      />
-      <AppTopicCard 
-        coverImage={PersonaCoverImage}
-        header="Persona" 
-        infoText="View and manage your current Persona. By leveling up you can unlock new looks and artifacts for your Persona to showcase to your followers"
-        footer={props.personaLvl != null ? "Persona Level: " + props.personaLvl : "Start Leveling Up"}
-        icon="exchange"
-      />
-      <AppTopicCard 
-        coverImage={DiscoverCoverImage}
-        header="Learn" 
-        infoText="Find a new and exciting read by leveraging our compiled recommendations based off of what you like and what your goals are. You can also find books based on a particular persona skill category"
-        footer={props.discoverCombinations != null ? "Over " + props.discoverCombinations + " suggestions found!" : "Explore our reccomendations"}
-        icon="rocket"
-      />
-      <AppTopicCard 
-        style={{minHeight: 250}}
-        coverImage={BookCoverImage}
-        header="Code" 
-        infoText="Take a look through your virtual bookshelf - View all of the books you have read or hope to read"
-        footer={props.currentBook != null ? "Currently Reading: " + props.currentBook : "Pickup a book today"}
-        icon="book"
-      />
-      <AppTopicCard 
-        coverImage={PersonaCoverImage}
-        header="Network" 
-        infoText="View and manage your current Persona. By leveling up you can unlock new looks and artifacts for your Persona to showcase to your followers"
-        footer={props.personaLvl != null ? "Persona Level: " + props.personaLvl : "Start Leveling Up"}
-        icon="exchange"
-      />
-    </Card.Group>
-  </Container>
-) 
+const slideData = [
+  {
+    index: 0,
+    headline: 'CODE',
+    button: 'Start Coding',
+    src: CodePagePreview,
+    desc: "Begin coding in Bitboards integrated development environment. Challenged range from finding the most efficient solution to an algorithmic problem to architecting full mini projects to achieve a more realistic real world feel"
+  },
+  {
+    index: 1,
+    headline: 'LEVEL UP',
+    button: 'View Persona Stats',
+    src: PersonaPagePreview,
+    desc: "View all of the progress you have made thus far through your time spent coding, learning and networking. You can view the different skills you've acquired and a number of other helpful statistics to track your progress as a BitBoard developer"
+  },
+  {
+    index: 2,
+    headline: 'LEARN',
+    button: 'Expand Your Knowledge',
+    src: LearningPagePreview,
+    desc: "Dive into a number of helpful learning resources that will help you become a more well rounded developer. Resources range from suggested Text, posted articles, and helpful videos. "
+  },
+  {
+    index: 3,
+    headline: 'MANAGE',
+    button: 'Browse Your Repos',
+    src: WorkspacePagePreview,
+    desc: "Manage all of the active or completed projects you have worked. Here you can manage not only your development projects, but also any writing projects you happen to be working. Track the stage of development for each project"
+  }
+]
 
 class HomePage extends Component {
   constructor(props) {
@@ -86,24 +53,11 @@ class HomePage extends Component {
     }
   }
 
-  setCardFooterValues = () => {
-    const uri = "/api/user/" + this.state.userId + "/status"
-    axios.get(uri).then(res => {
-      if (res.data) {
-        this.setState({
-          ...res.data
-        })
-      }
-    })
-  }
-
-  componentDidMount() {
-    this.setCardFooterValues();
-  }
-
   render() {
     return (
-      <HomepageCenter {...this.state} />
+      <Segment basic style={{marginTop: "6em"}}>
+        <Carousel heading="Bitboard Routing" slides={slideData} slideLength={slideData.length}/>
+      </Segment>
     )
   }
 }
