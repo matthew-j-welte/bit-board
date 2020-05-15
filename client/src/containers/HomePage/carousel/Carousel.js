@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import './carousel.css'
+import { Link } from 'react-router-dom'
 
 class Slide extends Component {
   constructor(props) {
@@ -25,7 +26,7 @@ class Slide extends Component {
   }
   
   render() {
-    const { src, button, headline, index, desc } = this.props.slide
+    const { src, button, headline, index, desc, path } = this.props.slide
     const totalSlides = this.totalSlides
     const current = this.props.current
     let classNames = 'slide'
@@ -51,7 +52,9 @@ class Slide extends Component {
         
         <article className="slide__content">
           <h2 className="slide__headline">{headline}</h2>
-          <button className="slide__action btn">{button}</button>
+          <Link to={path}>
+            <button className="slide__action btn">{button}</button>
+          </Link>
           <p style={{fontSize: "1.4em"}}>{desc}</p>
         </article>
       </li>

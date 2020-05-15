@@ -1,4 +1,6 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
+
 import {
   Container,
   Header,
@@ -13,7 +15,8 @@ import BitBoardLogo from '../../assets/images/BitBoard.png'
 
 import axios from "../../axios";
 
-const HomepageHeading = (props) => (
+const HomepageHeading = (props) => {
+  return (
     <Container>
       <Image centered size="massive" style={{padding: "6em 1em 6em 1em"}} src={BitBoardLogo}/>
       <Header
@@ -26,9 +29,10 @@ const HomepageHeading = (props) => (
           marginTop: '0em',
         }}
       />
-      <LoginForm/>
+      <LoginForm handler={props.loginHandler}/>
     </Container>
-)
+  )
+}
 
 class LandingPage extends Component {
   constructor(props) {
@@ -37,6 +41,14 @@ class LandingPage extends Component {
       userCount: 0
     }
   }
+
+  login = (username) => {
+    axios.get("/api/user/" + username).then(res => {
+      if (res.data) {
+        this.props.onLogin(res.data)
+      }
+    });
+  };
 
   setUserCount = () => {
     axios.get("/api/users/count").then(res => {
@@ -60,7 +72,7 @@ class LandingPage extends Component {
         style={{ minHeight: 1500, padding: '0em 0em 6em 0em' }}
         vertical
       >
-        <HomepageHeading userCount={this.state.userCount}/>
+        <HomepageHeading loginHandler={this.login} userCount={this.state.userCount}/>
         <InfoBox
           containerStyle={{padding: '8em 0em 0em 0em' }}
           inverted
@@ -77,4 +89,10 @@ class LandingPage extends Component {
   }
 }
 
-export default LandingPage
+const mapDispatchToProps = dispatch => {
+  return {
+    onLogin: (userId) => dispatch({type: "USER_LOGIN", userId: userId})
+  }
+}
+
+export default connect(null, mapDispatchToProps)(LandingPage)

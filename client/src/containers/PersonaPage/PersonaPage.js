@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 
 import { 
   Grid,
@@ -17,14 +18,13 @@ class PersonaPage extends Component {
     super(props);
     this.state = {
       skills: [],
-      userId: "1828dec38879419fad0ce23fe1323fa4",
       personaLvl: 0,
       personaLvlPercent: 67
     }
   }
 
   setPersonaSkills = () => {
-    const uri = "/api/user/" + this.state.userId + "/persona/skills"
+    const uri = "/api/user/" + this.props.userId + "/persona/skills"
     axios.get(uri).then(res => {
       if (res.data) {
         this.setState({
@@ -35,7 +35,7 @@ class PersonaPage extends Component {
   }
 
   setPersonaLvl = () => {
-    const uri = "/api/user/" + this.state.userId + "/status"
+    const uri = "/api/user/" + this.props.userId + "/status"
     axios.get(uri).then(res => {
       if (res.data) {
         this.setState({
@@ -79,4 +79,10 @@ class PersonaPage extends Component {
   }
 }
 
-export default PersonaPage
+const mapStateToProps = state => {
+  return {
+    userId: state.userId
+  }
+}
+
+export default connect(mapStateToProps)(PersonaPage)

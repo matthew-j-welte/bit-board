@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Menu, Image } from 'semantic-ui-react'
+import { NavLink } from 'react-router-dom'
 
 import BitBoardLogo from '../../assets/images/BitBoard.png'
 class NavBar extends Component {
@@ -8,26 +9,28 @@ class NavBar extends Component {
   handleItemClick = (e, { name }) => this.setState({ activeItem: name })
 
   generateNavLink = (el) => (
-    <Menu.Item
-      name={el.key}
-      active={this.state.activeItem === el.key}
-      onClick={this.handleItemClick}
-    >
-      {el.title}
-    </Menu.Item>
+    <NavLink to={el.path}>
+      <Menu.Item
+        name={el.key}
+        active={this.state.activeItem === el.key}
+        onClick={this.handleItemClick}
+      >
+        {el.title}
+      </Menu.Item>
+    </NavLink>
   )
 
   render() {
     const logoNav = this.generateNavLink(
-      {key: "icon", title: <Image size="small" src={BitBoardLogo}/>}
+      {key: "icon", title: <Image size="small" src={BitBoardLogo}/>, path: "/home"}
     )
     const navlinks = [
-      {key: "code", title: "Code"},
-      {key: "workspace", title: "Workspace"},
-      {key: "learn", title: "Learn"}, 
-      {key: "network", title: "Network"},
-      {key: "level-up", title: "Level Up"},
-      {key: "sign-in", title: "Sign In"},
+      {key: "code", title: "Code", path: "/code"},
+      {key: "workspace", title: "Workspace", path: "/workspace"},
+      {key: "learn", title: "Learn", path: "/learn"}, 
+      {key: "network", title: "Network", path: "/"},
+      {key: "level-up", title: "Level Up", path: "/persona"},
+      {key: "sign-in", title: "Sign In", path: "/"},
     ].map(el => this.generateNavLink(el))
 
     return (

@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 
 import { Menu, Icon, Segment, Grid, Feed, Item } from 'semantic-ui-react'
 
@@ -21,7 +22,6 @@ class LearnPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      userId: "1828dec38879419fad0ce23fe1323fa4",
       activeItem: "videos",
       resources: []
     }
@@ -30,7 +30,7 @@ class LearnPage extends Component {
   handleItemClick = (e, { name }) => this.setState({ activeItem: name })
 
   getResources() {
-    const uri = "/api/user/" + this.state.userId + "/learn/resources"
+    const uri = "/api/user/" + this.props.userId + "/learn/resources"
     axios.get(uri).then(res => {
       if (res.data) {
         console.log(res.data)
@@ -135,7 +135,7 @@ class LearnPage extends Component {
     )
 
     return (
-      <Segment style={{minHeight: "1200px"}}>
+      <Segment basic style={{minHeight: "1200px"}}>
         <Segment style={{margin: "2em 10em 1em 10em"}}>
           {menuBar}
         </Segment>
@@ -149,4 +149,10 @@ class LearnPage extends Component {
   }
 }
 
-export default LearnPage
+const mapStateToProps = state => {
+  return {
+    userId: state.userId
+  }
+}
+
+export default connect(mapStateToProps)(LearnPage)

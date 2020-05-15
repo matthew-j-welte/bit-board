@@ -1,4 +1,6 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
+
 import { Container } from 'semantic-ui-react'
 
 import axios from '../../axios'
@@ -8,14 +10,13 @@ class WorkspacePage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      userId: "1828dec38879419fad0ce23fe1323fa4",
       projectCount: 0,
       projects: []
     }
   }
 
   getProjects = () => {
-    const uri = "/api/user/" + this.state.userId + "/workspace/projects"
+    const uri = "/api/user/" + this.props.userId + "/workspace/projects"
     axios.get(uri).then(res => {
       if (res.data) {
         this.setState({
@@ -50,4 +51,10 @@ class WorkspacePage extends Component {
   }
 }
 
-export default WorkspacePage
+const mapStateToProps = state => {
+  return {
+    userId: state.userId
+  }
+}
+
+export default connect(mapStateToProps)(WorkspacePage)

@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 
-import { List, Segment, Image, Grid, Button, TextArea, Form, Header, Divider } from 'semantic-ui-react'
+import { List, Segment, Image, Grid, Button, Form, Header, Divider } from 'semantic-ui-react'
 
 import axios from '../../axios'
 
@@ -45,7 +46,6 @@ class CodePage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      userId: "100",
       activeLanguage: "Python",
       activeIcon: PythonLogo,
       activeFile: "main.py",
@@ -99,10 +99,10 @@ class CodePage extends Component {
   }
 
   submitCode = () => {
-    const uri = "/api/user/" + this.state.userId + "/code/submit/" + this.state.activeLanguage
+    const uri = "/api/user/" + this.props.userId + "/code/submit/" + this.state.activeLanguage
     axios.post(
       uri, 
-      {"id": this.state.userId, "code": this.state.currentCode}, 
+      {"id": this.props.userId, "code": this.state.currentCode}, 
       {
         headers: {"Content-Type": "application/x-www-form-urlencoded"}
       }).then(res => {
@@ -130,7 +130,7 @@ class CodePage extends Component {
     ))
 
     return (
-      <Segment style={{minHeight: "1200px", marginTop: "3em"}}>
+      <Segment basic style={{minHeight: "1200px", marginTop: "3em"}}>
         <Segment raised inverted style={{minHeight: "600px", margin: "3em 6em 0em 6em"}}>
           <Header style={{marginBottom: "0em"}} as='h2'>
             <Image 
@@ -180,4 +180,10 @@ class CodePage extends Component {
   }
 }
 
-export default CodePage
+const mapStateToProps = state => {
+  return {
+    userId: state.userId
+  }
+}
+
+export default connect(mapStateToProps)(CodePage)

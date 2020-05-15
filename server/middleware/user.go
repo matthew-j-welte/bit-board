@@ -26,6 +26,23 @@ func GetUserCount(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(count)
 }
 
+// GetUserID get the current signed up user count
+func GetUserID(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	params := mux.Vars(r)
+	name := params["name"]
+
+	id, err := dataaccess.GetIDFromValue(
+		db.Collection(userCollectionName), bson.D{{"name", name}})
+
+	if err != nil {
+		log.Printf("Error when retrieving userId: %s", err)
+	}
+	json.NewEncoder(w).Encode(id)
+}
+
 // GetWorkspaceCollection get the collection of projects for a users workspace
 func GetWorkspaceCollection(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
