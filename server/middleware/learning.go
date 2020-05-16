@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/http"
 
-	"./dataaccess"
+	"github.com/matthew-j-welte/bit-board/server/dataaccess"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )

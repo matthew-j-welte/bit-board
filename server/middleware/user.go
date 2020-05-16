@@ -6,9 +6,9 @@ import (
 	"log"
 	"net/http"
 
-	"../models/users"
-	"./dataaccess"
 	"github.com/gorilla/mux"
+	"github.com/matthew-j-welte/bit-board/server/dataaccess"
+	"github.com/matthew-j-welte/bit-board/server/models/users"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )

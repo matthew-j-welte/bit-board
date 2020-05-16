@@ -7,8 +7,8 @@ import (
 
 	"go.mongodb.org/mongo-driver/mongo"
 
-	"../middleware"
 	"github.com/gorilla/mux"
+	"github.com/matthew-j-welte/bit-board/server/middleware"
 )
 
 var db *mongo.Database
