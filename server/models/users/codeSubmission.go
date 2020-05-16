@@ -1,6 +1,6 @@
 package users
 
-import "../common"
+import "github.com/matthew-j-welte/bit-board/server/models/common"
 
 // Submission represents a code submission
 type Submission struct {

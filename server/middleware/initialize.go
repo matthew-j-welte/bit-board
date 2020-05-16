@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	_ "./dataaccess" // import dataaccess helpers
+	_ "github.com/matthew-j-welte/bit-board/server/middleware/dataaccess" // import dataaccess helpers
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"

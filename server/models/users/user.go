@@ -1,6 +1,6 @@
 package users
 
-import "../common"
+import "github.com/matthew-j-welte/bit-board/server/models/common"
 
 // User the user model
 type User struct {

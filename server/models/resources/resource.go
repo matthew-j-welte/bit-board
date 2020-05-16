@@ -1,7 +1,7 @@
 package resources
 
 import (
-	"../common"
+	"github.com/matthew-j-welte/bit-board/server/models/common"
 )
 
 // Resource a learning resource
