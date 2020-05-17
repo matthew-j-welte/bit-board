@@ -27,7 +27,6 @@ class Slide extends Component {
   
   render() {
     const { src, button, headline, index, desc, path } = this.props.slide
-    const totalSlides = this.totalSlides
     const current = this.props.current
     let classNames = 'slide'
     
@@ -112,7 +111,7 @@ class Carousel extends React.Component {
   }
 
   render() {
-    const { current, direction } = this.state
+    const { current } = this.state
     const { slides, heading, slideLength } = this.props 
     const headingId = `slider-heading__${heading.replace(/\s+/g, '-').toLowerCase()}`
     const wrapperTransform = {

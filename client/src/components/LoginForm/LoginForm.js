@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
+import React from 'react'
+import { Link } from 'react-router-dom'
 import {
   Button,
   Segment,
   Form,
   Grid,
-  Message,
+  Message
 } from 'semantic-ui-react'
 
 import Logo from '../../components/Logo/Logo'
@@ -41,7 +42,7 @@ const LoginForm = (props) => {
           </Segment>
         </Form>
         <Message>
-          New to us? <a href='#'>Sign Up</a>
+          New to us? <Link to="/">Sign Up</Link>
         </Message>
       </Grid.Column>
     </Grid>

@@ -58,7 +58,7 @@ class LearnPage extends Component {
     return comments.map(comment => {
       const elapsedTime = (new Date().getTime() / 1000) - comment["datePosted"]
       const dayEstimate = Math.round(elapsedTime / 86400)
-      const datePrompt = dayEstimate > 0 ? `Posted ${dayEstimate} day${dayEstimate == 1 ? "" : "s"} ago` : "Posted Today"
+      const datePrompt = dayEstimate > 0 ? `Posted ${dayEstimate} day${dayEstimate === 1 ? "" : "s"} ago` : "Posted Today"
       return (
         <Feed.Event
           icon="pencil"
@@ -101,10 +101,10 @@ class LearnPage extends Component {
   }
 
   genResources() {
-    return this.state.resources.map(resource => {
-      if (resource["type"] === this.state.activeItem) {
-        return this.renderResourceRow(resource)
-      }
+    return this.state.resources
+    .filter(resource => resource["type"] === this.state.activeItem)
+    .map(resource => {
+      return this.renderResourceRow(resource)
     });
   }
 
