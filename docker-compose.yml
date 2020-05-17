@@ -1,0 +1,47 @@
+version: '3'
+
+services:
+  client:
+    build:
+      context: ./client/ 
+      dockerfile: Dockerfile
+    restart: always
+    stdin_open: true
+    ports:
+      - "3500:3000" 
+    depends_on: 
+      - server 
+    environment: 
+      SERVER_URL: 'http://localhost:8080'
+    networks:
+      - backend
+    command: ["/usr/local/bin/npm", "start"]
+
+  server:
+    build:
+      context: ./server/ 
+      dockerfile: Dockerfile
+    ports:
+      - "8080" 
+    depends_on: 
+      - database
+    environment: 
+      DATABASE_URL: '0.0.0.0:27018'
+    networks: 
+      - backend
+    command: ["./main"]
+
+  database:
+    image: "mongo:latest"
+    ports:
+      - "27018:27017"
+    restart: unless-stopped
+    volumes:
+      - "./database/data:/data/db"
+    logging:
+      driver: "none"
+    networks: 
+      - backend
+
+networks:
+  backend: 

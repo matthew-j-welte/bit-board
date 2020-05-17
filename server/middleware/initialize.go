@@ -12,7 +12,9 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const mongoURI = "mongodb://127.0.0.1:27018/"
+var mongoHost = os.Getenv("DATABASE_URL")
+var mongoURI = "mongodb://" + mongoHost + "/"
+
 const dbName = "bitboard-dev"
 
 type mongoConnection struct{}
@@ -46,6 +48,7 @@ func initialize(clientOptions *options.ClientOptions, serverConnectorHelper serv
 	}
 
 	logger.Println("Attempting to connect to mongo server...")
+	logger.Printf("Connecting to: %s", mongoURI)
 	if err := serverConnectorHelper.testServerConnection(ctx, mongoClient); err != nil {
 		logger.Fatal(err)
 	}
