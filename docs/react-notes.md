@@ -99,3 +99,17 @@ Otherwise for unique pages its prolly best to just do exact
   each execution of code
   Or maybe spin it up when they enter the editor and just do a clean up (or restart)
   every time code is executed. This should minimize the risk of injection attacks
+
+
+## PROTOTYPE - V3 ##
+### Forms
+- Possibly create a helper function which accepts some params and returns a "form config" to avoid
+  duplicating work
+- formElement.id -- This passes the id of the current element to an event handler
+
+-- Signup Form
+
+
+
+### Redux
+- Add the redux devtools

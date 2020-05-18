@@ -6,39 +6,27 @@ import {
   Header,
   Image,
   Segment,
+  Button
 } from 'semantic-ui-react'
 
 import InfoBox from '../../components/InfoBox/InfoBox'
-import LoginForm from '../../components/LoginForm/LoginForm'
+import LoginForm from './forms/LoginForm/LoginForm'
+import SignUpForm from './forms/SignupForm/SignupForm'
+import SignUpPrompt from './components/signUpPrompt'
+import { signupFormConfig } from './forms/SignupForm/config'
+import { FormBuilder } from '../../utilities/forms/formBuilder'
 
 import BitBoardLogo from '../../assets/images/BitBoard.png'
 
 import axios from "../../axios";
 
-const HomepageHeading = (props) => {
-  return (
-    <Container>
-      <Image centered size="massive" style={{padding: "6em 1em 6em 1em"}} src={BitBoardLogo}/>
-      <Header
-        as='h3'
-        content={"Over " + props.userCount + " users and counting!"}
-        inverted
-        style={{
-          fontSize: '1.7em',
-          fontWeight: 'bold',
-          marginTop: '0em',
-        }}
-      />
-      <LoginForm handler={props.loginHandler}/>
-    </Container>
-  )
-}
 
 class LandingPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      userCount: 0
+      userCount: 0,
+      signupFormState: {}
     }
   }
 
@@ -64,7 +52,36 @@ class LandingPage extends Component {
     this.setUserCount();
   }
 
+  createNewUserState = () => {
+    let builder = new FormBuilder(signupFormConfig, this.handleFormFieldChange)
+    this.setState({ 
+      signupFormState: {...builder.createStateModel()}
+    })
+  }
+
+  handleFormFieldChange = (_, { value }, key) => {
+    const formState = {...this.state.signupFormState}
+    formState[key] = value;
+    this.setState({
+      signupFormState: formState
+    })
+  }
+
   render() {
+    const signupForm = <SignUpForm onChangeHandler={this.handleFormFieldChange}/>
+    const signupTriggerButton = (
+      <Button 
+        content="Sign Up"
+        color="black" 
+        style={{margin: "0px 0px 0px 5px"}}
+        onClick={() => this.createNewUserState()}
+      />
+    )
+    const signUpSection = (
+      <SignUpPrompt 
+        trigger={signupTriggerButton} signUpForm={signupForm}/>
+    )
+
     return (
       <Segment
         inverted
@@ -72,7 +89,22 @@ class LandingPage extends Component {
         style={{ minHeight: 1500, padding: '0em 0em 6em 0em' }}
         vertical
       >
-        <HomepageHeading loginHandler={this.login} userCount={this.state.userCount}/>
+        <Container>
+          <Image centered size="massive" style={{padding: "6em 1em 6em 1em"}} src={BitBoardLogo}/>
+          <Header
+            as='h3'
+            content={"Over " + this.state.userCount + " users and counting!"}
+            inverted
+            style={{
+              fontSize: '1.7em',
+              fontWeight: 'bold',
+              marginTop: '0em',
+            }}
+          />
+          <LoginForm 
+            handler={this.login} 
+            signUpCopmonent={signUpSection}/>
+        </Container>
         <InfoBox
           containerStyle={{padding: '8em 0em 0em 0em' }}
           inverted

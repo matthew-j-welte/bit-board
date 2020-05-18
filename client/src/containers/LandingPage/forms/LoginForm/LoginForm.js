@@ -1,18 +1,15 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
 import {
   Button,
   Segment,
   Form,
-  Grid,
-  Message
+  Grid
 } from 'semantic-ui-react'
 
-import Logo from '../../components/Logo/Logo'
+import Logo from '../../../../components/Logo/Logo'
 
 const LoginForm = (props) => {
   let username = ""
-  console.log(username)
   return (
     <Grid textAlign='center' verticalAlign='middle'>
       <Grid.Column style={{ maxWidth: 450 }}>
@@ -41,9 +38,7 @@ const LoginForm = (props) => {
             </Button>
           </Segment>
         </Form>
-        <Message>
-          New to us? <Link to="/">Sign Up</Link>
-        </Message>
+        {props.signUpCopmonent}
       </Grid.Column>
     </Grid>
   )
