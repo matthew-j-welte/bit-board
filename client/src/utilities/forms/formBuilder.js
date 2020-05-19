@@ -23,11 +23,12 @@ export class FormBuilder {
     ) 
   }
 
-  createStateModel = () => {
+  static createStateModel = (formConfig) => {
     let stateModel = {}
-    this.sections.forEach(section => {
-      Object.keys(this.config[section].fields).forEach(field => {
-        stateModel[field] = this.config[section].fields[field].value || ""
+    const sections = Object.keys(formConfig)
+    sections.forEach(section => {
+      Object.keys(formConfig[section].fields).forEach(field => {
+        stateModel[field] = formConfig[section].fields[field].value || ""
       })
     })
     return stateModel

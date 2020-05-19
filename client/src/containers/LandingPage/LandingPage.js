@@ -11,7 +11,6 @@ import {
 
 import InfoBox from '../../components/InfoBox/InfoBox'
 import LoginForm from './forms/LoginForm/LoginForm'
-import SignUpForm from './forms/SignupForm/SignupForm'
 import SignUpPrompt from './components/signUpPrompt'
 import { signupFormConfig } from './forms/SignupForm/config'
 import { FormBuilder } from '../../utilities/forms/formBuilder'
@@ -53,9 +52,8 @@ class LandingPage extends Component {
   }
 
   createNewUserState = () => {
-    let builder = new FormBuilder(signupFormConfig, this.handleFormFieldChange)
     this.setState({ 
-      signupFormState: {...builder.createStateModel()}
+      signupFormState: {...FormBuilder.createStateModel(signupFormConfig)}
     })
   }
 
@@ -70,12 +68,12 @@ class LandingPage extends Component {
   queryFormState = (key) => this.state.signupFormState[key]
 
   render() {
-    const signupForm = (
-      <SignUpForm 
-        onChangeHandler={this.handleFormFieldChange}
-        formValueHandler={this.queryFormState}
-      />
+    const formBuilder = new FormBuilder(
+      signupFormConfig,
+      this.handleFormFieldChange,
+      this.queryFormState
     )
+    const signupForm = formBuilder.buildForm()
     const signupTriggerButton = (
       <Button 
         content="Sign Up"

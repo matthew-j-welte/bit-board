@@ -1,14 +1,19 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import { Menu, Icon, Segment, Grid, Feed, Item } from 'semantic-ui-react'
+import { Menu, Icon, Segment, Grid, Feed, Item, Modal, Label } from 'semantic-ui-react'
 
 import axios from '../../axios'
 import { 
   VideoLearningResourceRow, 
   ReadingLearningResourceRow 
 } from './components/LearningResources'
-
+import { 
+  vidFormConfig, 
+  bookFormConfig, 
+  articleFormConfig
+} from './forms/newResource/config'
+import { FormBuilder } from '../../utilities/forms/formBuilder'
 
 import ColorCloudBkg from '../../assets/images/color-cloud.png'
 import CppBook from '../../assets/images/cpp-book.jpg'
@@ -23,7 +28,8 @@ class LearnPage extends Component {
     super(props);
     this.state = {
       activeItem: "videos",
-      resources: []
+      resources: [],
+      newResourceForm: {}
     }
   }
 
@@ -112,22 +118,77 @@ class LearnPage extends Component {
     this.getResources()
   }
 
+  createNewResourceState = (config) => {
+    this.setState({ 
+      newResourceForm: {...FormBuilder.createStateModel(config)}
+    })
+  }
+
+  handleFormFieldChange = (_, { value }, key) => {
+    const formState = {...this.state.newResourceForm}
+    formState[key] = value;
+    this.setState({
+      newResourceForm: formState
+    })
+  }
+
+  queryFormState = (key) => this.state.newResourceForm[key]
+
   render() {
     const { activeItem } = this.state;
     const menuTabs = [
-      {key: "videos", icon: "video", title: "Videos"},
-      {key: "books", icon: "book", title: "Books"},
-      {key: "articles", icon: "pencil", title: "Articles"}
-    ].map(tab => (
-      <Menu.Item
-        name={tab.key}
-        active={activeItem === tab.key}
-        onClick={this.handleItemClick}
-      >
-        <Icon name={tab.icon} />
-        {tab.title}
-      </Menu.Item>     
-    ));
+      {
+        key: "videos", icon: "video", title: "Videos",
+        formConfig: vidFormConfig
+      },
+      {
+        key: "books", icon: "book", title: "Books",
+        formConfig: bookFormConfig
+      },
+      {
+        key: "articles", icon: "pencil", title: "Articles",
+        formConfig: articleFormConfig
+      }
+    ].map(tab => {
+      const formbuilder = new FormBuilder(
+        tab.formConfig,
+        this.handleFormFieldChange,
+        this.queryFormState
+      )
+      const triggerButton = (
+        <Label
+          as="a"
+          size="small"
+          circular
+          style={{marginTop: "6px"}}
+          onClick={() => this.createNewResourceState(tab.formConfig)}
+        >
+          Suggest {tab.title} Resource
+        </Label>
+      )
+      
+      const newResourcePrompt = (
+        <Modal trigger={triggerButton}>
+          <Modal.Header>Create New Resource</Modal.Header>
+          <Modal.Content>
+            {formbuilder.buildForm()}
+          </Modal.Content>
+        </Modal>
+      )
+
+      return (
+        <Menu.Item
+          name={tab.key}
+          active={activeItem === tab.key}
+          onClick={this.handleItemClick}
+        >
+          <Icon name={tab.icon} />
+            {tab.title}
+            {newResourcePrompt}
+        </Menu.Item>
+      )
+    });
+
     const menuBar = (
       <Menu color="teal" icon="labeled" widths={3}>
         {menuTabs}
