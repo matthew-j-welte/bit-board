@@ -67,8 +67,15 @@ class LandingPage extends Component {
     })
   }
 
+  queryFormState = (key) => this.state.signupFormState[key]
+
   render() {
-    const signupForm = <SignUpForm onChangeHandler={this.handleFormFieldChange}/>
+    const signupForm = (
+      <SignUpForm 
+        onChangeHandler={this.handleFormFieldChange}
+        formValueHandler={this.queryFormState}
+      />
+    )
     const signupTriggerButton = (
       <Button 
         content="Sign Up"

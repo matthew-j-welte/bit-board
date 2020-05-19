@@ -4,10 +4,11 @@ import { Form, Icon, Header } from 'semantic-ui-react'
 import { FORM_ENUMS } from './enums'
 
 export class FormBuilder {
-  constructor(formConfig, onChangeHandler) {
+  constructor(formConfig, onChangeHandler, formValueHandler) {
     this.config = formConfig
     this.sections = Object.keys(formConfig)
     this.onChangeHandler = onChangeHandler
+    this.formValueHandler = formValueHandler
   }
 
   buildForm = () => {
@@ -92,6 +93,7 @@ export class FormBuilder {
         key={name}
         {...field}
         placeholder={field.placeholder ? field.placeholder : field.label}
+        content={this.formValueHandler(name)}
       />
     )
   }

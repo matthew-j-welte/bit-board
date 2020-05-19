@@ -2,7 +2,11 @@ import { signupFormConfig } from './config'
 import { FormBuilder } from '../../../../utilities/forms/formBuilder'
 
 const SignupForm = (props) => {
-  const builder = new FormBuilder(signupFormConfig, props.onChangeHandler)
+  const builder = new FormBuilder(
+    signupFormConfig, 
+    props.onChangeHandler, 
+    props.formValueHandler
+  )
   return (builder.buildForm())
 }
 

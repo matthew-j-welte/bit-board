@@ -1,6 +1,5 @@
 import React from 'react'
 import {
-  Button,
   Message,
   Modal
 } from 'semantic-ui-react'
