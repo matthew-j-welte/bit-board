@@ -112,11 +112,23 @@ func NewUserSubmission(db *mongo.Database, w http.ResponseWriter, r *http.Reques
 	w.Header().Set("Access-Control-Allow-Methods", "POST")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
-	reqBody := map[string]string{}
-	err := json.NewDecoder(r.Body).Decode(&reqBody)
-	fmt.Println(reqBody)
-	fmt.Println(err)
-	json.NewEncoder(w).Encode(true)
+	var userSignup = users.NewUser{}
+	err := json.NewDecoder(r.Body).Decode(&userSignup)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	objectID, err := dataaccess.CreateUser(db.Collection(userCollectionName), userSignup)
+	res := map[string]string{
+		"_id": objectID}
+
+	if err != nil {
+		fmt.Println(err)
+		res["error"] = err.Error()
+	} else {
+		log.Printf("New user created: %s", objectID)
+	}
+	json.NewEncoder(w).Encode(res)
 }
 
 // NewProjectSubmission creates a new project
