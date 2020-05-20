@@ -3,9 +3,11 @@ package middleware
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	"github.com/matthew-j-welte/bit-board/server/middleware/dataaccess"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -26,6 +28,18 @@ func GetLearningResources(db *mongo.Database, w http.ResponseWriter, r *http.Req
 		w.WriteHeader(http.StatusPartialContent)
 	}
 	json.NewEncoder(w).Encode(resources)
+}
+
+// NewResourceSuggestion creates a new suggestion for a learning resource
+func NewResourceSuggestion(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	params := mux.Vars(r)
+	fmt.Println(params)
+	json.NewEncoder(w).Encode(true)
 }
 
 func getLearningResources(coll *mongo.Collection) ([]bson.M, error) {

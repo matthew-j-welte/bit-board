@@ -6,6 +6,8 @@ import { FORM_ENUMS } from './enums'
 export class FormBuilder {
   constructor(formConfig, onChangeHandler, formValueHandler) {
     this.config = formConfig
+    this.formName = formConfig.formName
+    delete this.config.formName
     this.sections = Object.keys(formConfig)
     this.onChangeHandler = onChangeHandler
     this.formValueHandler = formValueHandler
@@ -16,7 +18,7 @@ export class FormBuilder {
       return this._buildSection(section, this.config[section])
     })
     return (
-      <Form>
+      <Form key={this.formName}>
         {sections}
         <Form.Button style={{margin: "10px 0px 0px 0px"}}>Submit</Form.Button>
       </Form>
@@ -24,7 +26,9 @@ export class FormBuilder {
   }
 
   static createStateModel = (formConfig) => {
-    let stateModel = {}
+    let stateModel = {
+      formModel: this.formName
+    }
     const sections = Object.keys(formConfig)
     sections.forEach(section => {
       Object.keys(formConfig[section].fields).forEach(field => {

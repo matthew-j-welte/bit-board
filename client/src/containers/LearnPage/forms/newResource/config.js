@@ -8,9 +8,10 @@ const softwareCategories = [
   { key: 'sci', text: 'Science / Mathematics Software', value: 'sci' }
 ]
 
-const resourceForm = (type, icon) => {
+const resourceForm = (formName, type, icon) => {
   const upperLabel = type.charAt(0).toUpperCase() + type.slice(1)
   return {
+    "formName": formName,
     suggestion: {
       header: {
         title: upperLabel + " Suggestion",
@@ -47,6 +48,6 @@ const resourceForm = (type, icon) => {
   }
 }
 
-export const vidFormConfig = resourceForm("video", "video")
-export const bookFormConfig = resourceForm("book", "book")
-export const articleFormConfig = resourceForm("article", "newspaper outline")
+export const vidFormConfig = resourceForm("vidFormConfig", "video", "video")
+export const bookFormConfig = resourceForm("bookFormConfig", "book", "book")
+export const articleFormConfig = resourceForm("articleFormConfig", "article", "newspaper outline")

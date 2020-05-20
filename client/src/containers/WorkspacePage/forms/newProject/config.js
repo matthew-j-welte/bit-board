@@ -16,6 +16,7 @@ const phaseTypes = [
 ]
 
 export const newProjectConfig = {
+  formName: "newProjectConfig",
   projSection: {
     header: {
       title: "Project Info",

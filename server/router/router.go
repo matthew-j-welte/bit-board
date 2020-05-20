@@ -30,6 +30,7 @@ func Router() *mux.Router {
 	router := mux.NewRouter()
 	fmt.Println("Initializing router...")
 
+	// User route handlers
 	userCountRoute := route{
 		URI:         "/api/users/count",
 		RESTMethods: []string{"GET", "OPTIONS"},
@@ -60,11 +61,30 @@ func Router() *mux.Router {
 		Handler:     middleware.PostCodeSubmission}
 	handleRoute(router, userCodeSubmissionRoute)
 
+	newUserRoute := route{
+		URI:         "/api/user/new",
+		RESTMethods: []string{"POST", "OPTIONS"},
+		Handler:     middleware.NewUserSubmission}
+	handleRoute(router, newUserRoute)
+
+	newProjectRoute := route{
+		URI:         "/api/user/{id}/workspace/project/new",
+		RESTMethods: []string{"POST", "OPTIONS"},
+		Handler:     middleware.NewProjectSubmission}
+	handleRoute(router, newProjectRoute)
+
+	// Resource route handlers
 	resourcesLearningRoute := route{
 		URI:         "/api/user/{id}/learn/resources",
 		RESTMethods: []string{"GET", "OPTIONS"},
 		Handler:     middleware.GetLearningResources}
 	handleRoute(router, resourcesLearningRoute)
+
+	newResourceSuggestionRoute := route{
+		URI:         "/api/user/{id}/learn/resource/new",
+		RESTMethods: []string{"POST", "OPTIONS"},
+		Handler:     middleware.NewResourceSuggestion}
+	handleRoute(router, newResourceSuggestionRoute)
 
 	return router
 }

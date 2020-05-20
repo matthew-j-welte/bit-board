@@ -14,6 +14,7 @@ const headerConstants = {
 }
 
 export const signupFormConfig = {
+  formName: "signupFormConfig",
   userInfoSection: {
     header: {
       title: "User Info",

@@ -6,8 +6,6 @@ import {
   Grid
 } from 'semantic-ui-react'
 
-import Logo from '../../../../components/Logo/Logo'
-
 const LoginForm = (props) => {
   let username = ""
   return (
@@ -15,10 +13,6 @@ const LoginForm = (props) => {
       <Grid.Column style={{ maxWidth: 450 }}>
         <Form size='large'>
           <Segment stacked>
-            <Logo 
-              size="huge" 
-              extraStyle={{marginBottom: ".3em"}}
-            />
             <Form.Input
               fluid 
               icon='user' 

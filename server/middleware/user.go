@@ -104,3 +104,27 @@ func PostCodeSubmission(db *mongo.Database, w http.ResponseWriter, r *http.Reque
 	fmt.Println(codeContents.Code["main.py"])
 	json.NewEncoder(w).Encode(true)
 }
+
+// NewUserSubmission creates a new user
+func NewUserSubmission(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	params := mux.Vars(r)
+	fmt.Println(params)
+	json.NewEncoder(w).Encode(true)
+}
+
+// NewProjectSubmission creates a new project
+func NewProjectSubmission(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	params := mux.Vars(r)
+	fmt.Println(params)
+	json.NewEncoder(w).Encode(true)
+}
