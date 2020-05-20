@@ -112,8 +112,10 @@ func NewUserSubmission(db *mongo.Database, w http.ResponseWriter, r *http.Reques
 	w.Header().Set("Access-Control-Allow-Methods", "POST")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
-	params := mux.Vars(r)
-	fmt.Println(params)
+	reqBody := map[string]string{}
+	err := json.NewDecoder(r.Body).Decode(&reqBody)
+	fmt.Println(reqBody)
+	fmt.Println(err)
 	json.NewEncoder(w).Encode(true)
 }
 
@@ -124,7 +126,9 @@ func NewProjectSubmission(db *mongo.Database, w http.ResponseWriter, r *http.Req
 	w.Header().Set("Access-Control-Allow-Methods", "POST")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
-	params := mux.Vars(r)
-	fmt.Println(params)
+	reqBody := map[string]string{}
+	err := json.NewDecoder(r.Body).Decode(&reqBody)
+	fmt.Println(reqBody)
+	fmt.Println(err)
 	json.NewEncoder(w).Encode(true)
 }

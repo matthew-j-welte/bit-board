@@ -29,9 +29,10 @@ services:
       - database
     environment: 
       DATABASE_URL: "172.19.0.1:27018"
+    volumes:
+      - "./server:/app"
     networks: 
       - backend
-    command: ["./main"]
 
   database:
     image: "mongo:latest"

@@ -26,6 +26,14 @@ const imageMap = {
 class LearnPage extends Component {
   constructor(props) {
     super(props);
+    const formHandlers = [
+      this.handleFormFieldChange,
+      this.queryFormState,
+      this.newResourceSuggestionSubmitHandler
+    ]
+    this.vidFormBuilder = new FormBuilder(vidFormConfig, ...formHandlers)
+    this.bookFormBuilder = new FormBuilder(bookFormConfig, ...formHandlers)
+    this.articleFormBuilder = new FormBuilder(articleFormConfig, ...formHandlers)
     this.state = {
       activeItem: "videos",
       resources: [],
@@ -39,7 +47,6 @@ class LearnPage extends Component {
     const uri = "/api/user/" + this.props.userId + "/learn/resources"
     axios.get(uri).then(res => {
       if (res.data) {
-        console.log(res.data)
         this.setState({
           resources: [...res.data.slice()]
         })
@@ -118,9 +125,9 @@ class LearnPage extends Component {
     this.getResources()
   }
 
-  createNewResourceState = (config) => {
+  createNewResourceState = (builder) => {
     this.setState({ 
-      newResourceForm: {...FormBuilder.createStateModel(config)}
+      newResourceForm: {...builder.createStateModel()}
     })
   }
 
@@ -134,34 +141,36 @@ class LearnPage extends Component {
 
   queryFormState = (key) => this.state.newResourceForm[key]
 
+  newResourceSuggestionSubmitHandler = () => {
+    const uri = "/api/user/" + this.props.userId + "/learn/resource/new"
+    axios.post(
+      uri, 
+      {...this.state.newResourceForm}, 
+      {headers: {"Content-Type": "application/x-www-form-urlencoded"}})
+      .then(res => {
+        if (res.data) {
+          console.log("set a new resource suggestion")
+          console.log(res.data)
+        }
+    })
+  }
+
+  menuTabInfo = [
+    {key: "videos", icon: "video", title: "Videos", builder: this.vidFormBuilder},
+    {key: "books", icon: "book", title: "Books", builder: this.bookFormBuilder},
+    {key: "articles", icon: "pencil", title: "Articles", builder: this.articleFormBuilder}
+  ]
+
   render() {
     const { activeItem } = this.state;
-    const menuTabs = [
-      {
-        key: "videos", icon: "video", title: "Videos",
-        formConfig: vidFormConfig
-      },
-      {
-        key: "books", icon: "book", title: "Books",
-        formConfig: bookFormConfig
-      },
-      {
-        key: "articles", icon: "pencil", title: "Articles",
-        formConfig: articleFormConfig
-      }
-    ].map(tab => {
-      const formbuilder = new FormBuilder(
-        tab.formConfig,
-        this.handleFormFieldChange,
-        this.queryFormState
-      )
+    const menuTabs = this.menuTabInfo.map(tab => {
       const triggerButton = (
         <Label
           as="a"
           size="small"
           circular
           style={{marginTop: "6px"}}
-          onClick={() => this.createNewResourceState(tab.formConfig)}
+          onClick={() => this.createNewResourceState(tab.builder)}
         >
           Suggest {tab.title} Resource
         </Label>
@@ -171,7 +180,7 @@ class LearnPage extends Component {
         <Modal trigger={triggerButton}>
           <Modal.Header>Create New Resource</Modal.Header>
           <Modal.Content>
-            {formbuilder.buildForm()}
+            {tab.builder.buildForm()}
           </Modal.Content>
         </Modal>
       )

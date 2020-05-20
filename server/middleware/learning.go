@@ -7,7 +7,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/gorilla/mux"
 	"github.com/matthew-j-welte/bit-board/server/middleware/dataaccess"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -37,8 +36,10 @@ func NewResourceSuggestion(db *mongo.Database, w http.ResponseWriter, r *http.Re
 	w.Header().Set("Access-Control-Allow-Methods", "POST")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
-	params := mux.Vars(r)
-	fmt.Println(params)
+	reqBody := map[string]string{}
+	err := json.NewDecoder(r.Body).Decode(&reqBody)
+	fmt.Println(reqBody)
+	fmt.Println(err)
 	json.NewEncoder(w).Encode(true)
 }
 

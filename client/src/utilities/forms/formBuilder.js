@@ -4,13 +4,17 @@ import { Form, Icon, Header } from 'semantic-ui-react'
 import { FORM_ENUMS } from './enums'
 
 export class FormBuilder {
-  constructor(formConfig, onChangeHandler, formValueHandler) {
+  constructor(formConfig, onChangeHandler, formValueHandler, submitHandler) {
     this.config = formConfig
     this.formName = formConfig.formName
-    delete this.config.formName
-    this.sections = Object.keys(formConfig)
+    this.sections = this.extractSectionNames(formConfig)
     this.onChangeHandler = onChangeHandler
     this.formValueHandler = formValueHandler
+    this.submitHandler = submitHandler
+  }
+
+  extractSectionNames = (conf) => {
+    return Object.keys(conf).filter(k => k !== "formName")
   }
 
   buildForm = () => {
@@ -20,19 +24,23 @@ export class FormBuilder {
     return (
       <Form key={this.formName}>
         {sections}
-        <Form.Button style={{margin: "10px 0px 0px 0px"}}>Submit</Form.Button>
+        <Form.Button 
+          style={{margin: "10px 0px 0px 0px"}}
+          onClick={() => this.submitHandler()}
+        >
+          Submit
+        </Form.Button>
       </Form>
     ) 
   }
 
-  static createStateModel = (formConfig) => {
+  createStateModel = () => {
     let stateModel = {
       formModel: this.formName
     }
-    const sections = Object.keys(formConfig)
-    sections.forEach(section => {
-      Object.keys(formConfig[section].fields).forEach(field => {
-        stateModel[field] = formConfig[section].fields[field].value || ""
+    this.sections.forEach(section => {
+      Object.keys(this.config[section].fields).forEach(field => {
+        stateModel[field] = this.config[section].fields[field].value || ""
       })
     })
     return stateModel

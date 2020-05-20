@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import { Container, Button, Modal, Image } from 'semantic-ui-react'
+import { Container, Button, Modal } from 'semantic-ui-react'
 
 import axios from '../../axios'
 import ProjectGroup from './components/Projects/Projects'
@@ -12,6 +12,12 @@ import { newProjectConfig } from './forms/newProject/config'
 class WorkspacePage extends Component {
   constructor(props) {
     super(props);
+    this.newProjFormBuilder = new FormBuilder(
+      newProjectConfig,
+      this.handleFormFieldChange,
+      this.queryFormState,
+      this.newProjectSubmitHandler
+    )
     this.state = {
       projectCount: 0,
       projects: [],
@@ -37,7 +43,7 @@ class WorkspacePage extends Component {
 
   createNewProjectState = () => {
     this.setState({ 
-      projFormState: {...FormBuilder.createStateModel(newProjectConfig)}
+      projFormState: {...this.newProjFormBuilder.createStateModel()}
     })
   }
 
@@ -51,18 +57,26 @@ class WorkspacePage extends Component {
 
   queryFormState = (key) => this.state.projFormState[key]
 
+  newProjectSubmitHandler = () => {
+    const uri = "/api/user/" + this.props.userId + "/workspace/project/new"
+    axios.post(
+      uri, 
+      {...this.state.projFormState}, 
+      {headers: {"Content-Type": "application/x-www-form-urlencoded"}})
+      .then(res => {
+        if (res.data) {
+          console.log("set a new project")
+          console.log(res.data)
+        }
+    })
+  }
+
   render() {
-    const formbuilder = new FormBuilder(
-      newProjectConfig,
-      this.handleFormFieldChange,
-      this.queryFormState
-    );
-    const newProjForm = formbuilder.buildForm()
+    const newProjForm = this.newProjFormBuilder.buildForm()
     const triggerFormButton = (
       <Button 
         fluid
         circular
-        color="#53c2aa"
         size="massive" 
         onClick={() => this.createNewProjectState()}
         style={{

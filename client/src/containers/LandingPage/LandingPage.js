@@ -23,6 +23,12 @@ import axios from "../../axios";
 class LandingPage extends Component {
   constructor(props) {
     super(props);
+    this.newUserFormBuilder = new FormBuilder(
+      signupFormConfig,
+      this.handleFormFieldChange,
+      this.queryFormState,
+      this.newUserSubmitHandler
+    );
     this.state = {
       userCount: 0,
       signupFormState: {}
@@ -53,7 +59,7 @@ class LandingPage extends Component {
 
   createNewUserState = () => {
     this.setState({ 
-      signupFormState: {...FormBuilder.createStateModel(signupFormConfig)}
+      signupFormState: {...this.newUserFormBuilder.createStateModel()}
     })
   }
 
@@ -67,13 +73,22 @@ class LandingPage extends Component {
 
   queryFormState = (key) => this.state.signupFormState[key]
 
+  newUserSubmitHandler = () => {
+    const uri = "/api/user/new"
+    axios.post(
+      uri, 
+      {...this.state.signupFormState}, 
+      {headers: {"Content-Type": "application/x-www-form-urlencoded"}})
+      .then(res => {
+        if (res.data) {
+          console.log("set user id in redux here")
+          console.log(res.data)
+        }
+    })
+  }
+
   render() {
-    const formBuilder = new FormBuilder(
-      signupFormConfig,
-      this.handleFormFieldChange,
-      this.queryFormState
-    )
-    const signupForm = formBuilder.buildForm()
+    const signupForm = this.newUserFormBuilder.buildForm()
     const signupTriggerButton = (
       <Button 
         content="Sign Up"

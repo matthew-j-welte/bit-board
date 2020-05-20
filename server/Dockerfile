@@ -13,6 +13,7 @@ WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
+RUN go get github.com/githubnemo/CompileDaemon
 
 ## Run ##
-RUN go build -o main .
+ENTRYPOINT CompileDaemon --build="go build -o main ." --command=./main
