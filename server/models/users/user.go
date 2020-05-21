@@ -15,6 +15,12 @@ type User struct {
 	Projects        []Project
 }
 
+// UserLogin info sent on user login
+type UserLogin struct {
+	Username string
+	Password string
+}
+
 // NewUser the model used to receive user signup requests
 type NewUser struct {
 	ID             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`

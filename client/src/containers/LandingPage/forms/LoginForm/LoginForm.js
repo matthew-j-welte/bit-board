@@ -7,31 +7,29 @@ import {
 } from 'semantic-ui-react'
 
 const LoginForm = (props) => {
-  let username = ""
   return (
     <Grid textAlign='center' verticalAlign='middle'>
       <Grid.Column style={{ maxWidth: 450 }}>
-        <Form size='large'>
-          <Segment stacked>
+      <Segment textAlign="center" stacked style={{ maxWidth: 450 }}>
+        <Form>
             <Form.Input
-              fluid 
               icon='user' 
               iconPosition='left' 
-              placeholder='E-mail address' 
-              onChange={(e, { value }) => username = value}
+              placeholder='Username' 
+              onChange={(event, data) => props.onChangeHandler(event, data, "username")}
             />
             <Form.Input
-              fluid
               icon='lock'
               iconPosition='left'
               placeholder='Password'
               type='password'
+              onChange={(event, data) => props.onChangeHandler(event, data, "password")}
             />
-            <Button color='teal' fluid size='large' onClick={() => props.handler(username)}>
+            <Button color='teal' fluid size='large' onClick={() => props.handler()}>
               Login
             </Button>
-          </Segment>
         </Form>
+        </Segment>
         {props.signUpCopmonent}
       </Grid.Column>
     </Grid>

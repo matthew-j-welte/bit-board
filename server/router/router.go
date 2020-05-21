@@ -37,11 +37,11 @@ func Router() *mux.Router {
 		Handler:     middleware.GetUserCount}
 	handleRoute(router, userCountRoute)
 
-	userIDByName := route{
-		URI:         "/api/user/{name}",
-		RESTMethods: []string{"GET", "OPTIONS"},
+	userLogin := route{
+		URI:         "/api/user/login",
+		RESTMethods: []string{"POST", "OPTIONS"},
 		Handler:     middleware.GetUserID}
-	handleRoute(router, userIDByName)
+	handleRoute(router, userLogin)
 
 	userWorkspaceRoute := route{
 		URI:         "/api/user/{id}/workspace/projects",

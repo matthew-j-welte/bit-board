@@ -31,17 +31,27 @@ class LandingPage extends Component {
     );
     this.state = {
       userCount: 0,
-      signupFormState: {}
+      signupFormState: {},
+      loginFormState: {
+        username: "",
+        password: ""
+      }
     }
   }
 
-  login = (username) => {
-    axios.get("/api/user/" + username).then(res => {
-      if (res.data) {
-        this.props.onLogin(res.data)
-      }
+  loginHandler = () => {
+    const uri = "/api/user/login"
+    axios.post(
+      uri, 
+      {...this.state.loginFormState}, 
+      {headers: {"Content-Type": "application/x-www-form-urlencoded"}})
+      .then(res => {
+        if (res.data) {
+          console.log("[LOGGED IN]")
+          this.props.onLogin(res.data)
+        }
     });
-  };
+  }
 
   setUserCount = () => {
     axios.get("/api/users/count").then(res => {
@@ -87,6 +97,14 @@ class LandingPage extends Component {
     })
   }
 
+  handleLoginFormFieldChange = (event, { value }, key) => {
+    const formState = {...this.state.loginFormState}
+    formState[key] = value;
+    this.setState({
+      loginFormState: formState
+    })
+  }
+
   render() {
     const signupForm = this.newUserFormBuilder.buildForm()
     const signupTriggerButton = (
@@ -122,7 +140,8 @@ class LandingPage extends Component {
             }}
           />
           <LoginForm 
-            handler={this.login} 
+            handler={this.loginHandler}
+            onChangeHandler={this.handleLoginFormFieldChange}
             signUpCopmonent={signUpSection}/>
         </Container>
         <InfoBox
