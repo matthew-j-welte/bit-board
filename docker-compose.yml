@@ -2,6 +2,7 @@ version: '3'
 
 services:
   client:
+    tty: true
     build:
       context: ./client/ 
       dockerfile: Dockerfile
@@ -20,6 +21,7 @@ services:
     command: ["/usr/local/bin/npm", "start"]
 
   server:
+    tty: true
     build:
       context: ./server/ 
       dockerfile: Dockerfile

@@ -3,8 +3,9 @@ package middleware
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/gorilla/mux"
 	"github.com/matthew-j-welte/bit-board/server/middleware/dataaccess"
@@ -20,10 +21,14 @@ const userCollectionName = "users"
 func GetUserCount(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+	contextLogger := log.WithFields(log.Fields{"action": "COUNT"})
+	contextLogger.Info("Counting available users")
+
 	count, err := dataaccess.CountRecords(db.Collection(userCollectionName))
 	if err != nil {
-		log.Printf("Error when getting user count: %s", err)
+		log.WithField("error", err).Error("Error when getting user count")
 	}
+	contextLogger.WithField("count", count).Info("Retrieved user count")
 	json.NewEncoder(w).Encode(count)
 }
 
@@ -33,11 +38,13 @@ func GetUserID(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	contextLogger := log.WithFields(log.Fields{"action": "READ"})
+	contextLogger.Info("Retrieving User ID")
 
 	var userLogin = users.UserLogin{}
 	err := json.NewDecoder(r.Body).Decode(&userLogin)
 	if err != nil {
-		fmt.Println(err)
+		contextLogger.WithField("error", err).Error("An Error occured")
 	}
 
 	id, err := dataaccess.GetIDFromValue(
@@ -46,8 +53,9 @@ func GetUserID(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
 			"password": userLogin.Password})
 
 	if err != nil {
-		log.Printf("Error when retrieving userId: %s", err)
+		contextLogger.WithField("error", err).Error("An Error occured")
 	}
+	contextLogger.WithField("ID", id).Error("Retrieved User ID")
 	json.NewEncoder(w).Encode(id)
 }
 
@@ -56,9 +64,11 @@ func GetWorkspaceCollection(db *mongo.Database, w http.ResponseWriter, r *http.R
 	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
 	params := mux.Vars(r)
 	id := params["id"]
+	contextLogger := log.WithFields(log.Fields{"action": "READ", "user": id})
+	contextLogger.Info("Getting project for User Workspace")
+
 	fmt.Printf("Getting Workspace projects for UserID: %s\n", id)
 
 	result, err := dataaccess.FindOneRecordWithProjection(
@@ -76,9 +86,11 @@ func GetPersonaSkills(db *mongo.Database, w http.ResponseWriter, r *http.Request
 	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
 	params := mux.Vars(r)
 	id := params["id"]
+	contextLogger := log.WithFields(log.Fields{"action": "READ", "user": id})
+	contextLogger.Info("Retrieving Persona Skills")
+
 	fmt.Printf("Getting Persona Skills for UserID: %s\n", id)
 
 	result, err := dataaccess.FindOneRecordWithProjection(
@@ -98,13 +110,11 @@ func PostCodeSubmission(db *mongo.Database, w http.ResponseWriter, r *http.Reque
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
 	params := mux.Vars(r)
 	id := params["id"]
-	lang := params["language"]
-
-	fmt.Println(id)
-	fmt.Println(lang)
+	// lang := params["language"]
+	contextLogger := log.WithFields(log.Fields{"action": "READ", "user": id})
+	contextLogger.Info("Posting code submission")
 
 	var codeContents users.Submission
 	_ = json.NewDecoder(r.Body).Decode(&codeContents)
@@ -119,11 +129,13 @@ func UserSubmission(db *mongo.Database, w http.ResponseWriter, r *http.Request) 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	contextLogger := log.WithFields(log.Fields{"action": "CREATE"})
+	contextLogger.Info("Creating a new user")
 
 	var userSignup = users.User{}
 	err := json.NewDecoder(r.Body).Decode(&userSignup)
 	if err != nil {
-		fmt.Println(err)
+		contextLogger.WithField("error", err).Error("An Error occured")
 	}
 
 	objectID, err := dataaccess.CreateUser(db.Collection(userCollectionName), userSignup)
@@ -131,10 +143,10 @@ func UserSubmission(db *mongo.Database, w http.ResponseWriter, r *http.Request) 
 		"_id": objectID}
 
 	if err != nil {
-		fmt.Println(err)
+		contextLogger.WithField("error", err).Error("An Error occured")
 		res["error"] = err.Error()
 	} else {
-		log.Printf("New user created: %s", objectID)
+		log.WithField("user", objectID).Info("New user created")
 	}
 	json.NewEncoder(w).Encode(res)
 }
@@ -145,11 +157,13 @@ func NewProjectSubmission(db *mongo.Database, w http.ResponseWriter, r *http.Req
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
 	params := mux.Vars(r)
 	id := params["id"]
+	contextLogger := log.WithFields(log.Fields{"action": "UPDATE", "user": id})
+	contextLogger.Info("Adding new project to user")
 
-	var newProject = users.Project{ID: primitive.NewObjectID()}
+	oid := primitive.NewObjectID()
+	var newProject = users.Project{ID: oid}
 	err := json.NewDecoder(r.Body).Decode(&newProject)
 
 	success, err := dataaccess.CreateProject(
@@ -157,7 +171,8 @@ func NewProjectSubmission(db *mongo.Database, w http.ResponseWriter, r *http.Req
 		newProject, id)
 
 	if err != nil {
-		fmt.Println(err)
+		contextLogger.WithField("error", err).Error("An Error occured")
 	}
+	contextLogger.WithField("projID", oid.Hex()).Info("Successfully created project")
 	json.NewEncoder(w).Encode(success)
 }

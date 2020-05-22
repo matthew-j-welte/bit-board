@@ -2,9 +2,10 @@ package middleware
 
 import (
 	"context"
-	"log"
 	"os"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	_ "github.com/matthew-j-welte/bit-board/server/middleware/dataaccess" // import dataaccess helpers
 
@@ -21,7 +22,6 @@ type mongoConnection struct{}
 type serverConnector interface {
 	connectToServer(ctx context.Context, mongoClient *mongo.Client) error
 	testServerConnection(ctx context.Context, mongoClient *mongo.Client) error
-	getLogger() *log.Logger
 }
 
 var mongoConnector serverConnector
@@ -34,30 +34,25 @@ func MongoDatabase() *mongo.Database {
 }
 
 func initialize(clientOptions *options.ClientOptions, serverConnectorHelper serverConnector) *mongo.Client {
-	logger := serverConnectorHelper.getLogger()
 	mongoClient, err := mongo.NewClient(clientOptions)
+	contextLogger := log.WithFields(log.Fields{"action": "DB Init", "URI": mongoURI})
 	if err != nil {
-		logger.Fatal(err)
+		contextLogger.Fatal(err)
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
 	if err := serverConnectorHelper.connectToServer(ctx, mongoClient); err != nil {
-		logger.Fatal(err)
+		contextLogger.Fatal(err)
 	}
 
-	logger.Println("Attempting to connect to mongo server...")
-	logger.Printf("Connecting to: %s", mongoURI)
+	contextLogger.Println("Attempting to connect to mongo server...")
 	if err := serverConnectorHelper.testServerConnection(ctx, mongoClient); err != nil {
-		logger.Fatal(err)
+		contextLogger.Fatal(err)
 	}
-	logger.Println("Successfully Connected to MongoDB")
+	contextLogger.Println("Successfully Connected to MongoDB")
 	return mongoClient
-}
-
-func (m mongoConnection) getLogger() *log.Logger {
-	return log.New(os.Stdout, "SERVER: ", log.Ldate|log.Ltime|log.Lshortfile)
 }
 
 func (m mongoConnection) connectToServer(ctx context.Context, mongoClient *mongo.Client) error {

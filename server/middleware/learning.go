@@ -3,11 +3,10 @@ package middleware
 import (
 	"context"
 	"encoding/json"
-	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
+	log "github.com/sirupsen/logrus"
 
 	"github.com/matthew-j-welte/bit-board/server/middleware/dataaccess"
 	"github.com/matthew-j-welte/bit-board/server/models/resources"
@@ -25,12 +24,14 @@ func GetLearningResources(db *mongo.Database, w http.ResponseWriter, r *http.Req
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.WriteHeader(http.StatusOK)
+	contextLogger := log.WithFields(log.Fields{"action": "READ"})
 
 	resources, err := getLearningResources(db.Collection(resourceCollectionName))
 	if err != nil {
-		log.Printf("An error occured: %s", err)
+		contextLogger.WithField("error", err).Error("An error occured")
 		w.WriteHeader(http.StatusPartialContent)
 	}
+	contextLogger.WithField("retrieved", len(resources)).Info("Successfully retrived resources")
 	json.NewEncoder(w).Encode(resources)
 }
 
@@ -40,9 +41,11 @@ func NewResourceSuggestion(db *mongo.Database, w http.ResponseWriter, r *http.Re
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
 	params := mux.Vars(r)
 	id := params["id"]
+	contextLogger := log.WithFields(log.Fields{"action": "CREATE", "user": id})
+	contextLogger.Info("Creating new resource suggestion")
+
 	oid, err := primitive.ObjectIDFromHex(id)
 	var resourceSuggestion = resources.ResourceSuggestion{Poster: oid}
 	err = json.NewDecoder(r.Body).Decode(&resourceSuggestion)
@@ -52,8 +55,9 @@ func NewResourceSuggestion(db *mongo.Database, w http.ResponseWriter, r *http.Re
 		resourceSuggestion)
 
 	if err != nil {
-		fmt.Println(err)
+		contextLogger.WithField("error", err).Error("Error when posting suggestion")
 	}
+	contextLogger.WithField("insertId", insertID).Info("Successfully created resource suggestion")
 	json.NewEncoder(w).Encode(insertID)
 }
 

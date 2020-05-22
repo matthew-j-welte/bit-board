@@ -2,9 +2,10 @@ package router
 
 import (
 	"context"
-	"fmt"
 	"net/http"
+	"os"
 
+	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/mongo"
 
 	"github.com/gorilla/mux"
@@ -23,12 +24,13 @@ type route struct {
 
 func init() {
 	db = middleware.MongoDatabase()
+	log.SetOutput(os.Stdout)
 }
 
 // Router main router for server
 func Router() *mux.Router {
 	router := mux.NewRouter()
-	fmt.Println("Initializing router...")
+	log.Info("Initializing router...")
 
 	// User route handlers
 	userCountRoute := route{
@@ -86,6 +88,7 @@ func Router() *mux.Router {
 		Handler:     middleware.NewResourceSuggestion}
 	handleRoute(router, newResourceSuggestionRoute)
 
+	log.Info("Router Initialized")
 	return router
 }
 
