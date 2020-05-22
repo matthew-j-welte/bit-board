@@ -15,7 +15,7 @@ const ProjectGroup = (props) => {
         <Project
             _id={project._id}
             phase={project.phase}
-            title={project.title}
+            name={project.name}
             description={project.description}
 
         />

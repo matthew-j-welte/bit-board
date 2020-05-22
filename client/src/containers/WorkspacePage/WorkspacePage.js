@@ -28,6 +28,7 @@ class WorkspacePage extends Component {
   getProjects = () => {
     const uri = "/api/user/" + this.props.userId + "/workspace/projects"
     axios.get(uri).then(res => {
+      console.log(res.data)
       if (res.data) {
         this.setState({
           projects: [...res.data.slice()]
@@ -107,13 +108,13 @@ class WorkspacePage extends Component {
           title="Software Development Projects"
           subheader="Manage your Code"
           icon="code branch"
-          projects={this.state.projects.filter(project => project.type === 'Code')}
+          projects={this.state.projects.filter(project => project.type === 'software')}
         />
         <ProjectGroup
           title="Writing Projects"
           subheader="Review your Writing"
           icon="pencil"
-          projects={this.state.projects.filter(project => project.type === 'Writing')}
+          projects={this.state.projects.filter(project => project.type === 'writing')}
         />
       </Container>
     )

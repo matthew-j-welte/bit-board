@@ -20,24 +20,24 @@ const resourceForm = (formName, type, icon) => {
         style: {margin: "25px 0px 25px 0px"}
       },
       fields: {
-        resourceURL: {
+        url: {
           control: Input,
           label: upperLabel + " URL",
           required: true
         },
-        resourceDesc: {
+        description: {
           control: TextArea,
           label: upperLabel + " Description",
           placeholder: "Give a brief description of this resource in your own words",
           required: true
         },
-        resourceRationale: {
+        rationale: {
           control: TextArea,
           label: "Rationale",
           placeholder: "Provide a valid reason why you believe this resource will be beneficial to the BitBoard Community",
           required: true
         },
-        resourceCategory: {
+        category: {
           control: Select,
           options: softwareCategories,
           label: "Category",

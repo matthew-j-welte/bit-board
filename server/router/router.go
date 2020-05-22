@@ -64,7 +64,7 @@ func Router() *mux.Router {
 	newUserRoute := route{
 		URI:         "/api/user/new",
 		RESTMethods: []string{"POST", "OPTIONS"},
-		Handler:     middleware.NewUserSubmission}
+		Handler:     middleware.UserSubmission}
 	handleRoute(router, newUserRoute)
 
 	newProjectRoute := route{

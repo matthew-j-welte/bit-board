@@ -7,12 +7,17 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/gorilla/mux"
+
 	"github.com/matthew-j-welte/bit-board/server/middleware/dataaccess"
+	"github.com/matthew-j-welte/bit-board/server/models/resources"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 const resourceCollectionName = "resources"
+const suggestedResourceCollectionName = "suggested-resources"
 
 // GetLearningResources collects the persona skill info
 func GetLearningResources(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
@@ -36,11 +41,20 @@ func NewResourceSuggestion(db *mongo.Database, w http.ResponseWriter, r *http.Re
 	w.Header().Set("Access-Control-Allow-Methods", "POST")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
-	reqBody := map[string]string{}
-	err := json.NewDecoder(r.Body).Decode(&reqBody)
-	fmt.Println(reqBody)
-	fmt.Println(err)
-	json.NewEncoder(w).Encode(true)
+	params := mux.Vars(r)
+	id := params["id"]
+	oid, err := primitive.ObjectIDFromHex(id)
+	var resourceSuggestion = resources.ResourceSuggestion{Poster: oid}
+	err = json.NewDecoder(r.Body).Decode(&resourceSuggestion)
+
+	insertID, err := dataaccess.CreateResourceSuggestion(
+		db.Collection(suggestedResourceCollectionName),
+		resourceSuggestion)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+	json.NewEncoder(w).Encode(insertID)
 }
 
 func getLearningResources(coll *mongo.Collection) ([]bson.M, error) {

@@ -37,10 +37,11 @@ func FindOneRecord(coll *mongo.Collection, id string) (bson.M, error) {
 
 // FindOneRecordWithProjection query a single record in the db with a projection expr
 func FindOneRecordWithProjection(coll *mongo.Collection, id string, projection bson.D) (bson.M, error) {
+	userOid, err := primitive.ObjectIDFromHex(id)
 	var result bson.M
-	err := coll.FindOne(
+	err = coll.FindOne(
 		context.Background(),
-		bson.D{{"_id", id}},
+		bson.D{{"_id", userOid}},
 		options.FindOne().SetProjection(projection)).Decode(&result)
 	return result, err
 }

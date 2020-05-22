@@ -9,10 +9,10 @@ import {
 import ColorCloudBkg from '../../../../../assets/images/color-cloud.png'
 
 const phaseToColorMap = {
-    Development: "#f3ffde",
-    Production: "#f1e6fa",
-    Drafting: "#f3ffde",
-    Published: "#f1e6fa"
+    development: "#f3ffde",
+    production: "#f1e6fa",
+    drafting: "#f3ffde",
+    published: "#f1e6fa"
 }
 
 const Project = (props) => (
@@ -23,7 +23,7 @@ const Project = (props) => (
     style={{borderStyle:"ridge", borderColor: phaseToColorMap[props.phase], borderRadius: "2em"}} 
   >
     <Card.Content textAlign="center">
-      <Card.Header>{props.title}</Card.Header>
+      <Card.Header>{props.name}</Card.Header>
     </Card.Content>
     <Image src={ColorCloudBkg} wrapped ui={false} />
     <Card.Content textAlign="center">
@@ -37,7 +37,7 @@ const Project = (props) => (
       style={{margin: ".25em 0em 1.75em 0em", background: phaseToColorMap[props.phase]}}
     >
       <Icon name="caret right"/>
-      <strong style={{color: "black"}}>{props.phase}</strong>
+      <strong style={{color: "black"}}>{ props.phase.toUpperCase()}</strong>
       <Icon name="caret left"/>
     </Card.Content>
   </Card>

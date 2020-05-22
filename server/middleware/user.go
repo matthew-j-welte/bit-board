@@ -10,6 +10,7 @@ import (
 	"github.com/matthew-j-welte/bit-board/server/middleware/dataaccess"
 	"github.com/matthew-j-welte/bit-board/server/models/users"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -112,14 +113,14 @@ func PostCodeSubmission(db *mongo.Database, w http.ResponseWriter, r *http.Reque
 	json.NewEncoder(w).Encode(true)
 }
 
-// NewUserSubmission creates a new user
-func NewUserSubmission(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
+// UserSubmission creates a new user
+func UserSubmission(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
-	var userSignup = users.NewUser{}
+	var userSignup = users.User{}
 	err := json.NewDecoder(r.Body).Decode(&userSignup)
 	if err != nil {
 		fmt.Println(err)
@@ -145,9 +146,18 @@ func NewProjectSubmission(db *mongo.Database, w http.ResponseWriter, r *http.Req
 	w.Header().Set("Access-Control-Allow-Methods", "POST")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
-	reqBody := map[string]string{}
-	err := json.NewDecoder(r.Body).Decode(&reqBody)
-	fmt.Println(reqBody)
-	fmt.Println(err)
-	json.NewEncoder(w).Encode(true)
+	params := mux.Vars(r)
+	id := params["id"]
+
+	var newProject = users.Project{ID: primitive.NewObjectID()}
+	err := json.NewDecoder(r.Body).Decode(&newProject)
+
+	success, err := dataaccess.CreateProject(
+		db.Collection(userCollectionName),
+		newProject, id)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+	json.NewEncoder(w).Encode(success)
 }

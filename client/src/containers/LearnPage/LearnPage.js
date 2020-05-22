@@ -143,6 +143,7 @@ class LearnPage extends Component {
 
   newResourceSuggestionSubmitHandler = () => {
     const uri = "/api/user/" + this.props.userId + "/learn/resource/new"
+    console.log(this.state.newResourceForm)
     axios.post(
       uri, 
       {...this.state.newResourceForm}, 
@@ -155,7 +156,7 @@ class LearnPage extends Component {
     })
   }
 
-  menuTabInfo = [
+  menuTabInfo = () => [
     {key: "videos", icon: "video", title: "Videos", builder: this.vidFormBuilder},
     {key: "books", icon: "book", title: "Books", builder: this.bookFormBuilder},
     {key: "articles", icon: "pencil", title: "Articles", builder: this.articleFormBuilder}
@@ -163,7 +164,7 @@ class LearnPage extends Component {
 
   render() {
     const { activeItem } = this.state;
-    const menuTabs = this.menuTabInfo.map(tab => {
+    const menuTabs = this.menuTabInfo().map(tab => {
       const triggerButton = (
         <Label
           as="a"

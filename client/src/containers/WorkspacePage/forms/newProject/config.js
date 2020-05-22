@@ -25,26 +25,26 @@ export const newProjectConfig = {
       style: {margin: "25px 0px 25px 0px"}
     },
     fields: {
-      projName: {
+      name: {
         control: Input,
         label: "Project Name",
         required: true
       },
-      projType: {
+      type: {
         grouping: FORM_ENUMS.GROUP_BEGIN,
         control: Select,
         options: projTypes,
         label: "Project Type",
         required: true
       },
-      projPhase: {
+      phase: {
         grouping: FORM_ENUMS.GROUP_END,
         control: Select,
         options: phaseTypes,
         label: "Current Phase",
         required: true
       },
-      projDescription: {
+      description: {
         control: TextArea,
         label: "Project Description",
         placeholder: "Give a brief summary of your project"

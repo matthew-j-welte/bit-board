@@ -1,19 +1,8 @@
 package users
 
 import (
-	"github.com/matthew-j-welte/bit-board/server/models/common"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
-
-// User the user model
-type User struct {
-	common.UID
-	Name            string
-	PersonaLvl      int          `json:"persona_lvl"`
-	CodeSubmissions []Submission `json:"codeSubmissions"`
-	Skills          []UserSkill
-	Projects        []Project
-}
 
 // UserLogin info sent on user login
 type UserLogin struct {
@@ -21,8 +10,8 @@ type UserLogin struct {
 	Password string
 }
 
-// NewUser the model used to receive user signup requests
-type NewUser struct {
+// User the model used to receive user signup requests
+type User struct {
 	ID             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
 	CompanyName    string             `json:"companyName,omitempty"`
 	Email          string
@@ -38,3 +27,13 @@ type NewUser struct {
 	Username       string
 	YearsWorking   int `json:"yearsWorking,omitempty,string"`
 }
+
+// // User the user model
+// type User struct {
+// 	common.UID
+// 	Name            string
+// 	PersonaLvl      int          `json:"persona_lvl"`
+// 	CodeSubmissions []Submission `json:"codeSubmissions"`
+// 	Skills          []UserSkill
+// 	Projects        []Project
+// }
