@@ -47,11 +47,11 @@ func initialize(clientOptions *options.ClientOptions, serverConnectorHelper serv
 		contextLogger.Fatal(err)
 	}
 
-	contextLogger.Println("Attempting to connect to mongo server...")
+	contextLogger.Info("Attempting to connect to mongo server...")
 	if err := serverConnectorHelper.testServerConnection(ctx, mongoClient); err != nil {
 		contextLogger.Fatal(err)
 	}
-	contextLogger.Println("Successfully Connected to MongoDB")
+	contextLogger.Info("Successfully Connected to MongoDB")
 	return mongoClient
 }
 

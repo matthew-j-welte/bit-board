@@ -7,9 +7,15 @@ import axios from '../../axios'
 import ProjectGroup from './components/Projects/Projects'
 import { FormBuilder } from '../../utilities/forms/formBuilder'
 import { newProjectConfig } from './forms/newProject/config'
-
+import { 
+  generateErrorPageFromAxiosError, 
+  generateWarningModalFromAxiosError,
+  getErrorInfo
+ } from '../../utilities/errorHandling/axiosErrors'
+ import { sendErrorReport } from '../../utilities/errorHandling/errorReports'
 
 class WorkspacePage extends Component {
+  displayName = 'WorkspacePage';
   constructor(props) {
     super(props);
     this.newProjFormBuilder = new FormBuilder(
@@ -21,21 +27,38 @@ class WorkspacePage extends Component {
     this.state = {
       projectCount: 0,
       projects: [],
-      projFormState: {}
+      projFormState: {},
+      warning: null,
+      error: null
     }
   }
 
   getProjects = () => {
     const uri = "/api/user/" + this.props.userId + "/workspace/projects"
-    axios.get(uri).then(res => {
+    axios.get(uri)
+    .then(res => {
       console.log(res.data)
       if (res.data) {
         this.setState({
-          projects: [...res.data.slice()]
+          projects: [...res.data.slice()],
+          error: null
         })
       }
     })
-
+    .catch(err => {
+      this.setState({
+        error: generateErrorPageFromAxiosError(err)
+      })
+      const { message, code } = getErrorInfo(err)
+      sendErrorReport({
+        func: "getProjects",
+        component: this.displayName, 
+        userId: this.props.userId,
+        err: message, 
+        code: code,
+        sideEffect: "This users projects are not able to be rendered"
+      })
+    })
   }
 
   componentDidMount() {
@@ -64,15 +87,29 @@ class WorkspacePage extends Component {
       uri, 
       {...this.state.projFormState}, 
       {headers: {"Content-Type": "application/x-www-form-urlencoded"}})
-      .then(res => {
-        if (res.data) {
-          console.log("set a new project")
-          console.log(res.data)
-        }
+    .then(res => {
+      if (res.data) {
+        console.log("set a new project")
+        console.log(res.data)
+      }
+    })
+    .catch(err => {
+      this.setState({
+        warning: generateWarningModalFromAxiosError(err)
+      })
     })
   }
 
   render() {
+    if (this.state.error) {
+      return this.state.error
+    }
+    
+    if (this.state.warning) {
+      console.log("[[ Future Effort ]] Show modal stating the post failed")
+      this.setState({warning: null})
+    }
+
     const newProjForm = this.newProjFormBuilder.buildForm()
     const triggerFormButton = (
       <Button 
@@ -99,7 +136,6 @@ class WorkspacePage extends Component {
         </Modal.Content>
       </Modal>
     )
-
 
     return (
       <Container style={{marginTop: "5em"}} >

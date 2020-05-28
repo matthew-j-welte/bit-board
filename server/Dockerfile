@@ -16,4 +16,4 @@ COPY . .
 RUN go get github.com/githubnemo/CompileDaemon
 
 ## Run ##
-ENTRYPOINT CompileDaemon --build="go build -o main ." --command=./main
+ENTRYPOINT CompileDaemon --build="go build -o main ." --command="bash -c ./main"

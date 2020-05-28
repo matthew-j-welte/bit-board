@@ -44,7 +44,7 @@ func GetUserID(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
 	var userLogin = users.UserLogin{}
 	err := json.NewDecoder(r.Body).Decode(&userLogin)
 	if err != nil {
-		contextLogger.WithField("error", err).Error("An Error occured")
+		contextLogger.WithField("error", err).Error("A Decode error occured")
 	}
 
 	id, err := dataaccess.GetIDFromValue(
@@ -53,7 +53,7 @@ func GetUserID(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
 			"password": userLogin.Password})
 
 	if err != nil {
-		contextLogger.WithField("error", err).Error("An Error occured")
+		contextLogger.WithField("error", err).Error("DB retrieval error occured")
 	}
 	contextLogger.WithField("ID", id).Error("Retrieved User ID")
 	json.NewEncoder(w).Encode(id)
@@ -69,14 +69,12 @@ func GetWorkspaceCollection(db *mongo.Database, w http.ResponseWriter, r *http.R
 	contextLogger := log.WithFields(log.Fields{"action": "READ", "user": id})
 	contextLogger.Info("Getting project for User Workspace")
 
-	fmt.Printf("Getting Workspace projects for UserID: %s\n", id)
-
 	result, err := dataaccess.FindOneRecordWithProjection(
 		db.Collection(userCollectionName),
 		id, bson.D{{"_id", 0}, {"projects", 1}})
 
 	if err != nil {
-		log.Printf("Error when getting workspace: %s", err)
+		contextLogger.WithField("error", err).Error("Error when retrieving projects")
 	}
 	json.NewEncoder(w).Encode(result["projects"])
 }
@@ -91,14 +89,12 @@ func GetPersonaSkills(db *mongo.Database, w http.ResponseWriter, r *http.Request
 	contextLogger := log.WithFields(log.Fields{"action": "READ", "user": id})
 	contextLogger.Info("Retrieving Persona Skills")
 
-	fmt.Printf("Getting Persona Skills for UserID: %s\n", id)
-
 	result, err := dataaccess.FindOneRecordWithProjection(
 		db.Collection(userCollectionName),
 		id, bson.D{{"_id", 0}, {"skills", 1}})
 
 	if err != nil {
-		log.Printf("Error when getting user skills: %s", err)
+		contextLogger.WithField("error", err).Error("Error when retrieving skills")
 	}
 
 	json.NewEncoder(w).Encode(result["skills"])
@@ -146,7 +142,7 @@ func UserSubmission(db *mongo.Database, w http.ResponseWriter, r *http.Request) 
 		contextLogger.WithField("error", err).Error("An Error occured")
 		res["error"] = err.Error()
 	} else {
-		log.WithField("user", objectID).Info("New user created")
+		contextLogger.WithField("user", objectID).Info("New user created")
 	}
 	json.NewEncoder(w).Encode(res)
 }

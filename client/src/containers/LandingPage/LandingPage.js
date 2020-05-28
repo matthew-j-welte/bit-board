@@ -116,10 +116,9 @@ class LandingPage extends Component {
       />
     )
     const signUpSection = (
-      <SignUpPrompt 
+      <SignUpPrompt
         trigger={signupTriggerButton} signUpForm={signupForm}/>
     )
-
     return (
       <Segment
         inverted

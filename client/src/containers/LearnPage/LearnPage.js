@@ -14,6 +14,12 @@ import {
   articleFormConfig
 } from './forms/newResource/config'
 import { FormBuilder } from '../../utilities/forms/formBuilder'
+import { 
+  generateErrorPageFromAxiosError, 
+  generateWarningModalFromAxiosError,
+  getErrorInfo
+ } from '../../utilities/errorHandling/axiosErrors'
+import { sendErrorReport } from '../../utilities/errorHandling/errorReports'
 
 import ColorCloudBkg from '../../assets/images/color-cloud.png'
 import CppBook from '../../assets/images/cpp-book.jpg'
@@ -24,6 +30,7 @@ const imageMap = {
 }
 
 class LearnPage extends Component {
+  displayName = "LearnPage"
   constructor(props) {
     super(props);
     const formHandlers = [
@@ -37,7 +44,9 @@ class LearnPage extends Component {
     this.state = {
       activeItem: "videos",
       resources: [],
-      newResourceForm: {}
+      newResourceForm: {},
+      error: null,
+      warning: null
     }
   }
 
@@ -45,12 +54,27 @@ class LearnPage extends Component {
 
   getResources() {
     const uri = "/api/user/" + this.props.userId + "/learn/resources"
-    axios.get(uri).then(res => {
+    axios.get(uri)
+    .then(res => {
       if (res.data) {
         this.setState({
           resources: [...res.data.slice()]
         })
       }
+    })
+    .catch(err => {
+      this.setState({
+        error: generateErrorPageFromAxiosError(err)
+      })
+      const { message, code } = getErrorInfo(err)
+      sendErrorReport({
+        func: "getResources",
+        component: this.displayName, 
+        userId: this.props.userId,
+        err: message, 
+        code: code,
+        sideEffect: "Learning resources are not able to be displayed for this user"
+      })
     })
   }
 
@@ -148,11 +172,16 @@ class LearnPage extends Component {
       uri, 
       {...this.state.newResourceForm}, 
       {headers: {"Content-Type": "application/x-www-form-urlencoded"}})
-      .then(res => {
-        if (res.data) {
-          console.log("set a new resource suggestion")
-          console.log(res.data)
-        }
+    .then(res => {
+      if (res.data) {
+        console.log("set a new resource suggestion")
+        console.log(res.data)
+      }
+    })
+    .catch(err => {
+      this.setState({
+        warning: generateWarningModalFromAxiosError(err)
+      })
     })
   }
 
@@ -163,6 +192,14 @@ class LearnPage extends Component {
   ]
 
   render() {
+    if (this.state.error) {
+      return this.state.error
+    }
+    if (this.state.warning) {
+      console.log("[[ Future Effort ]] Show modal stating the post failed")
+      this.setState({warning: null})
+    }
+
     const { activeItem } = this.state;
     const menuTabs = this.menuTabInfo().map(tab => {
       const triggerButton = (
