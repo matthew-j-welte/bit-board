@@ -13,7 +13,7 @@ import PersonaLevelBox from './components/PersonaLevelBox'
 
 import DummyModel from '../../assets/images/dummy-model.png'
 import { generateErrorPageFromAxiosError, getErrorInfo } from '../../utilities/errorHandling/axiosErrors'
-import { sendErrorReport } from '../../utilities/errorHandling/errorReports'
+import { sendErrorReport, ErrorReport } from '../../utilities/errorHandling/errorReports'
 
 class PersonaPage extends Component {
   displayName = "PersonaPage"
@@ -42,15 +42,20 @@ class PersonaPage extends Component {
       this.setState({
         error: generateErrorPageFromAxiosError(err)
       })
-      const { message, code } = getErrorInfo(err)
-      sendErrorReport({
-        func: "getPersonaSkills",
-        component: this.displayName, 
-        userId: this.props.userId,
-        err: message, 
-        code: code,
-        sideEffect: "The skills for a user's Persona could not be rendered"
-      })
+      const { message } = getErrorInfo(err)
+      const payload = {
+        errorFunctionSource: "getPersonaSkills",
+        errorComponentSource: this.displayName, 
+        clientSideEffect: "The skills for a user's Persona could not be rendered",
+        problemURI: uri
+      }
+      const report = new ErrorReport(
+        this.props.userId,
+        message, 
+        "Axios Error",
+        payload
+      )
+      sendErrorReport(report)
     })
   }
 

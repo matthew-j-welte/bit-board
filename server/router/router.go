@@ -88,6 +88,13 @@ func Router() *mux.Router {
 		Handler:     middleware.NewResourceSuggestion}
 	handleRoute(router, newResourceSuggestionRoute)
 
+	// Misc route handlers
+	clientErrorReportRoute := route{
+		URI:         "/api/error/report",
+		RESTMethods: []string{"POST", "OPTIONS"},
+		Handler:     middleware.HandleErrorReport}
+	handleRoute(router, clientErrorReportRoute)
+
 	log.Info("Router Initialized")
 	return router
 }

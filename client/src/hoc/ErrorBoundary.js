@@ -1,5 +1,8 @@
 import React from 'react';
+import { connect } from 'react-redux'
+
 import ErrorPage from '../components/Error/ErrorPage';
+import { sendErrorReport, ErrorReport } from '../utilities/errorHandling/errorReports'
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -11,7 +14,15 @@ class ErrorBoundary extends React.Component {
     this.setState({ hasError: true });
     console.log(error)
     console.log(info.componentStack)
-    // log error to backend
+    const report = new ErrorReport(
+      this.props.userId, 
+      error, 
+      "Unknown Component Thrown Error",
+      {
+        info: info
+      }
+    )
+    sendErrorReport(report)
   }
 
   render() {
@@ -22,4 +33,10 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-export default ErrorBoundary
+const mapStateToProps = state => {
+  return {
+    userId: state.userId
+  }
+}
+
+export default connect(mapStateToProps)(ErrorBoundary)

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log"
 
+	"github.com/matthew-j-welte/bit-board/server/models/reports"
 	"github.com/matthew-j-welte/bit-board/server/models/resources"
 	"github.com/matthew-j-welte/bit-board/server/models/users"
 	"go.mongodb.org/mongo-driver/bson"
@@ -44,9 +45,19 @@ func CreateProject(coll *mongo.Collection, project users.Project, hexOid string)
 	return true, nil
 }
 
-// CreateUser creates a new user in the database
+// CreateResourceSuggestion creates a learning resource suggestion in the db
 func CreateResourceSuggestion(coll *mongo.Collection, resource resources.ResourceSuggestion) (string, error) {
 	result, err := coll.InsertOne(context.Background(), resource)
+	if err != nil {
+		return "", err
+	}
+	oid := result.InsertedID.(primitive.ObjectID)
+	return oid.Hex(), err
+}
+
+// CreateErrorReport creates a new erorr report in db
+func CreateErrorReport(coll *mongo.Collection, report reports.ErrorReport) (string, error) {
+	result, err := coll.InsertOne(context.Background(), report)
 	if err != nil {
 		return "", err
 	}

@@ -12,7 +12,7 @@ import {
   generateWarningModalFromAxiosError,
   getErrorInfo
  } from '../../utilities/errorHandling/axiosErrors'
- import { sendErrorReport } from '../../utilities/errorHandling/errorReports'
+ import { sendErrorReport, ErrorReport } from '../../utilities/errorHandling/errorReports'
 
 class WorkspacePage extends Component {
   displayName = 'WorkspacePage';
@@ -49,15 +49,20 @@ class WorkspacePage extends Component {
       this.setState({
         error: generateErrorPageFromAxiosError(err)
       })
-      const { message, code } = getErrorInfo(err)
-      sendErrorReport({
-        func: "getProjects",
-        component: this.displayName, 
-        userId: this.props.userId,
-        err: message, 
-        code: code,
-        sideEffect: "This users projects are not able to be rendered"
-      })
+      const { message } = getErrorInfo(err)
+      const payload = {
+        errorFunctionSource: "getProjects",
+        errorComponentSource: this.displayName, 
+        clientSideEffect: "This users projects are not able to be rendered",
+        problemURI: uri
+      }
+      const report = new ErrorReport(
+        this.props.userId,
+        message, 
+        "Axios Error",
+        payload
+      )
+      sendErrorReport(report)
     })
   }
 

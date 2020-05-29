@@ -7,7 +7,6 @@ services:
       context: ./client/ 
       dockerfile: Dockerfile
     restart: always
-    stdin_open: true
     ports:
       - "3500:3000" 
     depends_on: 
@@ -21,8 +20,6 @@ services:
     command: ["/usr/local/bin/npm", "start"]
 
   server:
-    stdin_open: true
-    tty: true
     build:
       context: ./server/ 
       dockerfile: Dockerfile

@@ -19,7 +19,7 @@ import {
   generateWarningModalFromAxiosError,
   getErrorInfo
  } from '../../utilities/errorHandling/axiosErrors'
-import { sendErrorReport } from '../../utilities/errorHandling/errorReports'
+import { sendErrorReport, ErrorReport } from '../../utilities/errorHandling/errorReports'
 
 import ColorCloudBkg from '../../assets/images/color-cloud.png'
 import CppBook from '../../assets/images/cpp-book.jpg'
@@ -66,15 +66,20 @@ class LearnPage extends Component {
       this.setState({
         error: generateErrorPageFromAxiosError(err)
       })
-      const { message, code } = getErrorInfo(err)
-      sendErrorReport({
-        func: "getResources",
-        component: this.displayName, 
-        userId: this.props.userId,
-        err: message, 
-        code: code,
-        sideEffect: "Learning resources are not able to be displayed for this user"
-      })
+      const { message } = getErrorInfo(err)
+      const payload = {
+        errorFunctionSource: "getResources",
+        errorComponentSource: this.displayName, 
+        clientSideEffect: "Learning resources are not able to be displayed for this user",
+        problemURI: uri
+      }
+      const report = new ErrorReport(
+        this.props.userId,
+        message, 
+        "Axios Error",
+        payload
+      )
+      sendErrorReport(report)
     })
   }
 
