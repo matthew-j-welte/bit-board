@@ -1,11 +1,12 @@
 import React from 'react'
-
 import { Segment, Header, Icon } from 'semantic-ui-react'
 import { Link } from 'react-router-dom'
 
-const ErrorPage = (props) => (
-  <Segment style={{margin: "5em 10em 5em 10em"}}>
-    <Header textAlign="center" style={{fontSize: "15em"}}>
+import { mainSegmentBoxStyle, sorryHeaderStyle } from './styles'
+
+const ErrorPage = () => (
+  <Segment style={mainSegmentBoxStyle}>
+    <Header textAlign="center" style={sorryHeaderStyle}>
       SORRY!
     </Header>
     <Header textAlign="center">

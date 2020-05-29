@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
-import { Menu, Image } from 'semantic-ui-react'
+import { Menu } from 'semantic-ui-react'
 import { NavLink } from 'react-router-dom'
 
-import BitBoardLogo from '../../assets/images/BitBoard.png'
+import { routeInfo, logoRouteInfo } from './constants'
+import { menuStyle } from './styles'
+
 class NavBar extends Component {
   state = {}
 
@@ -21,26 +23,17 @@ class NavBar extends Component {
   )
 
   render() {
-    const logoNav = this.generateNavLink(
-      {key: "icon", title: <Image size="small" src={BitBoardLogo}/>, path: "/home"}
-    )
-    const navlinks = [
-      {key: "code", title: "Code", path: "/code"},
-      {key: "workspace", title: "Workspace", path: "/workspace"},
-      {key: "learn", title: "Learn", path: "/learn"}, 
-      {key: "network", title: "Network", path: "/"},
-      {key: "level-up", title: "Level Up", path: "/persona"},
-      {key: "sign-in", title: "Sign In", path: "/"},
-    ].map(el => this.generateNavLink(el))
+    const logoNavLink = this.generateNavLink(logoRouteInfo)
+    const navlinks = routeInfo.map(route => this.generateNavLink(route))
 
     return (
       <Menu 
         inverted 
         stackable 
         size="huge" 
-        style={{borderRadius: 0, margin:0, borderBottom: '2px solid #303030'}}
+        style={menuStyle}
       >
-        {logoNav}
+        {logoNavLink}
         <Menu.Menu position="right">
           {navlinks}
         </Menu.Menu>
