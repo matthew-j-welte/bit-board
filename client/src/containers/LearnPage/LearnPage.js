@@ -190,6 +190,8 @@ class LearnPage extends Component {
     })
   }
 
+  // Add lookup table in constructor that maps key => builder so we dont have to 
+  // declare them here and can move this into constants
   menuTabInfo = () => [
     {key: "videos", icon: "video", title: "Videos", builder: this.vidFormBuilder},
     {key: "books", icon: "book", title: "Books", builder: this.bookFormBuilder},

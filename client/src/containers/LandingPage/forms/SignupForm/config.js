@@ -7,7 +7,6 @@ const genderOptions = [
   { key: 'o', text: 'Other', value: 'other' },
 ]
 
-
 const headerConstants = {
   color: "blue",
   style: {margin: "50px 0px 25px 0px"}
