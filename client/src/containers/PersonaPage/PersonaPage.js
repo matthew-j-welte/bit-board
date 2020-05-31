@@ -1,19 +1,11 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { Grid, Segment, Image } from 'semantic-ui-react'
 
-import { 
-  Grid,
-  Segment,
-  Image
-} from 'semantic-ui-react'
-
-import axios from '../../axios'
-import SkillBar from './components/SkillBar'
-import PersonaLevelBox from './components/PersonaLevelBox'
-
+import SkillBar from './SkillBar/SkillBar'
+import PersonaLevelBox from './PersonaLevelBox/PersonaLevelBox'
 import DummyModel from '../../assets/images/dummy-model.png'
-import { generateErrorPageFromAxiosError, getErrorInfo } from '../../utilities/errorHandling/axiosErrors'
-import { sendErrorReport, ErrorReport } from '../../utilities/errorHandling/errorReports'
+import * as requests from './requests'
 
 class PersonaPage extends Component {
   displayName = "PersonaPage"
@@ -28,57 +20,9 @@ class PersonaPage extends Component {
     }
   }
 
-  getPersonaSkills = () => {
-    const uri = "/api/user/" + this.props.userId + "/persona/skills"
-    axios.get(uri)
-    .then(res => {
-      if (res.data) {
-        this.setState({
-          skills: [...res.data.slice()]
-        })
-      }
-    })
-    .catch(err => {
-      this.setState({
-        error: generateErrorPageFromAxiosError(err)
-      })
-      const { message } = getErrorInfo(err)
-      const payload = {
-        errorFunctionSource: "getPersonaSkills",
-        errorComponentSource: this.displayName, 
-        clientSideEffect: "The skills for a user's Persona could not be rendered",
-        problemURI: uri
-      }
-      const report = new ErrorReport(
-        this.props.userId,
-        message, 
-        "Axios Error",
-        payload
-      )
-      sendErrorReport(report)
-    })
-  }
-
-  gettPersonaLvl = () => {
-    const uri = "/api/user/" + this.props.userId + "/status"
-    axios.get(uri)
-    .then(res => {
-      if (res.data) {
-        this.setState({
-          personaLvl: res.data["personaLvl"]
-        })
-      }
-    })
-    .catch(err => {
-      this.setState({
-        error: generateErrorPageFromAxiosError(err)
-      })
-    })
-  }
-
   componentDidMount() {
-    this.getPersonaSkills()
-    this.gettPersonaLvl()
+    requests.getPersonaSkills(this)
+    // requests.gettPersonaLvl(this)
   }
 
   render() {

@@ -8,7 +8,7 @@ import { sendErrorReport, ErrorReport } from '../../utilities/errorHandling/erro
 
 
 export const getResources = (component) => {
-  const uri = "/api/user/" + "this.props.userId" + "/learn/resources"
+  const uri = "/api/user/" + component.props.userId + "/learn/resources"
   axios.get(uri)
   .then(res => {
     if (res.data) {

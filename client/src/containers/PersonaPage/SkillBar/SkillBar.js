@@ -1,25 +1,7 @@
 import React from 'react'
+import { Grid, Segment, Header, Icon, Progress, Divider, Container } from 'semantic-ui-react'
 
-import { 
-  Grid,
-  Segment,
-  Header,
-  Icon,
-  Progress,
-  Divider,
-  Container
-} from 'semantic-ui-react'
-
-const skillTypeToColor = {
-    Software: {
-      0: "blue",
-      1: "teal"
-    },
-    "Soft Skills": {
-      0: "violet",
-      1: "purple"
-    }
-  }
+import { skillTypeToColor } from './constants'
   
 const getSkillColorShade = (percent, cat) => {
     const shades = skillTypeToColor[cat]

@@ -1,12 +1,5 @@
 import React from 'react'
-
-import { 
-  Segment,
-  Header,
-  Icon,
-  Progress
-} from 'semantic-ui-react'
-
+import { Segment, Header, Icon, Progress } from 'semantic-ui-react'
 
 const PersonaLevelBox = (props) => (
     <Segment textAlign="center" inverted style={{margin: "0em 21em 0em 21em"}}>
