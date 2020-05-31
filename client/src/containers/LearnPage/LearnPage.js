@@ -43,7 +43,11 @@ class LearnPage extends Component {
     this.articleFormBuilder = new FormBuilder(articleFormConfig, ...formHandlers)
     this.state = {
       activeItem: "videos",
-      resources: [],
+      resources: {
+        videos: [],
+        books: [],
+        articles: []
+      },
       newResourceForm: {},
       error: null,
       warning: null
@@ -57,8 +61,14 @@ class LearnPage extends Component {
     axios.get(uri)
     .then(res => {
       if (res.data) {
+        const returnedResources = [...res.data.slice()]
+        const currentResources = {...this.state.resources}
         this.setState({
-          resources: [...res.data.slice()]
+          resources: {
+            videos: [...currentResources.videos, returnedResources.filter(r => r['type'] === "videos")],
+            books: [...currentResources.books, returnedResources.filter(r => r['type'] === "books")],
+            articles: [...currentResources.articles, returnedResources.filter(r => r['type'] === "articles")]
+          }
         })
       }
     })
@@ -116,14 +126,14 @@ class LearnPage extends Component {
       return (
         <VideoLearningResourceRow
           videoId={resource["videoId"]}
-          placeholderImage={imageMap[resource["placeholder"]]}
+          placeholder={imageMap[resource["placeholder"]]}
           videoSource="youtube"
           author={resource["author"]}
           title={resource["title"]}
           description={resource["description"]}
-          userCount={resource["viewers"]}
+          viewers={resource["viewers"]}
           comments={this.renderResourceFeed(resource["comments"])}
-          associatedSkills={this.renderResourceSkills(resource["skills"])}
+          skills={this.renderResourceSkills(resource["skills"])}
         />
       )
     }
@@ -134,17 +144,16 @@ class LearnPage extends Component {
           author={resource["author"]}
           title={resource["title"]}
           description={resource["description"]}
-          userCount={resource["viewers"]}
+          viewers={resource["viewers"]}
           comments={this.renderResourceFeed(resource["comments"])}
-          associatedSkills={this.renderResourceSkills(resource["skills"])}
+          skills={this.renderResourceSkills(resource["skills"])}
         />
       )
     }
   }
 
   genResources() {
-    return this.state.resources
-    .filter(resource => resource["type"] === this.state.activeItem)
+    return this.state.resources[this.state.activeItem]
     .map(resource => {
       return this.renderResourceRow(resource)
     });

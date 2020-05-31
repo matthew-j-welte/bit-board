@@ -31,43 +31,48 @@ const LearningResourceRow = (props) => (
       </Grid.Column>
     </Grid.Row>
   )
+
+const VideoLearningResourceRow = (props) => (
+  <LearningResourceRow
+    graphicColWidth={5}
+    graphic={
+      <Embed
+        style={{minHeight: "300px"}}
+        id={props.videoId}
+        placeholder={props.placeholderImage}
+        source={props.videoSource}
+      />
+    }
+    descriptionColWidth={3}
+    userCountNoun="Viewers"
+    {...props}
+  />
+)
+
+const ReadingLearningResourceRow = (props) => (
+  <LearningResourceRow
+    graphicColWidth={4}
+    graphic={
+      <Image
+        centered
+        fluid
+        style={{minHeight: "400px"}}
+        size="medium"
+        src={props.image}
+      />
+    }
+    descriptionColWidth={4}
+    userCountNoun="Readers"
+    {...props}
+  />
+)
+
+const LearningResource = (props) => {
   
-  const VideoLearningResourceRow = (props) => (
-    <LearningResourceRow
-      graphicColWidth={5}
-      graphic={
-        <Embed
-          style={{minHeight: "300px"}}
-          id={props.videoId}
-          placeholder={props.placeholderImage}
-          source={props.videoSource}
-        />
-      }
-      descriptionColWidth={3}
-      userCountNoun="Viewers"
-      {...props}
-    />
-  )
-  
-  const ReadingLearningResourceRow = (props) => (
-    <LearningResourceRow
-      graphicColWidth={4}
-      graphic={
-        <Image
-          centered
-          fluid
-          style={{minHeight: "400px"}}
-          size="medium"
-          src={props.image}
-        />
-      }
-      descriptionColWidth={4}
-      userCountNoun="Readers"
-      {...props}
-    />
-  )
+}
 
 export {
   VideoLearningResourceRow,
-  ReadingLearningResourceRow
+  ReadingLearningResourceRow,
+  LearningResource
 }
