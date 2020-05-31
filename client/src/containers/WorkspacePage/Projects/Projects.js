@@ -1,12 +1,5 @@
 import React from 'react'
-
-import { 
-  Card,
-  Icon,
-  Container, 
-  Header,
-  Divider
-} from 'semantic-ui-react'
+import { Card, Icon, Container, Header, Divider } from 'semantic-ui-react'
 
 import Project from './Project/Project'
 

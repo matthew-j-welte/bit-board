@@ -1,18 +1,13 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-
 import { Container, Button, Modal } from 'semantic-ui-react'
 
-import axios from '../../axios'
-import ProjectGroup from './components/Projects/Projects'
+import ProjectGroup from './Projects/Projects'
 import { FormBuilder } from '../../utilities/forms/formBuilder'
 import { newProjectConfig } from './forms/newProject/config'
-import { 
-  generateErrorPageFromAxiosError, 
-  generateWarningModalFromAxiosError,
-  getErrorInfo
- } from '../../utilities/errorHandling/axiosErrors'
- import { sendErrorReport, ErrorReport } from '../../utilities/errorHandling/errorReports'
+import * as requests from './requests'
+import * as styles from './styles'
+
 
 class WorkspacePage extends Component {
   displayName = 'WorkspacePage';
@@ -22,7 +17,7 @@ class WorkspacePage extends Component {
       newProjectConfig,
       this.handleFormFieldChange,
       this.queryFormState,
-      this.newProjectSubmitHandler
+      () => requests.postNewProject(this)
     )
     this.state = {
       projectCount: 0,
@@ -33,41 +28,8 @@ class WorkspacePage extends Component {
     }
   }
 
-  getProjects = () => {
-    const uri = "/api/user/" + this.props.userId + "/workspace/projects"
-    axios.get(uri)
-    .then(res => {
-      console.log(res.data)
-      if (res.data) {
-        this.setState({
-          projects: [...res.data.slice()],
-          error: null
-        })
-      }
-    })
-    .catch(err => {
-      this.setState({
-        error: generateErrorPageFromAxiosError(err)
-      })
-      const { message } = getErrorInfo(err)
-      const payload = {
-        errorFunctionSource: "getProjects",
-        errorComponentSource: this.displayName, 
-        clientSideEffect: "This users projects are not able to be rendered",
-        problemURI: uri
-      }
-      const report = new ErrorReport(
-        this.props.userId,
-        message, 
-        "Axios Error",
-        payload
-      )
-      sendErrorReport(report)
-    })
-  }
-
   componentDidMount() {
-    this.getProjects();
+    requests.getProjects(this);
   }
 
   createNewProjectState = () => {
@@ -86,25 +48,6 @@ class WorkspacePage extends Component {
 
   queryFormState = (key) => this.state.projFormState[key]
 
-  newProjectSubmitHandler = () => {
-    const uri = "/api/user/" + this.props.userId + "/workspace/project/new"
-    axios.post(
-      uri, 
-      {...this.state.projFormState}, 
-      {headers: {"Content-Type": "application/x-www-form-urlencoded"}})
-    .then(res => {
-      if (res.data) {
-        console.log("set a new project")
-        console.log(res.data)
-      }
-    })
-    .catch(err => {
-      this.setState({
-        warning: generateWarningModalFromAxiosError(err)
-      })
-    })
-  }
-
   render() {
     if (this.state.error) {
       return this.state.error
@@ -122,13 +65,7 @@ class WorkspacePage extends Component {
         circular
         size="massive" 
         onClick={() => this.createNewProjectState()}
-        style={{
-          background: "#53c2aa", 
-          border: "solid 2px black", 
-          minHeight: "50px", 
-          marginTop: "3em", 
-          marginBottom: "3em"
-        }}
+        style={styles.newProjectSubmitButton}
       >
         Create New Project
       </Button>
