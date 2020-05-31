@@ -3,8 +3,6 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import NavBar from './components/NavBar/NavBar'
 
 import ErrorBoundary from './hoc/ErrorBoundary'
-import lazyLoader from './hoc/lazyLoader'
-
 import HomePage from'./containers/HomePage/HomePage'
 import LandingPage from'./containers/LandingPage/LandingPage'
 import WorkspacePage from'./containers/WorkspacePage/WorkspacePage'

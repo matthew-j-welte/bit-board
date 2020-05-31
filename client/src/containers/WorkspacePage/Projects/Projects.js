@@ -7,6 +7,7 @@ const ProjectGroup = (props) => {
     const projects = props.projects.map(project => (
         <Project
             _id={project._id}
+            key={project._id}
             phase={project.phase}
             name={project.name}
             description={project.description}

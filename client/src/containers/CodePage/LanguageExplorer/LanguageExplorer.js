@@ -6,7 +6,8 @@ import { languageChoices } from './constants'
 
 const LanguageExplorer = (props) => {
   const languages = languageChoices.map(lang => (
-    <LanguageChoice 
+    <LanguageChoice
+      key={lang.language}
       isItemActive={props.activeLanguage === lang.language}
       clickHandler={props.languageSelectHandler}
       {...lang}

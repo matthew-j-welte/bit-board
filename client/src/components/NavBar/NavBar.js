@@ -11,7 +11,10 @@ class NavBar extends Component {
   handleItemClick = (e, { name }) => this.setState({ activeItem: name })
 
   generateNavLink = (el) => (
-    <NavLink to={el.path}>
+    <NavLink 
+      key={el.key}
+      to={el.path}
+    >
       <Menu.Item
         name={el.key}
         active={this.state.activeItem === el.key}
