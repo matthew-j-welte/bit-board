@@ -20,6 +20,7 @@ import {
   getErrorInfo
  } from '../../utilities/errorHandling/axiosErrors'
 import { sendErrorReport, ErrorReport } from '../../utilities/errorHandling/errorReports'
+import ResourceTypeTabs from './ResourceTypeTabs/ResourceTypeTabs'
 
 import ColorCloudBkg from '../../assets/images/color-cloud.png'
 import CppBook from '../../assets/images/cpp-book.jpg'
@@ -42,7 +43,7 @@ class LearnPage extends Component {
     this.bookFormBuilder = new FormBuilder(bookFormConfig, ...formHandlers)
     this.articleFormBuilder = new FormBuilder(articleFormConfig, ...formHandlers)
     this.state = {
-      activeItem: "videos",
+      activeResourceTypeTab: "videos",
       resources: {
         videos: [],
         books: [],
@@ -54,7 +55,7 @@ class LearnPage extends Component {
     }
   }
 
-  handleItemClick = (e, { name }) => this.setState({ activeItem: name })
+  menuTabSelectionHandler = (e, { name }) => this.setState({ activeResourceTypeTab: name })
 
   getResources() {
     const uri = "/api/user/" + this.props.userId + "/learn/resources"
@@ -123,37 +124,15 @@ class LearnPage extends Component {
 
   renderResourceRow(resource) {
     if (resource["type"] === "videos"){
-      return (
-        <VideoLearningResourceRow
-          videoId={resource["videoId"]}
-          placeholder={imageMap[resource["placeholder"]]}
-          videoSource="youtube"
-          author={resource["author"]}
-          title={resource["title"]}
-          description={resource["description"]}
-          viewers={resource["viewers"]}
-          comments={this.renderResourceFeed(resource["comments"])}
-          skills={this.renderResourceSkills(resource["skills"])}
-        />
-      )
+      return <VideoLearningResourceRow {...resource}/>
     }
     else {
-      return (
-        <ReadingLearningResourceRow
-          image={imageMap[resource["image"]]}
-          author={resource["author"]}
-          title={resource["title"]}
-          description={resource["description"]}
-          viewers={resource["viewers"]}
-          comments={this.renderResourceFeed(resource["comments"])}
-          skills={this.renderResourceSkills(resource["skills"])}
-        />
-      )
+      return <ReadingLearningResourceRow {...resource}/>
     }
   }
 
   genResources() {
-    return this.state.resources[this.state.activeItem]
+    return this.state.resources[this.state.activeResourceTypeTab]
     .map(resource => {
       return this.renderResourceRow(resource)
     });
@@ -163,7 +142,7 @@ class LearnPage extends Component {
     this.getResources()
   }
 
-  createNewResourceState = (builder) => {
+  initializeNewResourceFormState = (builder) => {
     this.setState({ 
       newResourceForm: {...builder.createStateModel()}
     })
@@ -199,14 +178,6 @@ class LearnPage extends Component {
     })
   }
 
-  // Add lookup table in constructor that maps key => builder so we dont have to 
-  // declare them here and can move this into constants
-  menuTabInfo = () => [
-    {key: "videos", icon: "video", title: "Videos", builder: this.vidFormBuilder},
-    {key: "books", icon: "book", title: "Books", builder: this.bookFormBuilder},
-    {key: "articles", icon: "pencil", title: "Articles", builder: this.articleFormBuilder}
-  ]
-
   render() {
     if (this.state.error) {
       return this.state.error
@@ -216,46 +187,16 @@ class LearnPage extends Component {
       this.setState({warning: null})
     }
 
-    const { activeItem } = this.state;
-    const menuTabs = this.menuTabInfo().map(tab => {
-      const triggerButton = (
-        <Label
-          as="a"
-          size="small"
-          circular
-          style={{marginTop: "6px"}}
-          onClick={() => this.createNewResourceState(tab.builder)}
-        >
-          Suggest {tab.title} Resource
-        </Label>
-      )
-      
-      const newResourcePrompt = (
-        <Modal trigger={triggerButton}>
-          <Modal.Header>Create New Resource</Modal.Header>
-          <Modal.Content>
-            {tab.builder.buildForm()}
-          </Modal.Content>
-        </Modal>
-      )
-
-      return (
-        <Menu.Item
-          name={tab.key}
-          active={activeItem === tab.key}
-          onClick={this.handleItemClick}
-        >
-          <Icon name={tab.icon} />
-            {tab.title}
-            {newResourcePrompt}
-        </Menu.Item>
-      )
-    });
-
-    const menuBar = (
-      <Menu color="teal" icon="labeled" widths={3}>
-        {menuTabs}
-      </Menu>
+    const { activeResourceTypeTab } = this.state;
+    const resourceTypeMenuTabs = (
+      <ResourceTypeTabs 
+        handleFormFieldChange={this.handleFormFieldChange}
+        queryFormState={this.queryFormState}
+        newResourceSuggestionSubmitHandler={this.newResourceSuggestionSubmitHandler} 
+        initializeNewResourceFormState={this.initializeNewResourceFormState}
+        menuTabSelectionHandler={this.menuTabSelectionHandler}
+        activeResourceTypeTab={activeResourceTypeTab}
+      />
     )
 
     return (
