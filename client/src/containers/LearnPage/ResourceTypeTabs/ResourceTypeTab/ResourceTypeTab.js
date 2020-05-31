@@ -1,5 +1,5 @@
 import React from 'react'
-import { Menu, Icon, Segment, Grid, Feed, Item, Modal, Label } from 'semantic-ui-react'
+import { Menu, Icon, Modal, Label } from 'semantic-ui-react'
 
 import { FormBuilder } from '../../../../utilities/forms/formBuilder'
 
@@ -8,7 +8,7 @@ const ResourceTypeTab = (props) => {
         props.formConfig,
         props.handleFormFieldChange,
         props.queryFormState,
-        newResourceSuggestionSubmitHandler
+        props.newResourceSuggestionSubmitHandler
     )
     const newResourceSuggestionForm = formBuilder.buildForm()
 
@@ -32,12 +32,12 @@ const ResourceTypeTab = (props) => {
         </Modal.Content>
       </Modal>
     )
-  
+
     return (
       <Menu.Item
-        name={props.key}
-        active={props.activeResourceTypeTab === props.key}
-        onClick={props.menuTabSelectionHandler}
+        name={props.componentKey}
+        active={props.activeResourceTypeTab === props.componentKey}
+        onClick={() => props.menuTabSelectionHandler(props.componentKey)}
       >
         <Icon name={props.icon} />
           {props.title}

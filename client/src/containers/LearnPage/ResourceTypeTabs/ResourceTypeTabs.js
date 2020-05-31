@@ -7,7 +7,7 @@ import { menuTabInfo } from './constants'
 const ResourceTypeTabs = (props) => {
     const menuTabs = menuTabInfo.map(tab => (
         <ResourceTypeTab
-            key={tab.key}
+            componentKey={tab.componentKey}
             icon={tab.icon}
             title={tab.title}
             formConfig={tab.config}
