@@ -8,7 +8,7 @@ import { sendErrorReport, ErrorReport } from '../../utilities/errorHandling/erro
 
 
 export const getResources = (component) => {
-  const uri = "/api/user/" + component.props.userId + "/learn/resources"
+  const uri = "/api/user/" + "component.props.userId" + "/learn/resources"
   axios.get(uri)
   .then(res => {
     if (res.data) {
@@ -47,6 +47,12 @@ export const getResources = (component) => {
 export const postResourceSuggestion = (component) => {
   const uri = "/api/user/" + component.props.userId + "/learn/resource/new"
   console.log(component.state.newResourceForm)
+  component.setState({
+    awaitingPost: true,
+    successfulPosting: null,
+    failedPosting: null,
+    submissionConfirmationModalOpen: true
+  })
   axios.post(
     uri, 
     {...component.state.newResourceForm}, 
@@ -55,11 +61,17 @@ export const postResourceSuggestion = (component) => {
     if (res.data) {
       console.log("set a new resource suggestion")
       console.log(res.data)
+      component.setState({
+        awaitingPost: null,
+        successfulPosting: true
+      })
     }
   })
   .catch(err => {
     component.setState({
-      warning: generateWarningModalFromAxiosError(err)
+      warning: generateWarningModalFromAxiosError(err),
+      awaitingPost: null,
+      failedPosting: true
     })
   })
 }

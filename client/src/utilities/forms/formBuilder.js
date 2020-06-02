@@ -1,16 +1,17 @@
 import React from 'react'
-import { Form, Icon, Header } from 'semantic-ui-react'
+import { Form, Icon, Header, Modal, Button, List } from 'semantic-ui-react'
 
 import { FORM_ENUMS } from './enums'
 
 export class FormBuilder {
-  constructor(formConfig, onChangeHandler, formValueHandler, submitHandler) {
+  constructor(formConfig, onChangeHandler, formValueHandler, submitTrigger) {
     this.config = formConfig
     this.formName = formConfig.formName
     this.sections = this.extractSectionNames(formConfig)
     this.onChangeHandler = onChangeHandler
     this.formValueHandler = formValueHandler
-    this.submitHandler = submitHandler
+    this.submitTrigger = submitTrigger
+    this.requiredFields = []
   }
 
   extractSectionNames = (conf) => {
@@ -24,12 +25,7 @@ export class FormBuilder {
     return (
       <Form key={this.formName}>
         {sections}
-        <Form.Button 
-          style={{margin: "10px 0px 0px 0px"}}
-          onClick={() => this.submitHandler()}
-        >
-          Submit
-        </Form.Button>
+        {this.submitTrigger}
       </Form>
     ) 
   }
@@ -73,6 +69,9 @@ export class FormBuilder {
     let groupFields = []
     Object.keys(fields).forEach(fieldKey => {
       const field = fields[fieldKey]
+      if (field.required && !this.requiredFields.includes(fieldKey)) {
+        this.requiredFields.push(fieldKey)
+      }
       const builtField = this._buildField(fieldKey, field)
       if (field.grouping === FORM_ENUMS.GROUP_BEGIN) {
         inGroup = true
@@ -110,4 +109,17 @@ export class FormBuilder {
       />
     )
   }
+}
+
+export const requiredFieldsFromConfig = (config) => {
+  const required = []
+  const sections = Object.keys(config).filter(k => k !== "formName")
+  sections.forEach(section => {
+      Object.keys(config[section].fields).forEach(field => {
+        if (config[section].fields[field].required) {
+          required.push(field)
+        }
+      })
+  })
+  return required
 }

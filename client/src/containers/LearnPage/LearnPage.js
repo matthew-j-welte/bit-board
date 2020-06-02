@@ -4,6 +4,8 @@ import { Segment, Grid } from 'semantic-ui-react'
 
 import ResourceTypeTabs from './ResourceTypeTabs/ResourceTypeTabs'
 import LearningResources from './LearningResources/LearningResources'
+import { requiredFieldsFromConfig } from '../../utilities/forms/formBuilder'
+import { vidFormConfig } from './ResourceTypeTabs/forms/newResource/config'
 import * as requests from './requests'
 
 class LearnPage extends Component {
@@ -18,13 +20,27 @@ class LearnPage extends Component {
         articles: []
       },
       newResourceForm: {},
+      handledFields: {},
+      requiredFormFields: requiredFieldsFromConfig(vidFormConfig),
       error: null,
-      warning: null
+      warning: null,
+      awaitingPost: null,
+      successfulPosting: null,
+      failedPosting: null,
+      submissionConfirmationModalOpen: false,
+      fieldsSatisfied: false,
+      formSatisfied: false
     }
   }
 
   componentDidMount() {
     requests.getResources(this)
+  }
+
+  submissionConfirmationModalStateChange = () => {
+    this.setState({
+      submissionConfirmationModalOpen: !this.state.submissionConfirmationModalOpen
+    })
   }
 
   menuTabSelectionHandler = (name) => {
@@ -33,15 +49,32 @@ class LearnPage extends Component {
 
   handleFormFieldChange = (_, { value }, key) => {
     const formState = {...this.state.newResourceForm}
+    const handledFieldState = {...this.state.handledFields}
     formState[key] = value;
+    if (value) {
+      handledFieldState[key] = true
+    }
+    else {
+      handledFieldState[key] = false
+    }
     this.setState({
-      newResourceForm: formState
+      newResourceForm: formState,
+      handledFields: handledFieldState,
+      formSatisfied: this.state.requiredFormFields.every(field => handledFieldState[field] === true)
+    })
+  }
+
+  isFormSatisfied = (requiredFields) => {
+    const handledFields = {...this.state.handledFields}
+    this.setState({
+      formSatisfied: requiredFields.every(field => handledFields[field] === true)
     })
   }
 
   initializeNewResourceFormState = (builder) => {
     this.setState({ 
-      newResourceForm: {...builder.createStateModel()}
+      newResourceForm: {...builder.createStateModel()},
+      handledFields: {...builder.createStateModel()}
     })
   }
 
@@ -68,6 +101,12 @@ class LearnPage extends Component {
             initializeNewResourceFormState={this.initializeNewResourceFormState}
             menuTabSelectionHandler={this.menuTabSelectionHandler}
             activeResourceTypeTab={activeResourceTypeTab}
+            awaitingPost={this.state.awaitingPost}
+            successfulPosting={this.state.successfulPosting}
+            failedPosting={this.state.failedPosting}
+            submissionConfirmationModalStateChange={this.submissionConfirmationModalStateChange}
+            submissionConfirmationModalOpen={this.state.submissionConfirmationModalOpen}
+            formSatisfied={this.state.formSatisfied}
           />
         </Segment>
         <Segment style={{minHeight: "1200px", margin: "2em 10em 5em 10em"}}>

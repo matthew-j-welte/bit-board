@@ -1,14 +1,23 @@
 import React from 'react'
-import { Menu, Icon, Modal, Label } from 'semantic-ui-react'
+import { Menu, Icon, Modal, Label, Button, List, Header } from 'semantic-ui-react'
 
 import { FormBuilder } from '../../../../utilities/forms/formBuilder'
+import NewResourceSubmit from '../forms/newResource/NewResourceSubmit'
 
 const ResourceTypeTab = (props) => {
+    const submission = (
+      <NewResourceSubmit
+        newResourceSuggestionSubmitHandler = {props.newResourceSuggestionSubmitHandler}
+        successConfirmationButton = {() => console.log("Eat my booty hole")}
+        {...props}
+      />
+    )
+
     const formBuilder = new FormBuilder(
         props.formConfig,
         props.handleFormFieldChange,
         props.queryFormState,
-        props.newResourceSuggestionSubmitHandler
+        submission
     )
     const newResourceSuggestionForm = formBuilder.buildForm()
 
@@ -25,7 +34,9 @@ const ResourceTypeTab = (props) => {
     )
         
     const newResourcePrompt = (
-      <Modal trigger={triggerButton}>
+      <Modal 
+        trigger={triggerButton}
+      >
         <Modal.Header>Create New Resource</Modal.Header>
         <Modal.Content>
           {newResourceSuggestionForm}
