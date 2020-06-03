@@ -1,16 +1,13 @@
 import React from 'react'
-import { Item, Segment } from 'semantic-ui-react'
+import { Item, Card, Segment, Header } from 'semantic-ui-react'
 
 const AssociatedSkills = (props) => {
   const skillList = props.skills.map(skill => (
-    <Item.Group>
-      <Item>
-        <Item.Image size='mini' src='https://react.semantic-ui.com/images/avatar/large/jenny.jpg' />
-        <Item.Content verticalAlign='middle'>
-          {skill["name"]}
-        </Item.Content>
-      </Item>
-    </Item.Group>
+    <Card.Group itemsPerRow={1}>
+      <Card style={{minHeight: "2em", background: "#242424", borderRadius:"5em"}}>
+        <Header textAlign="center" inverted size="medium" style={{margin: "1em"}}>{skill}</Header>
+      </Card>
+    </Card.Group>
   ))
 
   return (

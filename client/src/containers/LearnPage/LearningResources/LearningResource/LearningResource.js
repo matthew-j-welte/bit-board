@@ -1,18 +1,19 @@
 import React from 'react'
-import { Embed, Segment, Image, Grid, Button, Modal } from 'semantic-ui-react'
+import { Embed, Segment, Image, Grid, Card } from 'semantic-ui-react'
 
 import AssociatedSkills from './AssociatedSkills/AssociatedSkills'
 import CommentBox from './CommentBox/CommentBox'
 import SummaryBox from './SummaryBox/SummaryBox'
 import ColorCloudBkg from '../../../../assets/images/color-cloud.png'
 import CppBook from '../../../../assets/images/cpp-book.jpg'
+import ResourceModal from './ResourceModal/ResourceModal'
 
 const LearningResourceRow = (props) => {
   const resourceRow = (
-    <Grid.Row style={{margin: "2em 2em 0em 2em"}} as={Button} onClick={() => console.log("yooo")} >
+    <Grid.Row style={{margin: "2em 2em 0em 2em"}} as={Card} onClick={() => console.log("yooo")} >
       <Grid.Column width={props.graphicColWidth}>
         <Segment>
-          {props.graphic}
+          {props.graphicPreview}
         </Segment>
       </Grid.Column>
       <Grid.Column width={props.descriptionColWidth}>
@@ -34,14 +35,10 @@ const LearningResourceRow = (props) => {
   )
 
   return (
-    <Modal style={{minHeight: "1800px"}} size="large" dimmer="blurring"
-      trigger={resourceRow}
-    >
-      <Modal.Header>Testing new modal</Modal.Header>
-      <Modal.Content>
-        This some modal content
-      </Modal.Content>
-    </Modal>
+    <ResourceModal 
+      resourceRow={resourceRow}
+      graphic={props.graphic}
+    />
   )
 }
 
@@ -49,7 +46,7 @@ const LearningResourceRow = (props) => {
 const VideoLearningResourceRow = (props) => (
   <LearningResourceRow
     graphicColWidth={4}
-    graphic={
+    graphicPreview={
       <Image
         centered
         fluid
@@ -58,9 +55,8 @@ const VideoLearningResourceRow = (props) => (
         src={ColorCloudBkg}
       />
     }
-    videoComponent={
+    graphic={
       <Embed
-        style={{minHeight: "300px"}}
         id={props.videoId}
         placeholder={ColorCloudBkg}
         source="youtube"
@@ -72,23 +68,27 @@ const VideoLearningResourceRow = (props) => (
   />
 )
 
-const ReadingLearningResourceRow = (props) => (
-  <LearningResourceRow
-    graphicColWidth={4}
-    graphic={
-      <Image
-        centered
-        fluid
-        style={{minHeight: "400px"}}
-        size="medium"
-        src={CppBook}
-      />
-    }
-    descriptionColWidth={4}
-    userCountNoun="Readers"
-    {...props}
-  />
-)
+const ReadingLearningResourceRow = (props) => {
+  const graphic = (
+    <Image
+      centered
+      fluid
+      style={{minHeight: "400px"}}
+      size="medium"
+      src={CppBook}
+    />
+  )
+  return (
+    <LearningResourceRow
+      graphicColWidth={4}
+      graphic={graphic}
+      graphicPreview={graphic}
+      descriptionColWidth={4}
+      userCountNoun="Readers"
+      {...props}
+    />
+  )
+}
 
 export {
   VideoLearningResourceRow,
