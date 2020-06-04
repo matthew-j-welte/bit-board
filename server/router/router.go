@@ -77,16 +77,22 @@ func Router() *mux.Router {
 
 	// Resource route handlers
 	resourcesLearningRoute := route{
-		URI:         "/api/user/{id}/learn/resources",
+		URI:         "/api/learn/resources",
 		RESTMethods: []string{"GET", "OPTIONS"},
 		Handler:     middleware.GetLearningResources}
 	handleRoute(router, resourcesLearningRoute)
 
 	newResourceSuggestionRoute := route{
-		URI:         "/api/user/{id}/learn/resource/new",
+		URI:         "/api/learn/resource/new",
 		RESTMethods: []string{"POST", "OPTIONS"},
 		Handler:     middleware.NewResourceSuggestion}
 	handleRoute(router, newResourceSuggestionRoute)
+
+	resourceValueIncrement := route{
+		URI:         "/api/learn/resource/{id}/{field}/increment",
+		RESTMethods: []string{"PUT", "OPTIONS"},
+		Handler:     middleware.IncrementResourceValue}
+	handleRoute(router, resourceValueIncrement)
 
 	// Misc route handlers
 	clientErrorReportRoute := route{

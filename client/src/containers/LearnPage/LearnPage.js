@@ -113,6 +113,7 @@ class LearnPage extends Component {
             <LearningResources
               resources={{...this.state.resources}}
               activeResourceTypeTab={activeResourceTypeTab}
+              userId={this.props.userId}
             />
         </Segment>
       </Segment>

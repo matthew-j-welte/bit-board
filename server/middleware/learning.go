@@ -42,7 +42,7 @@ func NewResourceSuggestion(db *mongo.Database, w http.ResponseWriter, r *http.Re
 	w.Header().Set("Access-Control-Allow-Methods", "POST")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	params := mux.Vars(r)
-	id := params["id"]
+	id := params["userId"]
 	contextLogger := log.WithFields(log.Fields{"action": "CREATE", "user": id})
 	contextLogger.Info("Creating new resource suggestion")
 
@@ -59,6 +59,26 @@ func NewResourceSuggestion(db *mongo.Database, w http.ResponseWriter, r *http.Re
 	}
 	contextLogger.WithField("insertId", insertID).Info("Successfully created resource suggestion")
 	json.NewEncoder(w).Encode(insertID)
+}
+
+// IncrementResourceValue incremements the views associated with a resource
+func IncrementResourceValue(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	params := mux.Vars(r)
+	id := params["id"]
+	field := params["field"]
+	contextLogger := log.WithFields(log.Fields{"action": "INCREMENT", "field": field, "resource": id})
+	contextLogger.Info("Incrementing Value")
+
+	updateID, err := dataaccess.IncrementField(db.Collection(resourceCollectionName), id, field)
+	if err != nil {
+		contextLogger.WithField("error", err).Error("Error when incrementing resource value")
+	}
+	contextLogger.WithField("updateID", updateID).Info("Successfully incremented resource value")
+	json.NewEncoder(w).Encode(true)
 }
 
 func getLearningResources(coll *mongo.Collection) ([]bson.M, error) {

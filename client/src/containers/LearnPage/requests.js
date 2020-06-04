@@ -8,7 +8,7 @@ import { sendErrorReport, ErrorReport } from '../../utilities/errorHandling/erro
 
 
 export const getResources = (component) => {
-  const uri = "/api/user/" + "component.props.userId" + "/learn/resources"
+  const uri = "/api/learn/resources"
   axios.get(uri)
   .then(res => {
     if (res.data) {
@@ -45,7 +45,7 @@ export const getResources = (component) => {
 }
 
 export const postResourceSuggestion = (component) => {
-  const uri = "/api/user/" + component.props.userId + "/learn/resource/new"
+  const uri = "/api/learn/resource/new"
   console.log(component.state.newResourceForm)
   component.setState({
     awaitingPost: true,
@@ -56,7 +56,10 @@ export const postResourceSuggestion = (component) => {
   axios.post(
     uri, 
     {...component.state.newResourceForm}, 
-    {headers: {"Content-Type": "application/x-www-form-urlencoded"}})
+    {
+      headers: {"Content-Type": "application/x-www-form-urlencoded"},
+      params: {"userID": component.props.userId}
+    })
   .then(res => {
     if (res.data) {
       console.log("set a new resource suggestion")

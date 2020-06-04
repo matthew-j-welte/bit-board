@@ -1,95 +1,89 @@
-import React from 'react'
-import { Feed, Segment, Modal, Header, Icon, Divider, Card, Progress } from 'semantic-ui-react'
+import React, { useState } from 'react'
+import TextareaAutosize from "react-textarea-autosize";
+import axios from '../../../../../axios'
+import { Segment, Modal, Form, Header } from 'semantic-ui-react'
+
+import DescriptionSection from './DescriptionSections/DescriptionSection'
+import RationaleSection from './DescriptionSections/RationaleSection'
+import SkillWeights from './SkillWeights/SkillWeights'
+import ResourceFeed from './ResourceFeed/ResourceFeed'
 
 const ResourceModal = (props) => {
+  const content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Lorem ipsum dolor sit amet, consectetur adipiscing  elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.   Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris  nisi ut aliquip ex ea commodo consequat."
+
   const skills = [{
-    skill: "Python",
-    color: "violet"
+    name: "Python",
+    color: "violet",
+    weight: 31
   },
   {
-    skill: "Artificial Intelligence",
-    color: "teal"
+    name: "Artificial Intelligence",
+    color: "teal",
+    weight: 74
   },
   {
-    skill: "Operating System",
-    color: "pink"
+    name: "Operating System",
+    color: "pink",
+    weight: 7
   },
   {
-    skill: "Systems Engineering",
-    color: "orange"
+    name: "Systems Engineering",
+    color: "orange",
+    weight: 64
   },
   {
-    skill: "User Interface",
-    color: "gold"
+    name: "User Interface",
+    color: "gold",
+    weight: 83
   },
   {
-    skill: "Communication",
-    color: "red"
+    name: "Communication",
+    color: "red",
+    weight: 22
   },
   {
-    skill: "Super Learning",
-    color: "pink"
-  }].map(skill => (
-    <Card style={{background: "#242424", borderRadius:"1em"}}>
-      <Divider horizontal inverted style={{marginTop:"1.25em"}}>
-        <Header color={skill.color} size="small" inverted as="span">{skill.skill}</Header>
-      </Divider>
-      <Progress 
-        inverted 
-        color={skill.color} 
-        percent={35}
-        style={{margin:"0em 1em 1em 1em"}}/>
-    </Card>
-  ))
+    name: "Super Learning",
+    color: "pink",
+    weight: 37
+  }]
 
 
 
-  const comments = [{
+  const posts = [{
     img: "joe",
     user: "Joe Henderson",
     daysAgo: 12,
-    content: "Ours is a life of constant reruns. We're always circling back to where we'd we started\n, then starting all over again. Even if we don't run extra \n laps that day, we surely will come back for more of the same another day soon."
+    content: "Ours is a life of constant reruns. We're always circling back to where we'd we started\n, then starting all over again. Even if we don't run extra \n laps that day, we surely will come back for more of the same another day soon.",
+    likes: 9045
   },
   {
     img: "elliot",
     user: "Elliot Peters",
     daysAgo: 2,
-    content: "Ours is a life of constant reruns. We're always circling back to where we'd we started\n, then starting all over again. Even if we don't run extra \n laps that day, we surely will come back for more of the same another day soon."
+    content: "Ours is a life of constant reruns. We're always circling back to where we'd we started\n, then starting all over again. Even if we don't run extra \n laps that day, we surely will come back for more of the same another day soon.",
+    likes: 11365
   },
   {
     img: "jenny",
     user: "Jen Pikkey",
     daysAgo: 4,
-    content: "Ours is a life of constant reruns. We're always circling back to where we'd we started\n, then starting all over again. Even if we don't run extra \n laps that day, we surely will come back for more of the same another day soon."
+    content: "Ours is a life of constant reruns. We're always circling back to where we'd we started\n, then starting all over again. Even if we don't run extra \n laps that day, we surely will come back for more of the same another day soon.",
+    likes: 23540
   },
   {
     img: "justen",
     user: "Justen Randerson",
     daysAgo: 41,
-    content: "Ours is a life of constant reruns. We're always circling back to where we'd we started\n, then starting all over again. Even if we don't run extra \n laps that day, we surely will come back for more of the same another day soon."
-  }].map(comment => (
-    <Feed.Event>
-      <Feed.Label image={'https://react.semantic-ui.com/images/avatar/large/' + comment.img + '.jpg'} />
-      <Feed.Content>
-        <Feed.Summary>
-          <a>{comment.user}</a>
-          <Feed.Date>{comment.daysAgo} days ago</Feed.Date>
-        </Feed.Summary>
-        <Feed.Extra text>
-          {comment.content}
-        </Feed.Extra>
-        <Feed.Meta>
-          <Feed.Like>
-            <Icon name='like' />5 Likes
-          </Feed.Like>
-          <Feed.Like>
-            <Icon name='cancel' />Report
-        </Feed.Like>
-        </Feed.Meta>
-        <Divider/>
-      </Feed.Content>
-    </Feed.Event>
-  ))
+    content: "Ours is a life of constant reruns. We're always circling back to where we'd we started\n, then starting all over again. Even if we don't run extra \n laps that day, we surely will come back for more of the same another day soon.",
+    likes: 8402
+  }]
+
+  const [newPostValue, setNewPostValue] = useState("")
+  
+  const newPostHandler = () => {
+    console.log("Submitting: ", newPostValue)
+    console.log(props)
+  }
 
   return (
     <Modal style={{minHeight: "1800px"}} size="large" dimmer="blurring"
@@ -97,60 +91,32 @@ const ResourceModal = (props) => {
     >
       {props.graphic}
       <Segment basic padded="very">
-        <Header as='h2' style={{color: "#b880d1"}}>
-          <Icon name='clipboard outline' />
-          <Header.Content>
-            Resource Description
-            <Header.Subheader>Submitted By: <em>Matthew Welte</em></Header.Subheader>
-          </Header.Content>
-        </Header>
-        <Divider/>
-          <p style={{fontSize: "1.1em"}}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-            tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-            veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-            commodo consequat. Lorem ipsum dolor sit amet, consectetur adipiscing 
-            elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris 
-            nisi ut aliquip ex ea commodo consequat.
-          </p>
-        <Header as='h2' style={{marginTop: "2.5em", color: "#b880d1"}}>
-          <Icon name='hourglass half' />
-          <Header.Content>
-            Rationale
-            <Header.Subheader>Submitted By: <em>Matthew Welte</em></Header.Subheader>
-          </Header.Content>
-        </Header>
-        <Divider/>
-          <p style={{fontSize: "1.1em"}}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-            tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-            veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-            commodo consequat. Lorem ipsum dolor sit amet, consectetur adipiscing 
-            elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris 
-            nisi ut aliquip ex ea commodo consequat.
-          </p>
-          <Header as='h2' style={{marginTop: "2.5em", color: "#b880d1"}}>
-            <Icon name='star' />
-            <Header.Content>
-              Associated Skills
-            </Header.Content>
-          </Header>
-          <Divider/>
-            <Card.Group inverted stackable itemsPerRow={3}>
-              {skills}
-            </Card.Group>
-        <Header as='h2' style={{marginTop: "3.5em", color: "#b880d1"}}>
-          <Icon name='feed'/>
-          <Header.Content>
-            Top Comments
-          </Header.Content>
-        </Header>
-        <Divider/>
-          <Feed>
-            {comments}
-          </Feed>
+        <DescriptionSection 
+          author="Matthew Welte"
+          content={content}
+        />
+        <RationaleSection 
+          author="Matthew Welte"
+          content={content}
+        />
+        <SkillWeights skills={skills}/>
+        <ResourceFeed posts={posts}/>
+        <Form>
+          <Header as="h3">New Post</Header>
+          <Form.Field>
+            <TextareaAutosize 
+              label="New Post"
+              placeholder='Enlighten us...'
+              minRows={10}
+              value={newPostValue}
+              onChange={event => setNewPostValue(event.target.value)}
+            />
+          </Form.Field>
+          <Form.Button
+            content="Submit"
+            onClick={() => newPostHandler()}
+          />
+        </Form>
       </Segment>
     </Modal>
   )

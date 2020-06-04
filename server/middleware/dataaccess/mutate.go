@@ -64,3 +64,23 @@ func CreateErrorReport(coll *mongo.Collection, report reports.ErrorReport) (stri
 	oid := result.InsertedID.(primitive.ObjectID)
 	return oid.Hex(), err
 }
+
+// IncrementField increments a value on a document
+func IncrementField(coll *mongo.Collection, hexOid string, field string) (bool, error) {
+	result, err := coll.UpdateOne(
+		context.Background(),
+		bson.M{"_id": hexOid},
+		bson.D{
+			{"$inc", bson.D{{field, 1}}}})
+
+	if err != nil {
+		return false, err
+	}
+	if result.ModifiedCount == 0 {
+		return false, errors.New("Failed to incrememnt")
+	}
+	if result.ModifiedCount > 1 {
+		log.Printf("[WARNING] More than one record found for ID: %s\n", hexOid)
+	}
+	return true, nil
+}
