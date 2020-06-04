@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { VideoLearningResourceRow, ReadingLearningResourceRow } from './LearningResource/LearningResource'
+import { Card } from 'semantic-ui-react'
 
 const resourceTypeToComponentMap = {
   videos: (props) => <VideoLearningResourceRow {...props} />,
@@ -13,7 +14,11 @@ const LearningResources = (props) => {
   const activeResourcesComponents = props.resources[props.activeResourceTypeTab].map(resource => {
     return resourceTypeToComponentMap[activeResourceType](resource)
   })
-  return activeResourcesComponents
+  return (
+    <Card.Group itemsPerRow={3} stackable>
+      {activeResourcesComponents}
+    </Card.Group>
+  ) 
 }
 
 export default LearningResources

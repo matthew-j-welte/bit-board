@@ -1,39 +1,29 @@
 import React from 'react'
-import { Embed, Segment, Image, Grid, Card } from 'semantic-ui-react'
+import { Embed, Image, Card, Table, Rating, Header, Segment, Progress, Checkbox } from 'semantic-ui-react'
 
 import AssociatedSkills from './AssociatedSkills/AssociatedSkills'
-import CommentBox from './CommentBox/CommentBox'
-import SummaryBox from './SummaryBox/SummaryBox'
 import ColorCloudBkg from '../../../../assets/images/color-cloud.png'
 import CppBook from '../../../../assets/images/cpp-book.jpg'
 import ResourceModal from './ResourceModal/ResourceModal'
 
 const LearningResourceRow = (props) => {
   const resourceRow = (
-    <Grid.Row style={{margin: "2em 2em 0em 2em"}} as={Card} onClick={() => console.log("yooo")} >
-      <Grid.Column width={props.graphicColWidth}>
-        <Segment>
-          {props.graphicPreview}
-        </Segment>
-      </Grid.Column>
-      <Grid.Column width={props.descriptionColWidth}>
-        <SummaryBox 
-          author={props.author}
-          title={props.title}
-          description={props.description}
-          viewers={props.viewers}
-          userCountNoun={props.userCountNoun}
-        />
-      </Grid.Column>
-      <Grid.Column width={5}>
-        <CommentBox comments={props.comments}/>
-      </Grid.Column>
-      <Grid.Column width={3}>
-        <AssociatedSkills skills={props.skills}/>
-      </Grid.Column>
-    </Grid.Row>
+    <Card raised>
+      {props.graphicPreview}
+    <Card.Content>
+      <Card.Header>{props.title}</Card.Header>
+      <Card.Meta>
+        <span className='date'>Views: {props.viewers}</span>
+      </Card.Meta>
+      <Card.Description>
+        {props.description}
+      </Card.Description>
+    </Card.Content>
+    <Card.Content extra textAlign="center">
+      <AssociatedSkills skills={props.skills}/>
+    </Card.Content>
+  </Card>
   )
-
   return (
     <ResourceModal 
       resourceRow={resourceRow}
@@ -45,13 +35,10 @@ const LearningResourceRow = (props) => {
 
 const VideoLearningResourceRow = (props) => (
   <LearningResourceRow
-    graphicColWidth={4}
     graphicPreview={
       <Image
-        centered
-        fluid
-        style={{minHeight: "400px"}}
-        size="medium"
+        // fluid
+        style={{maxHeight: "400px", minHeight: "400px"}}
         src={ColorCloudBkg}
       />
     }
@@ -62,29 +49,47 @@ const VideoLearningResourceRow = (props) => (
         source="youtube"
       />
     }
-    descriptionColWidth={4}
-    userCountNoun="Viewers"
     {...props}
   />
 )
 
 const ReadingLearningResourceRow = (props) => {
-  const graphic = (
+  const graphicPreview = (
     <Image
-      centered
       fluid
-      style={{minHeight: "400px"}}
-      size="medium"
+      style={{maxHeight: "400px", minHeight: "400px"}}
       src={CppBook}
     />
   )
+  const graphic = (
+    <Segment>
+  <Table celled compact>
+    <Table.Header>
+      <Table.Row>
+        <Table.HeaderCell width={1}>Chapter</Table.HeaderCell>
+        <Table.HeaderCell width={6}>Title</Table.HeaderCell>
+        <Table.HeaderCell width={0.5}>Finished</Table.HeaderCell>
+        <Table.HeaderCell width={0.5}>Tested</Table.HeaderCell>
+        <Table.HeaderCell width={8}>Progress</Table.HeaderCell>
+      </Table.Row>
+    </Table.Header>
+
+    <Table.Body>
+      <Table.Row>
+        <Table.Cell textAlign="center">1</Table.Cell>
+        <Table.Cell singleLine>Scalar Types and Variables</Table.Cell>
+        <Table.Cell textAlign='center'><Checkbox/></Table.Cell>
+        <Table.Cell textAlign='center'><Checkbox/></Table.Cell>
+        <Table.Cell><Progress indicating style={{marginBottom: "0"}}/></Table.Cell>
+      </Table.Row>
+    </Table.Body>
+  </Table>
+    </Segment>
+  )
   return (
     <LearningResourceRow
-      graphicColWidth={4}
       graphic={graphic}
-      graphicPreview={graphic}
-      descriptionColWidth={4}
-      userCountNoun="Readers"
+      graphicPreview={graphicPreview}
       {...props}
     />
   )

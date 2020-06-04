@@ -110,12 +110,10 @@ class LearnPage extends Component {
           />
         </Segment>
         <Segment style={{minHeight: "1200px", margin: "2em 10em 5em 10em"}}>
-          <Grid stretched columns='equal'>
             <LearningResources
               resources={{...this.state.resources}}
               activeResourceTypeTab={activeResourceTypeTab}
             />
-          </Grid>
         </Segment>
       </Segment>
     )
