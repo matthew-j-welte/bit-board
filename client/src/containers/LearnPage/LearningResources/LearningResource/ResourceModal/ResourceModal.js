@@ -102,8 +102,8 @@ const ResourceModal = (props) => {
     })
   }
 
-  const postFieldIncrementHandler = (resourceID, postID, field) => {
-    const uri = `/api/learn/resource/{id}/post/{postID}/increment/{field}`
+  const postFieldIncrementHandler = (postID, field) => {
+    const uri = `/api/learn/resource/${props.id}/post/${postID}/increment/${field}`
     axios.put(uri, null,
       {
         headers: {"Content-Type": "application/x-www-form-urlencoded"}

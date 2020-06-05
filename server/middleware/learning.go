@@ -82,6 +82,29 @@ func IncrementResourceValue(db *mongo.Database, w http.ResponseWriter, r *http.R
 	json.NewEncoder(w).Encode(true)
 }
 
+// IncrementResourcePostValue incremements the views associated with a resource
+func IncrementResourcePostValue(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "PUT")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	params := mux.Vars(r)
+	resourceID := params["id"]
+	postID := params["postID"]
+	field := params["field"]
+
+	contextLogger := log.WithFields(log.Fields{
+		"action": "INCREMENT", "field": field, "resource": resourceID, "postID": postID})
+
+	contextLogger.Info("Incrementing Value on Resource Post")
+	updateID, err := dataaccess.IncrementFieldInObjectArray(db.Collection(resourceCollectionName), id, field)
+	if err != nil {
+		contextLogger.WithField("error", err).Error("Error when incrementing resource value")
+	}
+	contextLogger.WithField("updateID", updateID).Info("Successfully incremented resource value")
+	json.NewEncoder(w).Encode(true)
+}
+
 // NewPostOnResource adds a post to a learning resource
 func NewPostOnResource(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")

@@ -25,11 +25,11 @@ const ResourceFeedPost = (props) => {
           <p style={{whiteSpace: "pre-wrap"}}>{props.content}</p>
         </Feed.Content>
         <Feed.Meta>
-          <Feed.Like onClick={() => console.log("It works")}>
-            <Icon onClick={console.log("It works")} name='like' />{props.likes} Likes
+          <Feed.Like onClick={() => props.postFieldIncrementHandle(props._id, "likes")}>
+            <Icon name='like' />{props.likes} Likes
           </Feed.Like>
-          <Feed.Like>
-            <Icon name='cancel' />Report
+          <Feed.Like onClick={() => props.postFieldIncrementHandle(props._id, "reports")}>
+            <Icon name='cancel' /> Report Post
         </Feed.Like>
         </Feed.Meta>
       </Feed.Content>

@@ -13,7 +13,12 @@ const ResourceFeed = (props) => {
     }
     return (a.likes < b.likes) ? 1 : -1
   })
-  .map(post => <ResourceFeedPost {...post}/>)
+  .map(post => (
+    <ResourceFeedPost 
+      postFieldIncrementHandle={props.postFieldIncrementHandle}
+      {...post}
+    /> 
+  ))
 
   if (!props.showAllPosts) {
     posts = posts.slice(0,3)

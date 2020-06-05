@@ -86,6 +86,39 @@ func IncrementField(coll *mongo.Collection, resourceID string, field string) (bo
 	return true, nil
 }
 
+// IncrementFieldInObjectArray increments a value on a document
+func IncrementFieldInObjectArray(coll *mongo.Collection, hexID string, arrName string, arrHexID string, field string) (bool, error) {
+	objectID, err := primitive.ObjectIDFromHex(hexID)
+	arrObjectID, err := primitive.ObjectIDFromHex(arrHexID)
+
+	filterExpr := bson.M{
+		"_id":            objectID,
+		arrName + "._id": arrObjectID,
+	}
+	projectionExpr := bson.M{
+		"$inc": bson.M{
+			arrName + ".$." + field: 1,
+		},
+	}
+
+	result, err := coll.UpdateOne(
+		context.Background(),
+		filterExpr,
+		projectionExpr,
+	)
+
+	if err != nil {
+		return false, err
+	}
+	if result.ModifiedCount == 0 {
+		return false, errors.New("Failed to incrememnt")
+	}
+	if result.ModifiedCount > 1 {
+		log.Printf("[WARNING] More than one record found for ID: %s\n", resourceID)
+	}
+	return true, nil
+}
+
 // AddProjectToResource adds a post to a learning resource
 func AddProjectToResource(coll *mongo.Collection, post resources.ResourcePost, resourceID string) (bool, error) {
 	resourceOID, err := primitive.ObjectIDFromHex(resourceID)
