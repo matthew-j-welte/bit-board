@@ -26,6 +26,7 @@ type User struct {
 	TechTitle      string `json:"techTitle,omitempty"`
 	Username       string
 	YearsWorking   int `json:"yearsWorking,omitempty,string"`
+	Image          string
 }
 
 // // User the user model

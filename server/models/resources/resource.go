@@ -12,7 +12,7 @@ type Resource struct {
 	Author      string
 	Description string
 	Viewers     int
-	Comments    []common.Comment
+	Posts       []ResourcePost
 	Skills      []common.Skill
 	Placeholder string
 	VideoID     string `json:"videoId"`

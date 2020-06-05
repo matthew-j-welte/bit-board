@@ -79,11 +79,38 @@ const ResourceModal = (props) => {
   }]
 
   const [newPostValue, setNewPostValue] = useState("")
-  
   const newPostHandler = () => {
-    console.log("Submitting: ", newPostValue)
-    console.log(props)
+    console.log("Posting!")
+    const uri = "/api/learn/resource/" + props.id + "/new/post"
+    axios.post(
+      uri, 
+      {
+        "content": newPostValue,
+        "userID": "5ed964f0c37059ec434292ec"
+      },
+      {
+        headers: {"Content-Type": "application/x-www-form-urlencoded"}
+      })
+    .then(res => {
+      if (res.data) {
+        console.log("Successfully posted new resource post")
+        console.log(res.data)
+      }
+    })
+    .catch(err => {
+      console.log("Failed!", err)
+    })
   }
+
+  const postFieldIncrementHandler = (resourceID, postID, field) => {
+    const uri = `/api/learn/resource/{id}/post/{postID}/increment/{field}`
+    axios.put(uri, null,
+      {
+        headers: {"Content-Type": "application/x-www-form-urlencoded"}
+      }
+    )
+  }
+  console.log(props)
 
   return (
     <Modal style={{minHeight: "1800px"}} size="large" dimmer="blurring"
@@ -100,11 +127,14 @@ const ResourceModal = (props) => {
           content={content}
         />
         <SkillWeights skills={skills}/>
-        <ResourceFeed posts={posts}/>
-        <Form>
+        <ResourceFeed 
+          posts={props.posts}  
+          postFieldIncrementHandler={postFieldIncrementHandler}/>
+        <Form style={{marginTop: "3em"}}>
           <Header as="h3">New Post</Header>
           <Form.Field>
-            <TextareaAutosize 
+            <TextareaAutosize
+              style={{whiteSpace: "pre-wrap"}}
               label="New Post"
               placeholder='Enlighten us...'
               minRows={10}

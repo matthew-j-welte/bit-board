@@ -66,10 +66,11 @@ func CreateErrorReport(coll *mongo.Collection, report reports.ErrorReport) (stri
 }
 
 // IncrementField increments a value on a document
-func IncrementField(coll *mongo.Collection, hexOid string, field string) (bool, error) {
+func IncrementField(coll *mongo.Collection, resourceID string, field string) (bool, error) {
+	resourceOID, err := primitive.ObjectIDFromHex(resourceID)
 	result, err := coll.UpdateOne(
 		context.Background(),
-		bson.M{"_id": hexOid},
+		bson.M{"_id": resourceOID},
 		bson.D{
 			{"$inc", bson.D{{field, 1}}}})
 
@@ -80,7 +81,25 @@ func IncrementField(coll *mongo.Collection, hexOid string, field string) (bool, 
 		return false, errors.New("Failed to incrememnt")
 	}
 	if result.ModifiedCount > 1 {
-		log.Printf("[WARNING] More than one record found for ID: %s\n", hexOid)
+		log.Printf("[WARNING] More than one record found for ID: %s\n", resourceID)
+	}
+	return true, nil
+}
+
+// AddProjectToResource adds a post to a learning resource
+func AddProjectToResource(coll *mongo.Collection, post resources.ResourcePost, resourceID string) (bool, error) {
+	resourceOID, err := primitive.ObjectIDFromHex(resourceID)
+	result, err := coll.UpdateOne(
+		context.Background(),
+		bson.M{"_id": resourceOID},
+		bson.D{
+			{"$push", bson.D{{"posts", post}}}})
+
+	if err != nil {
+		return false, err
+	}
+	if result.ModifiedCount == 0 {
+		return false, errors.New("Failed to add post to resource")
 	}
 	return true, nil
 }

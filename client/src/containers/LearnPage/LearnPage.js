@@ -90,7 +90,7 @@ class LearnPage extends Component {
     }
 
     const { activeResourceTypeTab } = this.state;
-
+    console.log(this.state.resources)
     return (
       <Segment basic style={{minHeight: "1200px"}}>
         <Segment style={{margin: "2em 10em 1em 10em"}}>

@@ -24,7 +24,7 @@ class LandingPage extends Component {
       signupFormConfig,
       this.handleFormFieldChange,
       this.queryFormState,
-      this.newUserSubmitHandler
+      <Button content="Submit" onClick={this.newUserSubmitHandler}/>
     );
     this.state = {
       userCount: 0,

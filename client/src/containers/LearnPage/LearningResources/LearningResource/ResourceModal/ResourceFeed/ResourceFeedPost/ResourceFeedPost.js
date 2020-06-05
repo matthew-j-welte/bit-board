@@ -1,28 +1,40 @@
 import React from 'react'
-import { Feed, Icon, Divider } from 'semantic-ui-react'
+import { Feed, Icon, Segment, Button } from 'semantic-ui-react'
 
-const ResourceFeedPost = (props) => (
-  <Feed.Event>
-    <Feed.Label image={'https://react.semantic-ui.com/images/avatar/large/' + props.img + '.jpg'} />
-    <Feed.Content>
-      <Feed.Summary>
-        <a>{props.user}</a>
-        <Feed.Date>{props.daysAgo} days ago</Feed.Date>
-      </Feed.Summary>
-      <Feed.Extra text>
-        {props.content}
-      </Feed.Extra>
-      <Feed.Meta>
-        <Feed.Like>
-          <Icon name='like' />{props.likes} Likes
+const dayDiff = (timestamp) => {
+  const ts = Math.round((new Date()).getTime() / 1000);
+  const secDiff = ts - timestamp
+  const dayDiff = secDiff / 86400
+  return Math.round(dayDiff)
+
+}
+
+const ResourceFeedPost = (props) => {
+  console.log(props)
+  const daysAgo = dayDiff(props.posted)
+  const datePrompot = daysAgo ? `Posted ${daysAgo} days ago` : "Posted Today"
+  return (
+    <Feed.Event style={{marginBottom: "1.75em"}}>
+      <Feed.Label image={props.profileimage}/>
+      <Feed.Content>
+        <Feed.Summary>
+          <a>{props.fullname}</a>
+          <Feed.Date>{datePrompot}</Feed.Date>
+        </Feed.Summary>
+        <Feed.Content style={{marginBottom: "0"}} as={Segment} text>
+          <p style={{whiteSpace: "pre-wrap"}}>{props.content}</p>
+        </Feed.Content>
+        <Feed.Meta>
+          <Feed.Like onClick={() => console.log("It works")}>
+            <Icon onClick={console.log("It works")} name='like' />{props.likes} Likes
+          </Feed.Like>
+          <Feed.Like>
+            <Icon name='cancel' />Report
         </Feed.Like>
-        <Feed.Like>
-          <Icon name='cancel' />Report
-      </Feed.Like>
-      </Feed.Meta>
-      <Divider/>
-    </Feed.Content>
-  </Feed.Event>
-)
+        </Feed.Meta>
+      </Feed.Content>
+    </Feed.Event>
+  )
+}
 
 export default ResourceFeedPost

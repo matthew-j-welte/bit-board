@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
@@ -78,6 +79,50 @@ func IncrementResourceValue(db *mongo.Database, w http.ResponseWriter, r *http.R
 		contextLogger.WithField("error", err).Error("Error when incrementing resource value")
 	}
 	contextLogger.WithField("updateID", updateID).Info("Successfully incremented resource value")
+	json.NewEncoder(w).Encode(true)
+}
+
+// NewPostOnResource adds a post to a learning resource
+func NewPostOnResource(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	params := mux.Vars(r)
+
+	resourceID := params["id"]
+	var body = make(map[string]string)
+	json.NewDecoder(r.Body).Decode(&body)
+	userID := body["userID"]
+	userOID, err := primitive.ObjectIDFromHex(userID)
+	contextLogger := log.WithFields(log.Fields{"action": "NEW-RESOURCE-POST", "submittedBy": userID, "resource": resourceID})
+	if err != nil {
+		contextLogger.WithField("error", err).Error("Error when decoding body")
+	}
+	userInfo, err := dataaccess.FindOneRecordWithProjection(
+		db.Collection(userCollectionName),
+		userID,
+		bson.D{{"_id", 0}, {"fname", 1}, {"lname", 1}, {"image", 1}})
+
+	fullname := userInfo["fname"].(string) + " " + userInfo["lname"].(string)
+	imageURL := userInfo["image"].(string)
+	oid := primitive.NewObjectID()
+
+	var post = resources.ResourcePost{
+		ID:           oid,
+		UserID:       userOID,
+		Content:      body["content"],
+		Posted:       time.Now().Unix(),
+		FullName:     fullname,
+		ProfileImage: imageURL}
+	contextLogger.Info("Attemting to add post to resource")
+	success, err := dataaccess.AddProjectToResource(
+		db.Collection(resourceCollectionName), post, resourceID)
+
+	if err != nil {
+		contextLogger.WithField("error", err).Error("Error when adding new post to resource")
+	}
+	contextLogger.WithField("success", success).Info("Successfully added post to resource")
 	json.NewEncoder(w).Encode(true)
 }
 

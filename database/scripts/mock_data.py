@@ -9,9 +9,6 @@ import names
 
 
 class RandomModel:
-  def _gen_id(self):
-    return uuid.uuid4().hex
-
   def to_json(self):
     _json = {}
     for k,v in self.__dict__.items():
@@ -26,7 +23,6 @@ class RandomModel:
 # ---------------------- RESOURCE MODELS ------------------------- #
 class RandomResourceModel(RandomModel):
   def __init__(self, usr_list):
-    self._id = self._gen_id()
     self.title = TextLorem(srange=(2,5)).sentence()
     self.author = names.get_full_name()
     self.description = TextLorem(trange=(1,1)).text()
@@ -42,7 +38,6 @@ class RandomResourceModel(RandomModel):
 
 class RandomComment(RandomModel):
   def __init__(self, usr_list):
-    self._id = self._gen_id()
     _user = random.choice(usr_list)
     self.user_id = _user._id
     self.author = _user.name
@@ -53,7 +48,6 @@ class RandomComment(RandomModel):
 
 class RandomProject(RandomModel):
   def __init__(self):
-    self._id = self._gen_id()
     self.title = self.title = TextLorem(srange=(2,5)).sentence()
     self.description = TextLorem(prange=(1,3)).paragraph()
     self.type = random.choice(("Code", "Writing"))
@@ -64,7 +58,6 @@ class RandomProject(RandomModel):
 
 class RandomSkill(RandomModel):
   def __init__(self):
-    self._id = self._gen_id()
     self.level = random.randint(1,100)
     self.percent = random.randint(1,100)
     self.name = TextLorem(srange=(1,1)).sentence().split('.')[0]
@@ -73,7 +66,6 @@ class RandomSkill(RandomModel):
 
 class RandomCodeSubmission(RandomModel):
   def __init__(self):
-    self._id = self._gen_id()
     self.submission = self.random_dirs()
 
   def random_dirs(self):
@@ -96,8 +88,6 @@ class RandomCodeSubmission(RandomModel):
 
 class RandomUserModel(RandomModel):
   def __init__(self):
-
-    self._id = self._gen_id()
     self.name = names.get_full_name()
     self.persona_lvl = random.randint(1, 99)
     self.code_submissions = [code.to_json() for code in n_inits(random.randint(10, 25), RandomCodeSubmission)]

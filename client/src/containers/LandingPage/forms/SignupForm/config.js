@@ -56,7 +56,13 @@ export const signupFormConfig = {
         label: "Password",
         type: "password",
         required: true
-      }
+      },
+      image: {
+        control: Input,
+        label: "Profile Image",
+        placeholder: "http://image.com/myimg.jpg",
+        required: true
+      },
     }
   },
   technicalInfoSection: {

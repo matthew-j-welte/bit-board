@@ -5,8 +5,14 @@ import ResourceFeedPost from './ResourceFeedPost/ResourceFeedPost'
 import ResourceModalSection from '../ResourceModalSection/ResourceModalSection'
 
 const ResourceFeed = (props) => {  
-  let posts = props.posts
-  .sort((a, b) => (a.likes < b.likes) ? 1 : -1)
+  
+  let posts = !props.posts ? [] : props.posts
+  .sort((a, b) => {
+    if (a.likes === b.likes ) {
+      return (a.posted > b.posted) ? 1 : -1
+    }
+    return (a.likes < b.likes) ? 1 : -1
+  })
   .map(post => <ResourceFeedPost {...post}/>)
 
   if (!props.showAllPosts) {

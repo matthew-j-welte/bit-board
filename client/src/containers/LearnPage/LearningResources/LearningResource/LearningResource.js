@@ -41,6 +41,7 @@ const LearningResourceCard = (props) => {
       graphic={props.graphic}
       id={props._id}
       userId={props.userId}
+      posts={props.posts}
     />
   )
 }
