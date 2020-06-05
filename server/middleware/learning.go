@@ -86,7 +86,7 @@ func IncrementResourceValue(db *mongo.Database, w http.ResponseWriter, r *http.R
 func IncrementResourcePostValue(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "PUT")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	params := mux.Vars(r)
 	resourceID := params["id"]
@@ -97,7 +97,10 @@ func IncrementResourcePostValue(db *mongo.Database, w http.ResponseWriter, r *ht
 		"action": "INCREMENT", "field": field, "resource": resourceID, "postID": postID})
 
 	contextLogger.Info("Incrementing Value on Resource Post")
-	updateID, err := dataaccess.IncrementFieldInObjectArray(db.Collection(resourceCollectionName), id, field)
+	updateID, err := dataaccess.IncrementFieldInObjectArray(
+		db.Collection(resourceCollectionName), resourceID, "posts", postID, field,
+	)
+
 	if err != nil {
 		contextLogger.WithField("error", err).Error("Error when incrementing resource value")
 	}

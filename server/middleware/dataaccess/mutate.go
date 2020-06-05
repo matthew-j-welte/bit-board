@@ -114,7 +114,7 @@ func IncrementFieldInObjectArray(coll *mongo.Collection, hexID string, arrName s
 		return false, errors.New("Failed to incrememnt")
 	}
 	if result.ModifiedCount > 1 {
-		log.Printf("[WARNING] More than one record found for ID: %s\n", resourceID)
+		log.Printf("[WARNING] More than one record found for ID: %s\n", hexID)
 	}
 	return true, nil
 }

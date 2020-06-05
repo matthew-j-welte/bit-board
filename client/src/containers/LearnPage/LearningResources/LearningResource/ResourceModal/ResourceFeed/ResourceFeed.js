@@ -15,7 +15,7 @@ const ResourceFeed = (props) => {
   })
   .map(post => (
     <ResourceFeedPost 
-      postFieldIncrementHandle={props.postFieldIncrementHandle}
+      postFieldIncrementHandler={props.postFieldIncrementHandler}
       {...post}
     /> 
   ))

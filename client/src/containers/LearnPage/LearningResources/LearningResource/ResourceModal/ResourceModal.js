@@ -47,37 +47,6 @@ const ResourceModal = (props) => {
     weight: 37
   }]
 
-
-
-  const posts = [{
-    img: "joe",
-    user: "Joe Henderson",
-    daysAgo: 12,
-    content: "Ours is a life of constant reruns. We're always circling back to where we'd we started\n, then starting all over again. Even if we don't run extra \n laps that day, we surely will come back for more of the same another day soon.",
-    likes: 9045
-  },
-  {
-    img: "elliot",
-    user: "Elliot Peters",
-    daysAgo: 2,
-    content: "Ours is a life of constant reruns. We're always circling back to where we'd we started\n, then starting all over again. Even if we don't run extra \n laps that day, we surely will come back for more of the same another day soon.",
-    likes: 11365
-  },
-  {
-    img: "jenny",
-    user: "Jen Pikkey",
-    daysAgo: 4,
-    content: "Ours is a life of constant reruns. We're always circling back to where we'd we started\n, then starting all over again. Even if we don't run extra \n laps that day, we surely will come back for more of the same another day soon.",
-    likes: 23540
-  },
-  {
-    img: "justen",
-    user: "Justen Randerson",
-    daysAgo: 41,
-    content: "Ours is a life of constant reruns. We're always circling back to where we'd we started\n, then starting all over again. Even if we don't run extra \n laps that day, we surely will come back for more of the same another day soon.",
-    likes: 8402
-  }]
-
   const [newPostValue, setNewPostValue] = useState("")
   const newPostHandler = () => {
     console.log("Posting!")

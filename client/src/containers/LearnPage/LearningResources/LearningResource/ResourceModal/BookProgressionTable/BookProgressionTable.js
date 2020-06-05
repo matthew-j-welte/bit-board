@@ -1,5 +1,5 @@
 import React from 'react'
-import { Table, Segment, Progress, Checkbox } from 'semantic-ui-react'
+import { Table, Segment, Progress, Checkbox, Header, Divider } from 'semantic-ui-react'
 
 const BookProgressionTable = (props) => {
   const rows = [
@@ -10,7 +10,7 @@ const BookProgressionTable = (props) => {
     "Advanced Conditionals",
     "Package System",
     "Basic Architecture",
-    "Encapsulations and Inheritance",
+    "Encapsulations and Inheritance Encapsulations and Inheritance Encapsulations and Inheritance",
     "Advanced Architecture",
     "Polymorphism and Abstracton",
     "Generic Functions and Decorators",
@@ -19,7 +19,7 @@ const BookProgressionTable = (props) => {
   ].map((chapter, ind) => (
     <Table.Row>
     <Table.Cell textAlign="center">{ind + 1}</Table.Cell>
-    <Table.Cell singleLine>{chapter}</Table.Cell>
+    <Table.Cell>{chapter}</Table.Cell>
     <Table.Cell textAlign='center'><Checkbox/></Table.Cell>
     <Table.Cell textAlign='center'><Checkbox/></Table.Cell>
     <Table.Cell><Progress indicating style={{marginBottom: "0"}}/></Table.Cell>
@@ -27,8 +27,14 @@ const BookProgressionTable = (props) => {
   ))
   
   return (
-    <Segment>
-      <Table celled compact>
+    <Segment basic style={{padding: "0", margin: "1em 1em 0em 1em"}}>
+      <Header 
+        textAlign="center" 
+        content="Object Oriented Programming: Part1"
+        size="huge"
+        style={{margin: "1em"}}
+      />
+      <Table fluid celled compact>
         <Table.Header>
           <Table.Row>
             <Table.HeaderCell width={1}>Chapter</Table.HeaderCell>
