@@ -48,6 +48,7 @@ const ResourceModal = (props) => {
   }]
 
   const [newPostValue, setNewPostValue] = useState("")
+  const [newPostSubmitted, handlePostSubmission] = useState(false)
   const newPostHandler = () => {
     console.log("Posting!")
     const uri = "/api/learn/resource/" + props.id + "/new/post"
@@ -71,16 +72,17 @@ const ResourceModal = (props) => {
     })
   }
 
-  const postFieldIncrementHandler = (postID, field) => {
-    const uri = `/api/learn/resource/${props.id}/post/${postID}/increment/${field}`
+  const postFieldIncrementHandler = (postID, field, increment) => {
+    const action = increment ? "increment" : "decrement"
+    const uri = `/api/learn/resource/${props.id}/post/${postID}/${action}/${field}` 
     axios.put(uri, null,
       {
         headers: {"Content-Type": "application/x-www-form-urlencoded"}
       }
     )
   }
-  console.log(props)
 
+  console.log(props)
   return (
     <Modal style={{minHeight: "1800px"}} size="large" dimmer="blurring"
       trigger={props.resourceRow}
@@ -89,22 +91,20 @@ const ResourceModal = (props) => {
       <Segment basic padded="very">
         <DescriptionSection 
           author="Matthew Welte"
-          content={content}
-        />
-        <RationaleSection 
-          author="Matthew Welte"
-          content={content}
+          content={props.description}
         />
         <SkillWeights skills={skills}/>
         <ResourceFeed 
           posts={props.posts}  
           postFieldIncrementHandler={postFieldIncrementHandler}/>
         <Form style={{marginTop: "3em"}}>
-          <Header as="h3">New Post</Header>
+          <Header as="h3">{newPostSubmitted ? "Thanks for your Submission!" : "New Post"}</Header>
           <Form.Field>
             <TextareaAutosize
-              style={{whiteSpace: "pre-wrap"}}
-              label="New Post"
+              style={{whiteSpace: "pre-wrap", background: newPostSubmitted ? "#c1e6f5": ""}}
+              disabled={newPostSubmitted}
+              readOnly={newPostSubmitted}
+              label={newPostSubmitted ? "Thanks for your Submission!" : "New Post"}
               placeholder='Enlighten us...'
               minRows={10}
               value={newPostValue}
@@ -112,8 +112,12 @@ const ResourceModal = (props) => {
             />
           </Form.Field>
           <Form.Button
-            content="Submit"
-            onClick={() => newPostHandler()}
+            color={newPostSubmitted ? "teal" : "green"}
+            content={newPostSubmitted ? "Edit" : "Submit"}
+            onClick={() => {
+              newPostHandler()
+              handlePostSubmission(!newPostSubmitted)
+            }}
           />
         </Form>
       </Segment>

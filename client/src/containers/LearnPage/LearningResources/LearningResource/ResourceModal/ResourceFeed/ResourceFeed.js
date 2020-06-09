@@ -1,11 +1,18 @@
-import React from 'react'
-import { Feed } from 'semantic-ui-react'
+import React, { useState } from 'react'
+import { Feed, Button } from 'semantic-ui-react'
 
 import ResourceFeedPost from './ResourceFeedPost/ResourceFeedPost'
 import ResourceModalSection from '../ResourceModalSection/ResourceModalSection'
 
+const BUTTON_PROMPTS = {
+  true: "Show all Posts",
+  false: "Hide Posts"
+}
+
 const ResourceFeed = (props) => {  
-  
+  const [showAllPosts, setShowAllPosts] = useState(false)
+  const [showAllPostsButtonActive, setButtonPrompt] = useState(true)
+
   let posts = !props.posts ? [] : props.posts
   .sort((a, b) => {
     if (a.likes === b.likes ) {
@@ -20,7 +27,7 @@ const ResourceFeed = (props) => {
     /> 
   ))
 
-  if (!props.showAllPosts) {
+  if (!showAllPosts) {
     posts = posts.slice(0,3)
   }
 
@@ -28,11 +35,23 @@ const ResourceFeed = (props) => {
     <ResourceModalSection
       title="Top Posts"
       icon="feed"
-      style={{marginTop: "2.5em"}}
+      divStyle={{
+        marginTop: "4.5em",
+        padding: "1em"
+      }}
     >
       <Feed>
         {posts}
       </Feed>
+      <Button 
+        size="big" 
+        fluid
+        content={BUTTON_PROMPTS[showAllPostsButtonActive]}
+        onClick={() => {
+          setShowAllPosts(!showAllPosts)
+          setButtonPrompt(!showAllPostsButtonActive)
+        } }
+      />
     </ResourceModalSection>
   )
 }

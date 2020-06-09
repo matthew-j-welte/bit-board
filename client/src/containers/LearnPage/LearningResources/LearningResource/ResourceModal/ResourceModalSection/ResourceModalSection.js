@@ -7,8 +7,8 @@ const ResourceModalSection = (props) => {
     subheader = <Header.Subheader>{props.subheader}</Header.Subheader>
   }
   return (
-    <div>
-      <Header as='h2' style={{color: "#b880d1", ...props.style}}>
+    <div style={props.divStyle}>
+      <Header as='h2' style={{color: "#06364a", ...props.style}}>
         <Icon name={props.icon} />
         <Header.Content>
           {props.title}

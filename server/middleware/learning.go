@@ -92,13 +92,23 @@ func IncrementResourcePostValue(db *mongo.Database, w http.ResponseWriter, r *ht
 	resourceID := params["id"]
 	postID := params["postID"]
 	field := params["field"]
+	action := params["action"]
+	incrementValue := 1
+	if action == "decrement" {
+		incrementValue = -1
+	}
 
 	contextLogger := log.WithFields(log.Fields{
-		"action": "INCREMENT", "field": field, "resource": resourceID, "postID": postID})
+		"action": action, "field": field, "resource": resourceID, "postID": postID})
 
 	contextLogger.Info("Incrementing Value on Resource Post")
 	updateID, err := dataaccess.IncrementFieldInObjectArray(
-		db.Collection(resourceCollectionName), resourceID, "posts", postID, field,
+		db.Collection(resourceCollectionName),
+		resourceID,
+		"posts",
+		postID,
+		field,
+		incrementValue,
 	)
 
 	if err != nil {

@@ -39,6 +39,8 @@ const LearningResourceCard = (props) => {
     <ResourceModal 
       resourceRow={resourceRow}
       graphic={props.graphic}
+      description={props.description}
+      rationale={props.description}
       id={props._id}
       userId={props.userId}
       posts={props.posts}

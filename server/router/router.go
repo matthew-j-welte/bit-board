@@ -95,7 +95,7 @@ func Router() *mux.Router {
 	handleRoute(router, resourceValueIncrement)
 
 	resourcePostValueIncrement := route{
-		URI:         "/api/learn/resource/{id}/post/{postID}/increment/{field}",
+		URI:         "/api/learn/resource/{id}/post/{postID}/{action}/{field}",
 		RESTMethods: []string{"PUT", "OPTIONS"},
 		Handler:     middleware.IncrementResourcePostValue}
 	handleRoute(router, resourcePostValueIncrement)

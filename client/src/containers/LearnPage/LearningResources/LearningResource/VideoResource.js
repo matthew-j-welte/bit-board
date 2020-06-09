@@ -10,13 +10,13 @@ const VideoResourceCard = (props) => (
       <Image
         // fluid
         style={{maxHeight: "400px", minHeight: "400px"}}
-        src={ColorCloudBkg}
+        src={props.image}
       />
     }
     graphic={
       <Embed
         id={props.videoId}
-        placeholder={ColorCloudBkg}
+        placeholder={props.image}
         source="youtube"
       />
     }

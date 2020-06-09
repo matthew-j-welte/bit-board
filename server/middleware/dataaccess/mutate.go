@@ -87,7 +87,7 @@ func IncrementField(coll *mongo.Collection, resourceID string, field string) (bo
 }
 
 // IncrementFieldInObjectArray increments a value on a document
-func IncrementFieldInObjectArray(coll *mongo.Collection, hexID string, arrName string, arrHexID string, field string) (bool, error) {
+func IncrementFieldInObjectArray(coll *mongo.Collection, hexID string, arrName string, arrHexID string, field string, val int) (bool, error) {
 	objectID, err := primitive.ObjectIDFromHex(hexID)
 	arrObjectID, err := primitive.ObjectIDFromHex(arrHexID)
 
@@ -97,7 +97,7 @@ func IncrementFieldInObjectArray(coll *mongo.Collection, hexID string, arrName s
 	}
 	projectionExpr := bson.M{
 		"$inc": bson.M{
-			arrName + ".$." + field: 1,
+			arrName + ".$." + field: val,
 		},
 	}
 

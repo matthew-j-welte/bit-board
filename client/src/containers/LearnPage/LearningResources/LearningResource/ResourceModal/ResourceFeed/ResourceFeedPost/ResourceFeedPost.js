@@ -16,7 +16,7 @@ const ResourceFeedPost = (props) => {
   const datePrompot = daysAgo===1 ? "Posted Yesterday" : daysAgo ? `Posted ${daysAgo} days ago` : "Posted Today"
 
   return (
-    <Feed.Event style={{marginBottom: "1.75em"}}>
+    <Feed.Event style={{marginBottom: "1.75em", paddingRight: "3.5em"}}>
       <Feed.Label image={props.profileimage}/>
       <Feed.Content>
         <Feed.Summary style={{fontSize:"1.2em"}}>
@@ -32,8 +32,9 @@ const ResourceFeedPost = (props) => {
             active={liked} 
             as={Button} 
             onClick={() => {
+              const previousLikedState = liked
               setLiked(!liked)
-              props.postFieldIncrementHandler(props._id, "likes")
+              props.postFieldIncrementHandler(props._id, "likes", !previousLikedState)
             }}
           >
             <Icon name='like' />{liked ? props.likes + 1: props.likes} Likes
@@ -43,8 +44,9 @@ const ResourceFeedPost = (props) => {
             active={reported} 
             as={Button} 
             onClick={() => {
+              const previousReportedState = reported
               setReported(!reported)
-              props.postFieldIncrementHandler(props._id, "reports")
+              props.postFieldIncrementHandler(props._id, "reports", !previousReportedState)
             }}
           >
             <Icon name='cancel' />Report Post
