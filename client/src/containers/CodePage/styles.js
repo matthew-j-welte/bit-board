@@ -5,7 +5,8 @@ export const codePageSegmentStyle = {
 
 export const editorSegmentStyle = {
   minHeight: "600px", 
-  margin: "3em 6em 0em 6em"
+  margin: "3em 14em 0em 14em",
+  background: "#f2f3f5"
 }
 
 export const editorMiddleColumnStyle = {

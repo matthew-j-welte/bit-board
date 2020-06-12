@@ -14,8 +14,7 @@ const FileExplorer = (props) => {
   ))
 
   return (
-    <List 
-      inverted 
+    <List  
       selection 
       verticalAlign='middle' 
       size="small"

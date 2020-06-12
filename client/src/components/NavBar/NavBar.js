@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Menu } from 'semantic-ui-react'
 import { NavLink } from 'react-router-dom'
 
-import { routeInfo, logoRouteInfo } from './constants'
+import { routeInfo } from './constants'
 import { menuStyle } from './styles'
 
 class NavBar extends Component {
@@ -26,17 +26,14 @@ class NavBar extends Component {
   )
 
   render() {
-    const logoNavLink = this.generateNavLink(logoRouteInfo)
     const navlinks = routeInfo.map(route => this.generateNavLink(route))
 
     return (
       <Menu 
-        inverted 
         stackable 
         size="huge" 
         style={menuStyle}
       >
-        {logoNavLink}
         <Menu.Menu position="right">
           {navlinks}
         </Menu.Menu>

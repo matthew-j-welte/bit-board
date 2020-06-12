@@ -15,8 +15,7 @@ const LanguageExplorer = (props) => {
   ))
 
   return (
-    <List 
-      inverted 
+    <List  
       selection 
       verticalAlign='middle' 
       size="huge"

@@ -4,13 +4,10 @@ import axios from '../../../../../axios'
 import { Segment, Modal, Form, Header } from 'semantic-ui-react'
 
 import DescriptionSection from './DescriptionSections/DescriptionSection'
-import RationaleSection from './DescriptionSections/RationaleSection'
 import SkillWeights from './SkillWeights/SkillWeights'
 import ResourceFeed from './ResourceFeed/ResourceFeed'
 
 const ResourceModal = (props) => {
-  const content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Lorem ipsum dolor sit amet, consectetur adipiscing  elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.   Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris  nisi ut aliquip ex ea commodo consequat."
-
   const skills = [{
     name: "Python",
     color: "violet",

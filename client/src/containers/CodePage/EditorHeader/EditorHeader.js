@@ -5,8 +5,7 @@ import { headerStyle, headerLogoStyle, headerLowerDividerStyle } from './styles'
 
 const EditorHeader = (props) => (
   <div>
-    <Header 
-      inverted 
+    <Header  
       as='h2'
       style={headerStyle}
     >
@@ -17,7 +16,7 @@ const EditorHeader = (props) => (
       />
         {props.language}
     </Header>
-    <Divider inverted style={headerLowerDividerStyle}/>
+    <Divider style={headerLowerDividerStyle}/>
   </div>
 )
 
