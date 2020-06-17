@@ -4,9 +4,11 @@ import { Segment, Card } from 'semantic-ui-react'
 import JumbotronHeader from './JumbotronHeader/JumbotronHeader'
 import { LanguageSelectButton, LanguageSelectSection } from './JumbotronSections/LanguageSelectSection/LanguageSelectSection'
 import { CustomizeEditorButton, CustomizeEditorSection } from './JumbotronSections/CustomizeEditorSection/CustomizeEditorSection'
+import { KeyboardShortcutButton, KeyboardShortcutSection } from './JumbotronSections/KeyboardShortcutSection/KeyboardShortcutSection'
 
 const LANGUAGE_TAB = "languageTab"
-const CUSTOMIZE_EDITOR_TAB = "customizeEditor"
+const CUSTOMIZE_EDITOR_TAB = "customizeEditorTab"
+const KEYBOARD_TAB = "keyboardShortcutTab"
 
 const CodePageJumbotron = (props) => {
   const [activeTab, setActiveTab] = useState(null)
@@ -14,13 +16,14 @@ const CodePageJumbotron = (props) => {
     configurationName: "",
     newConfigurationOpen: false,
     selectedSavedConfiguration: "",
-    fontSize: 12,
+    fontSize: 14,
     tabSize: 4,
     colorTheme: "",
-    hasGutter: false,
-    hasLineNumbers: false,
+    colorThemeUrl: "",
+    hasGutter: true,
+    hasLineNumbers: true,
     highlightLine: false,
-    editorHeight: 400
+    editorHeight: 600
   })
 
   const formValueHandler = (key, val) => {
@@ -31,31 +34,64 @@ const CodePageJumbotron = (props) => {
     else {
       stateCopy[key] = val
     }
-    console.log(key, val)
     setCustomizeEditorState(stateCopy)
+  }
+
+  const setState = (newState) => {
+    setCustomizeEditorState({...customizeEditorState, ...newState})
   }
 
   const sectionButtons = (
     <Card.Group style={{margin: "2em"}} itemsPerRow={3}>
       <LanguageSelectButton 
-        selectionButtonClickHandler={() => setActiveTab(
-          activeTab === LANGUAGE_TAB ? null : LANGUAGE_TAB
-        )} 
+        selectionButtonClickHandler={() => {
+          const curState = activeTab === LANGUAGE_TAB ? null : LANGUAGE_TAB
+          setActiveTab(
+            curState
+          );
+          if (curState) {
+            props.startNewLabelPulsing()
+          }
+          else {
+            props.stopNewLabelPulsing()
+          }
+        }} 
       />
       <CustomizeEditorButton
-        selectionButtonClickHandler={() => setActiveTab(
-          activeTab === CUSTOMIZE_EDITOR_TAB ? null : CUSTOMIZE_EDITOR_TAB
-        )} 
+        selectionButtonClickHandler={() => {
+          props.stopNewLabelPulsing()
+          setActiveTab(
+            activeTab === CUSTOMIZE_EDITOR_TAB ? null : CUSTOMIZE_EDITOR_TAB
+          )
+        }} 
+      />
+      <KeyboardShortcutButton
+        selectionButtonClickHandler={() => {
+          props.stopNewLabelPulsing()
+          setActiveTab(
+            activeTab === KEYBOARD_TAB ? null : KEYBOARD_TAB
+          )
+        }} 
       />
     </Card.Group>
   );
 
-  const langSelectSection = <LanguageSelectSection newLabelPulsing={props.newLabelPulsing}/>
+  const langSelectSection = (
+    <LanguageSelectSection 
+      newLabelPulsing={props.newLabelPulsing}
+    />
+  ) 
+
   const customizeEditorSection = (
     <CustomizeEditorSection 
-      setState={formValueHandler}
+      formValueHandler={formValueHandler}
       formState={customizeEditorState}
+      setState={setState}
     />
+  )
+
+  const keyboardShortcuts = (
+    <KeyboardShortcutSection/>
   )
 
   return (
@@ -64,6 +100,7 @@ const CodePageJumbotron = (props) => {
       {sectionButtons}
       {activeTab === LANGUAGE_TAB ? langSelectSection : null}
       {activeTab === CUSTOMIZE_EDITOR_TAB ? customizeEditorSection : null}
+      {activeTab === KEYBOARD_TAB ? keyboardShortcuts : null}
     </Segment>
   )
 }

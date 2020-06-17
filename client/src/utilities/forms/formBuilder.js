@@ -1,5 +1,5 @@
 import React from 'react'
-import { Form, Icon, Header, Modal, Button, List } from 'semantic-ui-react'
+import { Form, Icon, Header } from 'semantic-ui-react'
 
 import { FORM_ENUMS } from './enums'
 

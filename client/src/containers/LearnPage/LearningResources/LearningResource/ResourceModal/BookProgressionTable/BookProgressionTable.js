@@ -1,7 +1,7 @@
 import React from 'react'
-import { Table, Segment, Progress, Checkbox, Header, Divider } from 'semantic-ui-react'
+import { Table, Segment, Progress, Checkbox, Header } from 'semantic-ui-react'
 
-const BookProgressionTable = (props) => {
+const BookProgressionTable = () => {
   const rows = [
     "Scalar Types and Variables",
     "Functions and Returns",

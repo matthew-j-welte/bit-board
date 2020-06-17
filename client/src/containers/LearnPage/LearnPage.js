@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Segment, Grid } from 'semantic-ui-react'
+import { Segment } from 'semantic-ui-react'
 
 import ResourceTypeTabs from './ResourceTypeTabs/ResourceTypeTabs'
 import LearningResources from './LearningResources/LearningResources'

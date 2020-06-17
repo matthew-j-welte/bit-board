@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Segment, Grid, Header, Divider, Card, Reveal, Image, Icon, List, Table, Label, Transition } from 'semantic-ui-react'
+import { Segment, Grid } from 'semantic-ui-react'
 import axios from '../../axios'
 
 import CodePageJumbotron from './CodePageJumbotron/CodePageJumbotron'
@@ -32,7 +32,11 @@ class CodePage extends Component {
       showLangs: false,
       newLangsPulsing: true
     }
-    setInterval(() => {this.setState({newLangsPulsing: !this.state.newLangsPulsing})}, 2250)
+    setInterval(() => {
+      if (this.state.showLangs) {
+        this.setState({newLangsPulsing: !this.state.newLangsPulsing})
+      }
+    }, 2250)
   }
 
   languageSelectHandler = (e, { name }) => {
@@ -85,12 +89,16 @@ class CodePage extends Component {
     })
   }
 
+  startNewLabelPulsing = () => this.setState({showLangs: true})
+  stopNewLabelPulsing = () => this.setState({showLangs: false})
 
   render() {
     return (
       <Segment style={{marginTop: "0", padding: "0"}}>
         <CodePageJumbotron 
           newLabelPulsing={this.state.newLangsPulsing}
+          startNewLabelPulsing={this.startNewLabelPulsing}
+          stopNewLabelPulsing={this.stopNewLabelPulsing}
         />
         <Segment basic style={codePageSegmentStyle}>
           <Segment raised style={editorSegmentStyle}>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Feed, Icon, Segment, Button, Header } from 'semantic-ui-react'
+import { Feed, Icon, Segment, Button } from 'semantic-ui-react'
 
 const dayDiff = (timestamp) => {
   const ts = Math.round((new Date()).getTime() / 1000);
@@ -20,7 +20,7 @@ const ResourceFeedPost = (props) => {
       <Feed.Label image={props.profileimage}/>
       <Feed.Content>
         <Feed.Summary style={{fontSize:"1.2em"}}>
-          <a>{props.fullname}</a>
+          <a href="#">{props.fullname}</a>
         </Feed.Summary>
         <Feed.Date style={{marginTop: "0.5em", fontSize:"0.9em"}}>{datePrompot}</Feed.Date>
         <Feed.Content style={{marginBottom: "0"}} as={Segment} text>

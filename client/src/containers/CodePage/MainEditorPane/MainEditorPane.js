@@ -1,12 +1,10 @@
 import React from 'react'
 import { Button, Form } from 'semantic-ui-react'
 import AceEditor from "react-ace";
-import { editorTextAreaStyle } from './styles'
 
 import "ace-builds/src-noconflict/theme-dracula";
 import "ace-builds/src-noconflict/mode-golang";
 import "ace-builds/src-noconflict/ext-language_tools"
-import "ace-builds/src-noconflict/ext-emmet"
 
 const MainEditorPane = (props) => {
   return (

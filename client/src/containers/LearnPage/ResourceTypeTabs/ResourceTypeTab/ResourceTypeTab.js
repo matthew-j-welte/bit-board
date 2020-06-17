@@ -1,5 +1,5 @@
 import React from 'react'
-import { Menu, Icon, Modal, Label, Button, List, Header } from 'semantic-ui-react'
+import { Menu, Icon, Modal, Label } from 'semantic-ui-react'
 
 import { FormBuilder } from '../../../../utilities/forms/formBuilder'
 import NewResourceSubmit from '../forms/newResource/NewResourceSubmit'
