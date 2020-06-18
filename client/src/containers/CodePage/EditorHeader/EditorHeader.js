@@ -5,17 +5,7 @@ import { headerStyle, headerLogoStyle, headerLowerDividerStyle } from './styles'
 
 const EditorHeader = (props) => (
   <div>
-    <Header  
-      as='h2'
-      style={headerStyle}
-    >
-      <Image 
-        circular 
-        src={props.icon}
-        style={headerLogoStyle}
-      />
-        {props.language}
-    </Header>
+    <Header as='h2' style={headerStyle}>{props.language}</Header>
     <Divider style={headerLowerDividerStyle}/>
   </div>
 )

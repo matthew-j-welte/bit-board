@@ -20,7 +20,3 @@ export const langCardHeader = {
   borderRadius: "2.5em 2.5em 0 0", 
   marginBottom: "1em"
 }
-
-export const newLabelStyle = {
-  "box-shadow": "0 0 20px 5px #d6af13"
-}

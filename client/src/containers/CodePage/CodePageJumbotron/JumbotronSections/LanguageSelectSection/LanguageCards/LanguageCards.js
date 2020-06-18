@@ -1,7 +1,7 @@
 import React from 'react'
-import { Header, Card, Reveal, Image, Label, Transition } from 'semantic-ui-react'
+import { Header, Card, Reveal, Image } from 'semantic-ui-react'
 import { languages, statSectionData } from '../mockdata'
-import { cardStyle, imgStyle, langCardHeader, newLabelStyle } from './styles'
+import { cardStyle, imgStyle, langCardHeader } from './styles'
 
 const LanguageCard = (props) => {
   const statSections = statSectionData.map(statSec => (
@@ -12,30 +12,11 @@ const LanguageCard = (props) => {
       </Header.Content>
     </Header>
   ))
-  let newLabel = null
-  if (props.new) {
-    newLabel = (
-      <Transition 
-        animation="tada" 
-        duration="1500" 
-        visible={props.newLabelPulsing}
-      >
-        <Label 
-          circular
-          floating
-          color='yellow' 
-          size="huge"
-          content="NEW!"
-          style={newLabelStyle}
-        />
-      </Transition>
-    )
-  }
 
   return (
     <Card 
       raised 
-      onClick={props.languageSelectHandler} 
+      onClick={() => props.languageSelectHandler(props.lang)} 
       style={cardStyle}
     >
       <Reveal 
@@ -48,7 +29,6 @@ const LanguageCard = (props) => {
             src={props.logo}  
             style={imgStyle}
           />
-          {newLabel}
         </Reveal.Content>
         <Reveal.Content hidden>
           <Header 

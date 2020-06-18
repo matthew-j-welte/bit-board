@@ -79,6 +79,26 @@ func GetWorkspaceCollection(db *mongo.Database, w http.ResponseWriter, r *http.R
 	json.NewEncoder(w).Encode(result["projects"])
 }
 
+// GetEditorConfigurations get all code editor confs for a user
+func GetEditorConfigurations(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	params := mux.Vars(r)
+	id := params["id"]
+	contextLogger := log.WithFields(log.Fields{"action": "READ", "user": id})
+	contextLogger.Info("Getting saved editor configurations for user")
+
+	result, err := dataaccess.FindOneRecordWithProjection(
+		db.Collection(userCollectionName),
+		id, bson.D{{"_id", 0}, {"editorconfs", 1}})
+
+	if err != nil {
+		contextLogger.WithField("error", err).Error("Error when retrieving editor configurations")
+	}
+	json.NewEncoder(w).Encode(result["editorconfs"])
+}
+
 // GetPersonaSkills collects the persona skill info
 func GetPersonaSkills(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
@@ -170,5 +190,31 @@ func NewProjectSubmission(db *mongo.Database, w http.ResponseWriter, r *http.Req
 		contextLogger.WithField("error", err).Error("An Error occured")
 	}
 	contextLogger.WithField("projID", oid.Hex()).Info("Successfully created project")
+	json.NewEncoder(w).Encode(success)
+}
+
+// NewEditorConfigSubmission creates a new editor configuration for a user
+func NewEditorConfigSubmission(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	params := mux.Vars(r)
+	id := params["id"]
+	contextLogger := log.WithFields(log.Fields{"action": "UPDATE", "user": id})
+	contextLogger.Info("Adding new Code editor configuraiton to user document")
+	oid := primitive.NewObjectID()
+
+	var newEditorConfiguration = users.CodeEditorConfiguration{ID: oid}
+	err := json.NewDecoder(r.Body).Decode(&newEditorConfiguration)
+
+	success, err := dataaccess.CreateEditorConfiguration(
+		db.Collection(userCollectionName),
+		newEditorConfiguration, id)
+
+	if err != nil {
+		contextLogger.WithField("error", err).Error("An Error occured")
+	}
+	contextLogger.WithField("editorConfigID", oid.Hex()).Info("Successfully created editor configuration")
 	json.NewEncoder(w).Encode(success)
 }

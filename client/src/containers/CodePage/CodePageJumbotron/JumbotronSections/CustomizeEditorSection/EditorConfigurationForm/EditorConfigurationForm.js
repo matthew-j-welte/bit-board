@@ -139,9 +139,12 @@ const EditorConfigurationMutator = (props) => {
             labelPosition: 'left',
             icon: 'save',
             content: 'Save Current Configuration As: ',
+            onClick: () => props.submitNewEditorConfiguration(props.formState)
           }}
           actionPosition='left'
           placeholder="Configuration Name..."
+          value={props.formState.configurationName}
+          onChange={(e) => props.formValueHandler("configurationName", e.target.value)}
           style={{marginTop: "2em", width: "300px"}}
         />
       </Form.Group>

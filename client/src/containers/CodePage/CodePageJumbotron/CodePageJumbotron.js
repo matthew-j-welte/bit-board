@@ -89,6 +89,9 @@ const CodePageJumbotron = (props) => {
       formState={customizeEditorState}
       setState={setState}
       setEditorConfiguration={props.setEditorConfiguration}
+      submitNewEditorConfiguration={props.submitNewEditorConfiguration}
+      savedEditorConfigurations={props.savedEditorConfigurations}
+      setEditorConfigurationFromID={props.setEditorConfigurationFromID}
     />
   )
 

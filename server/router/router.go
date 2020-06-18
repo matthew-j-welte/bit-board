@@ -75,6 +75,18 @@ func Router() *mux.Router {
 		Handler:     middleware.NewProjectSubmission}
 	handleRoute(router, newProjectRoute)
 
+	newEditorConfigRoute := route{
+		URI:         "/api/user/{id}/code/configuration/new",
+		RESTMethods: []string{"POST", "OPTIONS"},
+		Handler:     middleware.NewEditorConfigSubmission}
+	handleRoute(router, newEditorConfigRoute)
+
+	getEditorConfigurationsRoute := route{
+		URI:         "/api/user/{id}/code/configurations",
+		RESTMethods: []string{"GET", "OPTIONS"},
+		Handler:     middleware.GetEditorConfigurations}
+	handleRoute(router, getEditorConfigurationsRoute)
+
 	// Resource route handlers
 	resourcesLearningRoute := route{
 		URI:         "/api/learn/resources",

@@ -20,6 +20,15 @@ export const CustomizeEditorSection = (props) => {
     />
   )
 
+  const savedEditorConfOptions = props.savedEditorConfigurations.map(
+    configuration => ({
+        key: configuration._id, 
+        value: configuration._id, 
+        text: configuration.name
+      }
+    )
+  )
+
   return (
     <Segment 
       basic 
@@ -42,7 +51,8 @@ export const CustomizeEditorSection = (props) => {
             label="Saved Configurations" 
             placeholder="None" 
             width={8}
-            options={[]}
+            options={savedEditorConfOptions}
+            onChange={(e, { value }) => props.setEditorConfigurationFromID(value)}
             style={{marginBottom: "2em"}}
           />
           <Form.Button width={4} fluid label="Edit Saved Configuration" disabled={props.formState.selectedSavedConfiguration ? false : true}>

@@ -24,24 +24,39 @@ func CreateUser(coll *mongo.Collection, user users.User) (string, error) {
 }
 
 // CreateProject creates a new project for a user
-func CreateProject(coll *mongo.Collection, project users.Project, hexOid string) (bool, error) {
-	userOid, err := primitive.ObjectIDFromHex(hexOid)
+func CreateProject(coll *mongo.Collection, project users.Project, documentID string) (bool, error) {
+	return createSubResource(
+		coll,
+		documentID,
+		bson.D{{"$push", bson.D{{"projects", project}}}},
+	)
+}
+
+// CreateEditorConfiguration creates a new editor configuration for a user
+func CreateEditorConfiguration(coll *mongo.Collection, editorConfig users.CodeEditorConfiguration, documentID string) (bool, error) {
+	return createSubResource(
+		coll,
+		documentID,
+		bson.D{{"$push", bson.D{{"editorconfs", editorConfig}}}},
+	)
+}
+
+// CreateProject creates a new project for a user
+func createSubResource(coll *mongo.Collection, primaryID string, filterExpr bson.D) (bool, error) {
+	primaryOID, err := primitive.ObjectIDFromHex(primaryID)
 	result, err := coll.UpdateOne(
 		context.Background(),
-		bson.M{"_id": userOid},
-		bson.D{
-			{"$push", bson.D{{"projects", project}}}})
+		bson.M{"_id": primaryOID},
+		filterExpr,
+	)
 
 	if err != nil {
 		return false, err
 	}
 	if result.ModifiedCount == 0 {
-		log.Println("[ERROR] No user associated with this userId")
-		return false, errors.New("Failed to add project")
+		return false, errors.New("No user associated with this userId")
 	}
-	if result.ModifiedCount > 1 {
-		log.Printf("[WARNING] More than one user record found for ID: %s\n", hexOid)
-	}
+
 	return true, nil
 }
 

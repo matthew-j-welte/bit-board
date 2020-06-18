@@ -4,7 +4,6 @@ import { Segment, Grid } from 'semantic-ui-react'
 import axios from '../../axios'
 
 import CodePageJumbotron from './CodePageJumbotron/CodePageJumbotron'
-import LanguageExplorer from './LanguageExplorer/LanguageExplorer'
 import FileExplorer from './FileExplorer/FileExplorer'
 import EditorHeader from './EditorHeader/EditorHeader'
 import MainEditorPane from './MainEditorPane/MainEditorPane'
@@ -12,13 +11,14 @@ import {
   codePageSegmentStyle, 
   editorSegmentStyle, 
   editorMiddleColumnStyle } from './styles'
-import { languageChoices } from './LanguageExplorer/constants'
 
+import { postNewEditorConfiguration, getEditorConfigurations } from './requests'
 
 class CodePage extends Component {
+  displayName = "CodePage"
   constructor(props) {
     super(props);
-    const defaultLanguage = languageChoices[0]
+    const defaultLanguage = "Python"
     this.state = {
       activeLanguage: defaultLanguage.language,
       activeIcon: defaultLanguage.logo,
@@ -31,19 +31,18 @@ class CodePage extends Component {
       },
       showLangs: false,
       newLangsPulsing: true,
-      editorConfiguration: {}
+      editorConfiguration: {},
+      savedConfigurations: []
     }
-    setInterval(() => {
-      if (this.state.showLangs) {
-        this.setState({newLangsPulsing: !this.state.newLangsPulsing})
-      }
-    }, 2250)
   }
 
-  languageSelectHandler = (e, { name }) => {
+  componentDidMount() {
+    getEditorConfigurations(this);
+  }
+
+  languageSelectHandler = (lang) => {
     this.setState({
-      activeLanguage: name,
-      activeIcon: languageChoices.find(({ language }) => language === name).logo
+      activeLanguage: lang
     })
   }
   
@@ -58,6 +57,8 @@ class CodePage extends Component {
     return this.state.currentCode.find(({ filename }) => filename === name).con
   }
 
+  submitNewEditorConfiguration = (editorConf) => postNewEditorConfiguration(this, editorConf)
+
   codeInputHandler = (value) => {
     let codeMap = {...this.state.currentCode}
     codeMap[this.state.activeFile] = value
@@ -66,15 +67,6 @@ class CodePage extends Component {
       currentCode: codeMap
     })
   } 
-  
-  codeClearHandler = () => {
-    let clearedCode = {}
-    Object.keys({...this.state.currentCode}).forEach(filename => clearedCode[filename] = "")
-    this.setState({
-      currentCode: clearedCode,
-      activeFileContents: ""
-    })
-  }
 
   codeSubmitHandler = () => {
     const uri = "/api/user/" + this.props.userId + "/code/submit/" + this.state.activeLanguage
@@ -92,8 +84,19 @@ class CodePage extends Component {
 
   startNewLabelPulsing = () => this.setState({showLangs: true})
   stopNewLabelPulsing = () => this.setState({showLangs: false})
-
-  setEditorConfiguration = (conf) => this.setState({...this.state, editorConfiguration: conf})
+  setEditorConfiguration = (conf) => this.setState({...this.state, editorConfiguration: conf});
+  
+  setEditorConfigurationFromID = (confID) => {
+    let mergedConf = {
+      ...this.state.editorConfiguration,
+      ...this.state.savedConfigurations.find(
+        conf => conf._id === confID
+      )
+    }
+    this.setState({
+      editorConfiguration: mergedConf
+    })
+  }
 
   render() {
     return (
@@ -104,11 +107,13 @@ class CodePage extends Component {
           stopNewLabelPulsing={this.stopNewLabelPulsing}
           languageSelectHandler={this.languageSelectHandler}
           setEditorConfiguration={this.setEditorConfiguration}
+          submitNewEditorConfiguration={this.submitNewEditorConfiguration}
+          savedEditorConfigurations={this.state.savedConfigurations}
+          setEditorConfigurationFromID={this.setEditorConfigurationFromID}
         />
         <Segment basic style={codePageSegmentStyle}>
           <Segment raised style={editorSegmentStyle}>
             <EditorHeader
-              icon={this.state.activeIcon}
               language={this.state.activeLanguage}
             />
             <Grid>
@@ -126,6 +131,7 @@ class CodePage extends Component {
                   codeSubmitHandler={this.codeSubmitHandler}
                   codeClearHandler={this.codeClearHandler}
                   activeLanguage={this.state.activeLanguage}
+                  editorConfiguration={this.state.editorConfiguration}
                 />
               </Grid.Column>
             </Grid>
