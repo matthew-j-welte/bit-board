@@ -15,8 +15,8 @@ import "ace-builds/src-noconflict/mode-ruby";
 import "ace-builds/src-noconflict/ext-language_tools"
 
 const languageToModeMapping = {
-  "Python": "golang",
-  "Golang": "python",
+  "Python": "python",
+  "Golang": "golang",
   "Javascript": "javascript",
   "C#": "csharp",
   "C++": "c_cpp",
