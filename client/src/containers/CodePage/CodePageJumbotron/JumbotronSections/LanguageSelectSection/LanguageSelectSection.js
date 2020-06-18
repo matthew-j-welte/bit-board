@@ -18,6 +18,7 @@ export const LanguageSelectSection = (props) => (
     <Card.Group itemsPerRow={5}>
       <LanguageCards
         newLabelPulsing={props.newLabelPulsing}
+        languageSelectHandler={props.languageSelectHandler}
       />
     </Card.Group>
   </Segment>

@@ -131,7 +131,7 @@ const EditorConfigurationMutator = (props) => {
       </Form.Group>
       <Divider/>
       <Form.Group>
-        <Form.Button color="blue" style={{marginLeft: "-2em", marginTop: "2em"}}>Apply Changes</Form.Button>
+        <Form.Button color="blue" onClick={() => props.setEditorConfiguration(props.formState)} style={{marginLeft: "-2em", marginTop: "2em"}}>Apply Changes</Form.Button>
         {/* <Form.Button color="teal" style={{marginTop: "2em"}}>Save Current Configuration</Form.Button> */}
         <Form.Input 
           action={{

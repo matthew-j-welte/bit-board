@@ -30,7 +30,8 @@ class CodePage extends Component {
         "loader.py": ""
       },
       showLangs: false,
-      newLangsPulsing: true
+      newLangsPulsing: true,
+      editorConfiguration: {}
     }
     setInterval(() => {
       if (this.state.showLangs) {
@@ -92,6 +93,8 @@ class CodePage extends Component {
   startNewLabelPulsing = () => this.setState({showLangs: true})
   stopNewLabelPulsing = () => this.setState({showLangs: false})
 
+  setEditorConfiguration = (conf) => this.setState({...this.state, editorConfiguration: conf})
+
   render() {
     return (
       <Segment style={{marginTop: "0", padding: "0"}}>
@@ -99,6 +102,8 @@ class CodePage extends Component {
           newLabelPulsing={this.state.newLangsPulsing}
           startNewLabelPulsing={this.startNewLabelPulsing}
           stopNewLabelPulsing={this.stopNewLabelPulsing}
+          languageSelectHandler={this.languageSelectHandler}
+          setEditorConfiguration={this.setEditorConfiguration}
         />
         <Segment basic style={codePageSegmentStyle}>
           <Segment raised style={editorSegmentStyle}>
@@ -107,25 +112,20 @@ class CodePage extends Component {
               language={this.state.activeLanguage}
             />
             <Grid>
-              <Grid.Column width={3}>
+              <Grid.Column width={4}>
                 <FileExplorer 
                   currentCode={this.state.currentCode}
                   activeFile={this.state.activeFile}
                   fileClickHandler={this.handleFileClick}
                 />
               </Grid.Column>
-              <Grid.Column width={10} style={editorMiddleColumnStyle}>
+              <Grid.Column width={12} style={editorMiddleColumnStyle}>
                 <MainEditorPane 
                   activeFileContents={this.state.activeFileContents}
                   codeInputHandler={this.codeInputHandler}
                   codeSubmitHandler={this.codeSubmitHandler}
                   codeClearHandler={this.codeClearHandler}
-                />
-              </Grid.Column>
-              <Grid.Column width={3}>
-                <LanguageExplorer 
                   activeLanguage={this.state.activeLanguage}
-                  languageSelectHandler={this.languageSelectHandler}
                 />
               </Grid.Column>
             </Grid>

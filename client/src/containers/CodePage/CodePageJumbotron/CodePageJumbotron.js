@@ -79,6 +79,7 @@ const CodePageJumbotron = (props) => {
   const langSelectSection = (
     <LanguageSelectSection 
       newLabelPulsing={props.newLabelPulsing}
+      languageSelectHandler={props.languageSelectHandler}
     />
   ) 
 
@@ -87,6 +88,7 @@ const CodePageJumbotron = (props) => {
       formValueHandler={formValueHandler}
       formState={customizeEditorState}
       setState={setState}
+      setEditorConfiguration={props.setEditorConfiguration}
     />
   )
 

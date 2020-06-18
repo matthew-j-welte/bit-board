@@ -35,7 +35,7 @@ const LanguageCard = (props) => {
   return (
     <Card 
       raised 
-      onClick={() => {}} 
+      onClick={props.languageSelectHandler} 
       style={cardStyle}
     >
       <Reveal 
@@ -70,6 +70,7 @@ const LanguageCards = (props) => (
   languages.map(langinfo => (
     <LanguageCard 
       newLabelPulsing={props.newLabelPulsing}
+      languageSelectHandler={props.languageSelectHandler}
       {...langinfo}
     />
   )) 
