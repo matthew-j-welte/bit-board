@@ -10,6 +10,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/matthew-j-welte/bit-board/server/database"
+	"github.com/matthew-j-welte/bit-board/server/database/collections"
 	"github.com/matthew-j-welte/bit-board/server/models/resources"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -51,7 +52,7 @@ func NewResourceSuggestion(db *mongo.Database, w http.ResponseWriter, r *http.Re
 	var resourceSuggestion = resources.ResourceSuggestion{Poster: oid}
 	err = json.NewDecoder(r.Body).Decode(&resourceSuggestion)
 
-	insertID, err := database.CreateResourceSuggestion(
+	insertID, err := collections.CreateResourceSuggestion(
 		db.Collection(suggestedResourceCollectionName),
 		resourceSuggestion)
 
@@ -152,7 +153,7 @@ func NewPostOnResource(db *mongo.Database, w http.ResponseWriter, r *http.Reques
 		FullName:     fullname,
 		ProfileImage: imageURL}
 	contextLogger.Info("Attemting to add post to resource")
-	success, err := database.AddProjectToResource(
+	success, err := collections.AddProjectToResource(
 		db.Collection(resourceCollectionName), post, resourceID)
 
 	if err != nil {
@@ -163,7 +164,7 @@ func NewPostOnResource(db *mongo.Database, w http.ResponseWriter, r *http.Reques
 }
 
 func getLearningResources(coll *mongo.Collection) ([]bson.M, error) {
-	cur, err := database.GetResources(coll)
+	cur, err := collections.GetResources(coll)
 	defer cur.Close(context.Background())
 	if err != nil {
 		return nil, cur.Err()

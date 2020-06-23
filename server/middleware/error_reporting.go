@@ -6,7 +6,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/matthew-j-welte/bit-board/server/database"
+	"github.com/matthew-j-welte/bit-board/server/database/collections"
 	"github.com/matthew-j-welte/bit-board/server/models/reports"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -28,7 +28,7 @@ func HandleErrorReport(db *mongo.Database, w http.ResponseWriter, r *http.Reques
 		contextLogger.WithField("error", err).Error("An Error occured")
 	}
 
-	objectID, err := database.CreateErrorReport(db.Collection(errorReportCollection), errorReport)
+	objectID, err := collections.CreateErrorReport(db.Collection(errorReportCollection), errorReport)
 	res := map[string]string{
 		"_id": objectID}
 

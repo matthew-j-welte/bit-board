@@ -9,6 +9,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/matthew-j-welte/bit-board/server/database"
+	"github.com/matthew-j-welte/bit-board/server/database/collections"
 	"github.com/matthew-j-welte/bit-board/server/models/users"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -150,11 +151,13 @@ func UserSubmission(db *mongo.Database, w http.ResponseWriter, r *http.Request) 
 
 	var userSignup = users.User{}
 	err := json.NewDecoder(r.Body).Decode(&userSignup)
+
+	contextLogger.Info(userSignup)
 	if err != nil {
 		contextLogger.WithField("error", err).Error("An Error occured")
 	}
 
-	objectID, err := database.CreateUser(db.Collection(userCollectionName), userSignup)
+	objectID, err := collections.CreateUser(userSignup)
 	res := map[string]string{
 		"_id": objectID}
 
@@ -165,32 +168,6 @@ func UserSubmission(db *mongo.Database, w http.ResponseWriter, r *http.Request) 
 		contextLogger.WithField("user", objectID).Info("New user created")
 	}
 	json.NewEncoder(w).Encode(res)
-}
-
-// NewProjectSubmission creates a new project
-func NewProjectSubmission(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "POST")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-	params := mux.Vars(r)
-	id := params["id"]
-	contextLogger := log.WithFields(log.Fields{"action": "UPDATE", "user": id})
-	contextLogger.Info("Adding new project to user")
-
-	oid := primitive.NewObjectID()
-	var newProject = users.Project{ID: oid}
-	err := json.NewDecoder(r.Body).Decode(&newProject)
-
-	success, err := database.CreateProject(
-		db.Collection(userCollectionName),
-		newProject, id)
-
-	if err != nil {
-		contextLogger.WithField("error", err).Error("An Error occured")
-	}
-	contextLogger.WithField("projID", oid.Hex()).Info("Successfully created project")
-	json.NewEncoder(w).Encode(success)
 }
 
 // NewEditorConfigSubmission creates a new editor configuration for a user
@@ -208,7 +185,7 @@ func NewEditorConfigSubmission(db *mongo.Database, w http.ResponseWriter, r *htt
 	var newEditorConfiguration = users.CodeEditorConfiguration{ID: oid}
 	err := json.NewDecoder(r.Body).Decode(&newEditorConfiguration)
 
-	success, err := database.CreateEditorConfiguration(
+	success, err := collections.CreateEditorConfiguration(
 		db.Collection(userCollectionName),
 		newEditorConfiguration, id)
 

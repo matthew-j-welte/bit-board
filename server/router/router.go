@@ -45,12 +45,6 @@ func Router() *mux.Router {
 		Handler:     middleware.GetUserID}
 	handleRoute(router, userLogin)
 
-	userWorkspaceRoute := route{
-		URI:         "/api/user/{id}/workspace/projects",
-		RESTMethods: []string{"GET", "OPTIONS"},
-		Handler:     middleware.GetWorkspaceCollection}
-	handleRoute(router, userWorkspaceRoute)
-
 	userSkillsRoute := route{
 		URI:         "/api/user/{id}/persona/skills",
 		RESTMethods: []string{"GET", "OPTIONS"},
@@ -68,12 +62,6 @@ func Router() *mux.Router {
 		RESTMethods: []string{"POST", "OPTIONS"},
 		Handler:     middleware.UserSubmission}
 	handleRoute(router, newUserRoute)
-
-	newProjectRoute := route{
-		URI:         "/api/user/{id}/workspace/project/new",
-		RESTMethods: []string{"POST", "OPTIONS"},
-		Handler:     middleware.NewProjectSubmission}
-	handleRoute(router, newProjectRoute)
 
 	newEditorConfigRoute := route{
 		URI:         "/api/user/{id}/code/configuration/new",
