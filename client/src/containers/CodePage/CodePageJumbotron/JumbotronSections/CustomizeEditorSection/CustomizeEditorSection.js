@@ -6,6 +6,7 @@ import EditorConfigurationForm from './EditorConfigurationForm/EditorConfigurati
 
 export const CustomizeEditorButton = (props) => (
   <SelectionCard 
+    activeTab={props.activeTab}  
     handler={props.selectionButtonClickHandler}
     title="CUSTOMIZE YOUR EDITOR"
     desc="Bitboard allows a lot of opportunity to customize your editor the way you prefer. Once you find the style you like you can save the 'theme' and come back and use it later."

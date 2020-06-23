@@ -9,7 +9,7 @@ import (
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/matthew-j-welte/bit-board/server/middleware/dataaccess"
+	"github.com/matthew-j-welte/bit-board/server/database"
 	"github.com/matthew-j-welte/bit-board/server/models/resources"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -51,7 +51,7 @@ func NewResourceSuggestion(db *mongo.Database, w http.ResponseWriter, r *http.Re
 	var resourceSuggestion = resources.ResourceSuggestion{Poster: oid}
 	err = json.NewDecoder(r.Body).Decode(&resourceSuggestion)
 
-	insertID, err := dataaccess.CreateResourceSuggestion(
+	insertID, err := database.CreateResourceSuggestion(
 		db.Collection(suggestedResourceCollectionName),
 		resourceSuggestion)
 
@@ -74,7 +74,7 @@ func IncrementResourceValue(db *mongo.Database, w http.ResponseWriter, r *http.R
 	contextLogger := log.WithFields(log.Fields{"action": "INCREMENT", "field": field, "resource": id})
 	contextLogger.Info("Incrementing Value")
 
-	updateID, err := dataaccess.IncrementField(db.Collection(resourceCollectionName), id, field)
+	updateID, err := database.IncrementField(db.Collection(resourceCollectionName), id, field)
 	if err != nil {
 		contextLogger.WithField("error", err).Error("Error when incrementing resource value")
 	}
@@ -102,7 +102,7 @@ func IncrementResourcePostValue(db *mongo.Database, w http.ResponseWriter, r *ht
 		"action": action, "field": field, "resource": resourceID, "postID": postID})
 
 	contextLogger.Info("Incrementing Value on Resource Post")
-	updateID, err := dataaccess.IncrementFieldInObjectArray(
+	updateID, err := database.IncrementFieldInObjectArray(
 		db.Collection(resourceCollectionName),
 		resourceID,
 		"posts",
@@ -135,7 +135,7 @@ func NewPostOnResource(db *mongo.Database, w http.ResponseWriter, r *http.Reques
 	if err != nil {
 		contextLogger.WithField("error", err).Error("Error when decoding body")
 	}
-	userInfo, err := dataaccess.FindOneRecordWithProjection(
+	userInfo, err := database.FindOneRecordWithProjection(
 		db.Collection(userCollectionName),
 		userID,
 		bson.D{{"_id", 0}, {"fname", 1}, {"lname", 1}, {"image", 1}})
@@ -152,7 +152,7 @@ func NewPostOnResource(db *mongo.Database, w http.ResponseWriter, r *http.Reques
 		FullName:     fullname,
 		ProfileImage: imageURL}
 	contextLogger.Info("Attemting to add post to resource")
-	success, err := dataaccess.AddProjectToResource(
+	success, err := database.AddProjectToResource(
 		db.Collection(resourceCollectionName), post, resourceID)
 
 	if err != nil {
@@ -163,7 +163,7 @@ func NewPostOnResource(db *mongo.Database, w http.ResponseWriter, r *http.Reques
 }
 
 func getLearningResources(coll *mongo.Collection) ([]bson.M, error) {
-	cur, err := dataaccess.GetResources(coll)
+	cur, err := database.GetResources(coll)
 	defer cur.Close(context.Background())
 	if err != nil {
 		return nil, cur.Err()

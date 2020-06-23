@@ -5,6 +5,7 @@ import SelectionCard from '../components/SelectionCard/SelectionCard'
 
 export const KeyboardShortcutButton = (props) => (
   <SelectionCard 
+    activeTab={props.activeTab}    
     handler={props.selectionButtonClickHandler}
     title="VIEW KEYBOARD SHORTCUTS"
     desc="The goal with our code editor is to keep you from ever having to leave your keyboard when diving deep into some of our more complex challenges. Allowing you to quickly change font size, tab index, navigate different files and more."

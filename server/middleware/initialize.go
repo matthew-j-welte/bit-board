@@ -7,7 +7,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	_ "github.com/matthew-j-welte/bit-board/server/middleware/dataaccess" // import dataaccess helpers
+	_ "github.com/matthew-j-welte/bit-board/server/database" // import database helpers
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"

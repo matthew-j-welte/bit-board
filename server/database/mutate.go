@@ -1,4 +1,4 @@
-package dataaccess
+package database
 
 import (
 	"context"

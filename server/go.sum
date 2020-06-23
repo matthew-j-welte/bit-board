@@ -52,6 +52,7 @@ github.com/markbates/safe v1.0.1/go.mod h1:nAqgmRi7cY2nqMc92/bSEeQA+R4OheNU2T1kN
 github.com/matthew-j-welte/bit-board v0.0.0-20200515052611-ae04543af0f4 h1:IFx6TuZmKlaysTK9xXxakFIQihQQOi+OhHh03bTPc4E=
 github.com/matthew-j-welte/bit-board v0.0.0-20200521045910-f658f1b935ee h1:/gKW/Zq0/IKsKfRaGkJfgyzmz7ORNxnODm3o7EXhJ4Q=
 github.com/matthew-j-welte/bit-board v0.0.0-20200528064814-c6d2174531a1 h1:EKQWg5F81op+qaAoHGawe7Crt9xqaNA8lhhmdwY7jNI=
+github.com/matthew-j-welte/bit-board v0.0.0-20200618062121-88899e97248f h1:rkvgN9kq6cPJSJwsQowCtEqS1l5df1t2UDncBKWy28o=
 github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe/go.mod h1:wL8QJuTMNUDYhXwkmfOly8iTdp5TEcJFWZD2D7SIkUc=
 github.com/pelletier/go-toml v1.4.0/go.mod h1:PN7xzY2wHTK0K9p34ErDQMlFxa51Fk0OUruD3k1mMwo=
 github.com/pkg/errors v0.8.0/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=

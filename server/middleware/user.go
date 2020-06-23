@@ -8,7 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/gorilla/mux"
-	"github.com/matthew-j-welte/bit-board/server/middleware/dataaccess"
+	"github.com/matthew-j-welte/bit-board/server/database"
 	"github.com/matthew-j-welte/bit-board/server/models/users"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -24,7 +24,7 @@ func GetUserCount(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
 	contextLogger := log.WithFields(log.Fields{"action": "COUNT"})
 	contextLogger.Info("Counting available users")
 
-	count, err := dataaccess.CountRecords(db.Collection(userCollectionName))
+	count, err := database.CountRecords(db.Collection(userCollectionName))
 	if err != nil {
 		log.WithField("error", err).Error("Error when getting user count")
 	}
@@ -47,7 +47,7 @@ func GetUserID(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
 		contextLogger.WithField("error", err).Error("A Decode error occured")
 	}
 
-	id, err := dataaccess.GetIDFromValue(
+	id, err := database.GetIDFromValue(
 		db.Collection(userCollectionName), bson.M{
 			"username": userLogin.Username,
 			"password": userLogin.Password})
@@ -69,7 +69,7 @@ func GetWorkspaceCollection(db *mongo.Database, w http.ResponseWriter, r *http.R
 	contextLogger := log.WithFields(log.Fields{"action": "READ", "user": id})
 	contextLogger.Info("Getting project for User Workspace")
 
-	result, err := dataaccess.FindOneRecordWithProjection(
+	result, err := database.FindOneRecordWithProjection(
 		db.Collection(userCollectionName),
 		id, bson.D{{"_id", 0}, {"projects", 1}})
 
@@ -89,7 +89,7 @@ func GetEditorConfigurations(db *mongo.Database, w http.ResponseWriter, r *http.
 	contextLogger := log.WithFields(log.Fields{"action": "READ", "user": id})
 	contextLogger.Info("Getting saved editor configurations for user")
 
-	result, err := dataaccess.FindOneRecordWithProjection(
+	result, err := database.FindOneRecordWithProjection(
 		db.Collection(userCollectionName),
 		id, bson.D{{"_id", 0}, {"editorconfs", 1}})
 
@@ -109,7 +109,7 @@ func GetPersonaSkills(db *mongo.Database, w http.ResponseWriter, r *http.Request
 	contextLogger := log.WithFields(log.Fields{"action": "READ", "user": id})
 	contextLogger.Info("Retrieving Persona Skills")
 
-	result, err := dataaccess.FindOneRecordWithProjection(
+	result, err := database.FindOneRecordWithProjection(
 		db.Collection(userCollectionName),
 		id, bson.D{{"_id", 0}, {"skills", 1}})
 
@@ -154,7 +154,7 @@ func UserSubmission(db *mongo.Database, w http.ResponseWriter, r *http.Request) 
 		contextLogger.WithField("error", err).Error("An Error occured")
 	}
 
-	objectID, err := dataaccess.CreateUser(db.Collection(userCollectionName), userSignup)
+	objectID, err := database.CreateUser(db.Collection(userCollectionName), userSignup)
 	res := map[string]string{
 		"_id": objectID}
 
@@ -182,7 +182,7 @@ func NewProjectSubmission(db *mongo.Database, w http.ResponseWriter, r *http.Req
 	var newProject = users.Project{ID: oid}
 	err := json.NewDecoder(r.Body).Decode(&newProject)
 
-	success, err := dataaccess.CreateProject(
+	success, err := database.CreateProject(
 		db.Collection(userCollectionName),
 		newProject, id)
 
@@ -208,7 +208,7 @@ func NewEditorConfigSubmission(db *mongo.Database, w http.ResponseWriter, r *htt
 	var newEditorConfiguration = users.CodeEditorConfiguration{ID: oid}
 	err := json.NewDecoder(r.Body).Decode(&newEditorConfiguration)
 
-	success, err := dataaccess.CreateEditorConfiguration(
+	success, err := database.CreateEditorConfiguration(
 		db.Collection(userCollectionName),
 		newEditorConfiguration, id)
 

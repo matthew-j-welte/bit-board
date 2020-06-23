@@ -6,6 +6,7 @@ import LanguageCards from './LanguageCards/LanguageCards'
 
 export const LanguageSelectButton = (props) => (
   <SelectionCard 
+    activeTab={props.activeTab}  
     handler={props.selectionButtonClickHandler}
     title="SELECT A LANGUAGE"
     desc="BitBoard currently supports a number of coding languages, each with their own set of unique challenges - ranging from basic problem solving to more advanced architectural based projects"

@@ -6,9 +6,9 @@ import { LanguageSelectButton, LanguageSelectSection } from './JumbotronSections
 import { CustomizeEditorButton, CustomizeEditorSection } from './JumbotronSections/CustomizeEditorSection/CustomizeEditorSection'
 import { KeyboardShortcutButton, KeyboardShortcutSection } from './JumbotronSections/KeyboardShortcutSection/KeyboardShortcutSection'
 
-const LANGUAGE_TAB = "languageTab"
-const CUSTOMIZE_EDITOR_TAB = "customizeEditorTab"
-const KEYBOARD_TAB = "keyboardShortcutTab"
+const LANGUAGE_TAB = "SELECT A LANGUAGE"
+const CUSTOMIZE_EDITOR_TAB = "CUSTOMIZE YOUR EDITOR"
+const KEYBOARD_TAB = "VIEW KEYBOARD SHORTCUTS"
 
 const CodePageJumbotron = (props) => {
   const [activeTab, setActiveTab] = useState(null)
@@ -44,6 +44,7 @@ const CodePageJumbotron = (props) => {
   const sectionButtons = (
     <Card.Group style={{margin: "2em"}} itemsPerRow={3}>
       <LanguageSelectButton 
+        activeTab={activeTab}
         selectionButtonClickHandler={() => {
           const curState = activeTab === LANGUAGE_TAB ? null : LANGUAGE_TAB
           setActiveTab(
@@ -58,6 +59,7 @@ const CodePageJumbotron = (props) => {
         }} 
       />
       <CustomizeEditorButton
+        activeTab={activeTab}
         selectionButtonClickHandler={() => {
           props.stopNewLabelPulsing()
           setActiveTab(
@@ -66,6 +68,7 @@ const CodePageJumbotron = (props) => {
         }} 
       />
       <KeyboardShortcutButton
+        activeTab={activeTab}
         selectionButtonClickHandler={() => {
           props.stopNewLabelPulsing()
           setActiveTab(
