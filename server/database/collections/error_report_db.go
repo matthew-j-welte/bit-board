@@ -5,7 +5,6 @@ import (
 
 	"github.com/matthew-j-welte/bit-board/server/database"
 	"github.com/matthew-j-welte/bit-board/server/models/reports"
-	"github.com/matthew-j-welte/bit-board/server/models/resources"
 )
 
 const errorReportDB = "error-reports"
@@ -15,8 +14,8 @@ func CreateErrorReport(report reports.ErrorReport) (string, error) {
 	return createErrorReport(getCollection(resourceSuggestionDB), report)
 }
 
-func createErrorReport(collectionHelper database.CollectionHelper, resource resources.ResourceSuggestion) {
-	result, err := collectionHelper.InsertOne(context.Background(), resource)
+func createErrorReport(collectionHelper database.CollectionHelper, report reports.ErrorReport) (string, error) {
+	result, err := collectionHelper.InsertOne(context.Background(), report)
 	if err != nil {
 		return "", err
 	}

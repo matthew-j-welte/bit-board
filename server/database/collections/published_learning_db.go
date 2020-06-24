@@ -8,33 +8,46 @@ import (
 	"github.com/matthew-j-welte/bit-board/server/models/resources"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 const resourcesDB = "resources"
 
 // GetResources get all learning resources
-func GetResources(coll *mongo.Collection) (*mongo.Cursor, error) {
-	return coll.Find(context.Background(), bson.D{})
+func GetResources() ([]bson.M, error) {
+	return getResources(getCollection(resourcesDB))
 }
 
 // AddPostToResource adds a post to a learning resource
-func AddPostToResource(post resources.ResourcePost, resourceID string) (bool, error) {
-	addPost(getCollection(resourcesDB), post, resourceID)
+func AddPostToResource(post resources.ResourcePost, resourceID string) (string, error) {
+	return addPost(getCollection(resourcesDB), post, resourceID)
 }
 
-func addPost(collectionHelper database.CollectionHelper, post resources.ResourcePost, resourceID string) (bool, error) {
+func getResources(collectionHelper database.CollectionHelper) ([]bson.M, error) {
+	var resources []bson.M
+	cursor, err := collectionHelper.Find(context.Background(), bson.D{}, nil)
+	if err != nil {
+		return nil, err
+	}
+	resources, err = cursor.DecodeCursor(resources)
+	if err != nil {
+		return nil, err
+	}
+	return resources, nil
+}
+
+func addPost(collectionHelper database.CollectionHelper, post resources.ResourcePost, resourceID string) (string, error) {
+	// TODO: move this ?
 	resourceOID, err := primitive.ObjectIDFromHex(resourceID)
 	filter := bson.M{"_id": resourceOID}
 	projection := bson.D{{"$push", bson.D{{"posts", post}}}}
 
 	result, err := collectionHelper.UpdateOne(context.Background(), filter, projection)
 	if err != nil {
-		return false, err
+		return "", err
 	}
 
 	if collectionHelper.GetModifiedCount(result) == 0 {
-		return false, errors.New("Failed to add post to resource - No documents modified")
+		return "", errors.New("Failed to add post to resource - No documents modified")
 	}
-	return collectionHelper.GetUpsertedID(result), nil
+	return post.ID.Hex(), nil
 }

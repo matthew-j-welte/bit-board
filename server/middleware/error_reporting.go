@@ -28,7 +28,7 @@ func HandleErrorReport(db *mongo.Database, w http.ResponseWriter, r *http.Reques
 		contextLogger.WithField("error", err).Error("An Error occured")
 	}
 
-	objectID, err := collections.CreateErrorReport(db.Collection(errorReportCollection), errorReport)
+	objectID, err := collections.CreateErrorReport(errorReport)
 	res := map[string]string{
 		"_id": objectID}
 

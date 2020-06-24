@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -18,12 +19,12 @@ type DBHelper interface {
 // CollectionHelper wrapper around the mongo-driver Collection type
 type CollectionHelper interface {
 	FindOne(context.Context, interface{}) SingleResultHelper
+	Find(context.Context, interface{}, interface{}) (ManyResultsHelper, error)
 	InsertOne(context.Context, interface{}) (interface{}, error)
 	DeleteOne(ctx context.Context, filter interface{}) (int64, error)
 	GetInsertID(result interface{}) string
-	GetUpsertedID(result interface{}) string
 	GetModifiedCount(result interface{}) int64
-	UpdateOne(ctx context.Context, filter interface{}, projection interface{})
+	UpdateOne(ctx context.Context, filter interface{}, projection interface{}) (interface{}, error)
 }
 
 // SingleResultHelper wrapper around the mongo-driver SingleResult type
@@ -33,7 +34,7 @@ type SingleResultHelper interface {
 
 // SingleResultHelper wrapper around the mongo-driver SingleResult type
 type ManyResultsHelper interface {
-	GetIterations(v interface{}) interface{}
+	DecodeCursor(v []bson.M) ([]bson.M, error)
 }
 
 // InsertedRecordHelper wrapper around the mongo-driver InsertResult
@@ -51,9 +52,11 @@ type ClientHelper interface {
 type mongoClient struct {
 	dbClient *mongo.Client
 }
+
 type mongoDatabase struct {
 	db *mongo.Database
 }
+
 type mongoCollection struct {
 	dbCollection *mongo.Collection
 }
@@ -63,7 +66,7 @@ type mongoSingleResult struct {
 }
 
 type mongoManyResult struct {
-	dbManyResult *mongo.SingleResult
+	mongoCursor *mongo.Cursor
 }
 
 type mongoSession struct {
@@ -129,21 +132,45 @@ func (wrapper *mongoCollection) GetInsertID(result interface{}) string {
 	return insertID.Hex()
 }
 
-func (wrapper *mongoCollection) GetUpsertedID(result interface{}) string {
-	insertID := result.(primitive.ObjectID)
-	return insertID.Hex()
-}
-
 func (wrapper *mongoCollection) UpdateOne(ctx context.Context, filter interface{}, projection interface{}) (interface{}, error) {
 	return wrapper.dbCollection.UpdateOne(ctx, filter, projection)
 }
 
-func (result *mongoSingleResult) Decode(payload interface{}) error {
-	return result.dbSingleResult.Decode(payload)
+func (wrapper *mongoSingleResult) Decode(payload interface{}) error {
+	return wrapper.dbSingleResult.Decode(payload)
+}
+
+func (wrapper *mongoCollection) GetModifiedCount(result interface{}) int64 {
+	return result.(*mongo.UpdateResult).ModifiedCount
+}
+
+func (wrapper *mongoCollection) Find(ctx context.Context, filter interface{}, projection interface{}) (ManyResultsHelper, error) {
+	var cursor *mongo.Cursor
+	var err error
+
+	if projection != nil {
+		cursor, err = wrapper.dbCollection.Find(ctx, filter, projection.(*options.FindOptions))
+	} else {
+		cursor, err = wrapper.dbCollection.Find(ctx, filter)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+	return &mongoManyResult{mongoCursor: cursor}, nil
 }
 
 // Will have to figure out how to do this - decode using one interface ?
 // decode by looping through and using the interface on each iteration?
-func (result *mongoManyResult) GetIterations(payload interface{}) error {
-	return result.dbManyResult.Decode(payload)
+func (wrapper *mongoManyResult) DecodeCursor(payload []bson.M) ([]bson.M, error) {
+	defer wrapper.mongoCursor.Close(context.Background())
+	for wrapper.mongoCursor.Next(context.Background()) {
+		var result bson.M
+		err := wrapper.mongoCursor.Decode(&result)
+		if err != nil {
+			return nil, wrapper.mongoCursor.Err()
+		}
+		payload = append(payload, result)
+	}
+	return payload, wrapper.mongoCursor.Err()
 }

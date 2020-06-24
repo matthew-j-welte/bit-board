@@ -14,7 +14,7 @@ func CreateResourceSuggestion(resource resources.ResourceSuggestion) (string, er
 	return createResourceSuggestion(getCollection(resourceSuggestionDB), resource)
 }
 
-func createResourceSuggestion(collectionHelper database.CollectionHelper, resource resources.ResourceSuggestion) {
+func createResourceSuggestion(collectionHelper database.CollectionHelper, resource resources.ResourceSuggestion) (string, error) {
 	result, err := collectionHelper.InsertOne(context.Background(), resource)
 	if err != nil {
 		return "", err

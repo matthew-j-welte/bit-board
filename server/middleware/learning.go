@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
 	"time"
@@ -27,8 +26,7 @@ func GetLearningResources(db *mongo.Database, w http.ResponseWriter, r *http.Req
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.WriteHeader(http.StatusOK)
 	contextLogger := log.WithFields(log.Fields{"action": "READ"})
-
-	resources, err := getLearningResources(db.Collection(resourceCollectionName))
+	resources, err := collections.GetResources()
 	if err != nil {
 		contextLogger.WithField("error", err).Error("An error occured")
 		w.WriteHeader(http.StatusPartialContent)
@@ -52,9 +50,7 @@ func NewResourceSuggestion(db *mongo.Database, w http.ResponseWriter, r *http.Re
 	var resourceSuggestion = resources.ResourceSuggestion{Poster: oid}
 	err = json.NewDecoder(r.Body).Decode(&resourceSuggestion)
 
-	insertID, err := collections.CreateResourceSuggestion(
-		db.Collection(suggestedResourceCollectionName),
-		resourceSuggestion)
+	insertID, err := collections.CreateResourceSuggestion(resourceSuggestion)
 
 	if err != nil {
 		contextLogger.WithField("error", err).Error("Error when posting suggestion")
@@ -153,31 +149,32 @@ func NewPostOnResource(db *mongo.Database, w http.ResponseWriter, r *http.Reques
 		FullName:     fullname,
 		ProfileImage: imageURL}
 	contextLogger.Info("Attemting to add post to resource")
-	success, err := collections.AddProjectToResource(
-		db.Collection(resourceCollectionName), post, resourceID)
+	contextLogger.Info(post)
+	success, err := collections.AddPostToResource(post, resourceID)
 
 	if err != nil {
 		contextLogger.WithField("error", err).Error("Error when adding new post to resource")
 	}
 	contextLogger.WithField("success", success).Info("Successfully added post to resource")
+	contextLogger.Info(post)
 	json.NewEncoder(w).Encode(true)
 }
 
-func getLearningResources(coll *mongo.Collection) ([]bson.M, error) {
-	cur, err := collections.GetResources(coll)
-	defer cur.Close(context.Background())
-	if err != nil {
-		return nil, cur.Err()
-	}
+// func getLearningResources(coll *mongo.Collection) ([]bson.M, error) {
+// 	cur, err := collections.GetResources(coll)
+// 	defer cur.Close(context.Background())
+// 	if err != nil {
+// 		return nil, cur.Err()
+// 	}
 
-	var resources []bson.M
-	for cur.Next(context.Background()) {
-		var result bson.M
-		err := cur.Decode(&result)
-		if err != nil {
-			return resources, cur.Err()
-		}
-		resources = append(resources, result)
-	}
-	return resources, cur.Err()
-}
+// 	var resources []bson.M
+// 	for cur.Next(context.Background()) {
+// 		var result bson.M
+// 		err := cur.Decode(&result)
+// 		if err != nil {
+// 			return resources, cur.Err()
+// 		}
+// 		resources = append(resources, result)
+// 	}
+// 	return resources, cur.Err()
+// }
