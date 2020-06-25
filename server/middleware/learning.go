@@ -139,10 +139,8 @@ func NewPostOnResource(db *mongo.Database, w http.ResponseWriter, r *http.Reques
 
 	fullname := userInfo["fname"].(string) + " " + userInfo["lname"].(string)
 	imageURL := userInfo["image"].(string)
-	oid := primitive.NewObjectID()
 
 	var post = resources.ResourcePost{
-		ID:           oid,
 		UserID:       userOID,
 		Content:      body["content"],
 		Posted:       time.Now().Unix(),

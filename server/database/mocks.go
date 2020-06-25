@@ -2,49 +2,112 @@ package database
 
 import (
 	"context"
+
+	"github.com/stretchr/testify/mock"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
-var MockFindOneR1 SingleResultHelper
-var MockFindR1 ManyResultsHelper
-var MockFindR2 error
-var MockInsertOneR1 interface{}
-var MockInsertOneR2 error
-var MockDeleteOneR1 int64
-var MockDeleteOneR2 error
-var MockUpdateOneR1 interface{}
-var MockUpdateOneR2 error
-var MockGetInsertIDR1 string
-var MockGetGetModifiedCountR1 int64
-
-type mockCollectionHelper struct{}
-
-func (mockCollection mockCollectionHelper) FindOne(context.Context, interface{}) SingleResultHelper {
-	return MockFindOneR1
+type MockCollectionHelper struct {
+	mock.Mock
 }
 
-func (mockCollection mockCollectionHelper) Find(ctx context.Context, filter interface{}, projection interface{}) (ManyResultsHelper, error) {
-	return MockFindR1, MockFindR2
+type MockManyResultHelper struct {
+	mock.Mock
 }
 
-func (mockCollection mockCollectionHelper) InsertOne(context.Context, interface{}) (interface{}, error) {
-	return MockInsertOneR1, MockInsertOneR2
+type MockSingleResultHelper struct {
+	mock.Mock
 }
 
-func (mockCollection mockCollectionHelper) DeleteOne(ctx context.Context, filter interface{}) (int64, error) {
-	return MockDeleteOneR1, MockDeleteOneR2
+// // MockCollectionHelper mocks out the collection helper interface
+// var MockCollectionHelper CollectionHelper = mHelper{}
+
+// // MockManyResultHelper mocks out the many result helper
+// var MockManyResultHelper ManyResultsHelper = mockManyResultHelper{}
+
+// Collection Helper mocks
+
+func (m *MockCollectionHelper) FindOne(ctx context.Context, filter interface{}) SingleResultHelper {
+	args := m.Called(ctx, filter)
+	r1 := args.Get(0)
+	if r1 == nil {
+		return nil
+	}
+	return r1.(*MockSingleResultHelper)
 }
 
-func (mockCollection mockCollectionHelper) UpdateOne(ctx context.Context, filter interface{}, projection interface{}) (interface{}, error) {
-	return MockUpdateOneR1, MockUpdateOneR2
+func (m *MockCollectionHelper) Find(ctx context.Context, filter interface{}, projection interface{}) (ManyResultsHelper, error) {
+	args := m.Called(ctx, filter, projection)
+	r1 := args.Get(0)
+	r2 := args.Error(1)
+	if r1 == nil {
+		return nil, r2
+	}
+	return r1.(*MockManyResultHelper), r2
 }
 
-func (mockCollection mockCollectionHelper) GetInsertID(result interface{}) string {
-	return MockGetInsertIDR1
+func (m *MockCollectionHelper) InsertOne(ctx context.Context, payload interface{}) (interface{}, error) {
+	args := m.Called(ctx, payload)
+	return args.Get(0), args.Error(1)
 }
 
-func (mockCollection mockCollectionHelper) GetModifiedCount(result interface{}) int64 {
-	return MockGetGetModifiedCountR1
+func (m *MockCollectionHelper) DeleteOne(ctx context.Context, filter interface{}) (int64, error) {
+	args := m.Called(ctx, filter)
+	return args.Get(0).(int64), args.Error(1)
 }
 
-// MockCollectionHelper mocks out the collection helper interface
-var MockCollectionHelper CollectionHelper = mockCollectionHelper{}
+func (m *MockCollectionHelper) UpdateOne(ctx context.Context, filter interface{}, projection interface{}) (interface{}, error) {
+	args := m.Called(ctx, filter, projection)
+	return args.Get(0), args.Error(1)
+}
+
+func (m *MockCollectionHelper) GetInsertID(result interface{}) string {
+	args := m.Called(result)
+	return args.String(0)
+}
+
+func (m *MockCollectionHelper) GetModifiedCount(result interface{}) int64 {
+	args := m.Called(result)
+	return args.Get(0).(int64)
+}
+
+func (m *MockCollectionHelper) PushToArray(primaryID string, arrayName string, payload interface{}) (interface{}, error) {
+	args := m.Called(primaryID, arrayName, payload)
+	return args.Get(0), args.Error(1)
+}
+
+// CountAllRecords returns the amount of documents in a table
+func (m *MockCollectionHelper) CountAllRecords() (int64, error) {
+	args := m.Called()
+	return args.Get(0).(int64), args.Error(1)
+}
+
+// CountRecords returns the amount of documents in a table
+func (m *MockCollectionHelper) CountRecords(filter interface{}) (int64, error) {
+	args := m.Called(filter)
+	return args.Get(0).(int64), args.Error(1)
+}
+
+func (m *MockCollectionHelper) GetObjectIDFromFilter(identifier bson.M) (string, error) {
+	args := m.Called(identifier)
+	return args.String(0), args.Error(1)
+}
+
+// Single Result Mocks
+
+func (m *MockSingleResultHelper) Decode(result interface{}) error {
+	args := m.Called(result)
+	return args.Error(0)
+}
+
+// Many Result Mocks
+
+func (m *MockManyResultHelper) Decode() ([]bson.M, error) {
+	args := m.Called()
+	r1 := args.Get(0)
+	r2 := args.Error(1)
+	if r1 == nil {
+		return nil, r2
+	}
+	return r1.([]bson.M), r2
+}

@@ -4,12 +4,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// UserLogin info sent on user login
-type UserLogin struct {
-	Username string
-	Password string
-}
-
 // User the model used to receive user signup requests
 type User struct {
 	ID             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`

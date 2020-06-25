@@ -54,6 +54,7 @@ github.com/matthew-j-welte/bit-board v0.0.0-20200521045910-f658f1b935ee h1:/gKW/
 github.com/matthew-j-welte/bit-board v0.0.0-20200528064814-c6d2174531a1 h1:EKQWg5F81op+qaAoHGawe7Crt9xqaNA8lhhmdwY7jNI=
 github.com/matthew-j-welte/bit-board v0.0.0-20200618062121-88899e97248f h1:rkvgN9kq6cPJSJwsQowCtEqS1l5df1t2UDncBKWy28o=
 github.com/matthew-j-welte/bit-board v0.0.0-20200623021315-eb24ae2f559a h1:H4T+V3hwbwzXtP/ZnrCgJMCn2bpCap0ZwNwjCi8pdBc=
+github.com/matthew-j-welte/bit-board v0.0.0-20200624072045-a4033f799138 h1:vl6Am4smBBc2J8n3dcTFT3twdCygWIOfWNppBc1vpoY=
 github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe/go.mod h1:wL8QJuTMNUDYhXwkmfOly8iTdp5TEcJFWZD2D7SIkUc=
 github.com/pelletier/go-toml v1.4.0/go.mod h1:PN7xzY2wHTK0K9p34ErDQMlFxa51Fk0OUruD3k1mMwo=
 github.com/pkg/errors v0.8.0/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
@@ -73,6 +74,7 @@ github.com/spf13/pflag v1.0.3/go.mod h1:DYY7MBk1bdzusC3SYhjObp+wFpr4gzcvqqNjLnIn
 github.com/sqs/goreturns v0.0.0-20181028201513-538ac6014518 h1:iD+PFTQwKEmbwSdwfvP5ld2WEI/g7qbdhmHJ2ASfYGs=
 github.com/sqs/goreturns v0.0.0-20181028201513-538ac6014518/go.mod h1:CKI4AZ4XmGV240rTHfO0hfE83S6/a3/Q1siZJ/vXf7A=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
+github.com/stretchr/objx v0.1.1 h1:2vfRuCMp5sSVIDSqO8oNnWJq7mPa6KVP3iPIwFBuy8A=
 github.com/stretchr/objx v0.1.1/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/testify v1.2.2/go.mod h1:a8OnRcib4nhh0OaRAV+Yts87kKdq0PP7pXfy6kDkUVs=
 github.com/stretchr/testify v1.3.0 h1:TivCn/peBQ7UY8ooIcPgZFpTNSz0Q2U6UrFlUfqbe0Q=

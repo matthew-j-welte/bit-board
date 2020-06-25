@@ -8,6 +8,8 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+
+	"github.com/stretchr/testify/mock"
 )
 
 func GetDiscardLogger() *log.Logger {
@@ -41,4 +43,13 @@ func CatchOSExit(testName, osKey, osVal, expectedLog string) error {
 		return errors.New(errMsg)
 	}
 	return nil
+}
+
+// XArgs helper to get x amount of mock.Anything calls to avoid clogging unit tests with them
+func MockArgs(amt int) []interface{} {
+	args := []interface{}{}
+	for i := 0; i < amt; i++ {
+		args = append(args, mock.Anything)
+	}
+	return args
 }

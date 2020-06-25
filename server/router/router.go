@@ -9,6 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 
 	"github.com/gorilla/mux"
+	"github.com/matthew-j-welte/bit-board/server/database"
 	"github.com/matthew-j-welte/bit-board/server/middleware"
 )
 
@@ -23,8 +24,14 @@ type route struct {
 }
 
 func init() {
-	db = middleware.MongoDatabase()
 	log.SetOutput(os.Stdout)
+
+	log.Info("Testing Connection to Database...")
+	err := database.TestConnection()
+	if err != nil {
+		log.Fatal("Failed to connect to database - Terminating")
+	}
+	log.Info("Successfully Connected to Database.")
 }
 
 // Router main router for server

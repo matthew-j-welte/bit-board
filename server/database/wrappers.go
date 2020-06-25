@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -25,6 +26,10 @@ type CollectionHelper interface {
 	GetInsertID(result interface{}) string
 	GetModifiedCount(result interface{}) int64
 	UpdateOne(ctx context.Context, filter interface{}, projection interface{}) (interface{}, error)
+	PushToArray(primaryID string, arrayName string, payload interface{}) (interface{}, error)
+	CountRecords(filter interface{}) (int64, error)
+	CountAllRecords() (int64, error)
+	GetObjectIDFromFilter(identifier bson.M) (string, error)
 }
 
 // SingleResultHelper wrapper around the mongo-driver SingleResult type
@@ -32,14 +37,9 @@ type SingleResultHelper interface {
 	Decode(v interface{}) error
 }
 
-// SingleResultHelper wrapper around the mongo-driver SingleResult type
+// ManyResultsHelper wrapper around the mongo-driver Cursor type
 type ManyResultsHelper interface {
-	DecodeCursor(v []bson.M) ([]bson.M, error)
-}
-
-// InsertedRecordHelper wrapper around the mongo-driver InsertResult
-type InsertedRecordHelper interface {
-	Decode(v interface{}) error
+	Decode() ([]bson.M, error)
 }
 
 // ClientHelper wrapper around the mongo-driver client
@@ -97,9 +97,21 @@ func (wrapper *mongoClient) StartSession() (mongo.Session, error) {
 func (wrapper *mongoClient) Connect() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
-	connection := wrapper.dbClient.Connect(ctx)
-	wrapper.dbClient.Ping(ctx, nil)
-	return connection
+	err := wrapper.dbClient.Connect(ctx)
+	if err != nil {
+		return err
+	}
+	err = wrapper.dbClient.Ping(ctx, nil)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// TestConnection checks if we can connect to our mongo URI
+func TestConnection() error {
+	client, _ := NewClient()
+	return client.Connect()
 }
 
 func (wrapper *mongoDatabase) Collection(colName string) CollectionHelper {
@@ -110,6 +122,16 @@ func (wrapper *mongoDatabase) Collection(colName string) CollectionHelper {
 func (wrapper *mongoDatabase) Client() ClientHelper {
 	client := wrapper.db.Client()
 	return &mongoClient{dbClient: client}
+}
+
+// CountAllRecords returns the amount of documents in a table
+func (wrapper *mongoCollection) CountAllRecords() (int64, error) {
+	return wrapper.CountRecords(bson.M{})
+}
+
+// CountRecords returns the amount of documents in a table
+func (wrapper *mongoCollection) CountRecords(filter interface{}) (int64, error) {
+	return wrapper.dbCollection.CountDocuments(context.Background(), filter)
 }
 
 func (wrapper *mongoCollection) FindOne(ctx context.Context, filter interface{}) SingleResultHelper {
@@ -144,6 +166,20 @@ func (wrapper *mongoCollection) GetModifiedCount(result interface{}) int64 {
 	return result.(*mongo.UpdateResult).ModifiedCount
 }
 
+func (wrapper *mongoCollection) GetObjectIDFromFilter(identifier bson.M) (string, error) {
+	var result bson.M
+	wrapper.dbCollection.FindOne(
+		context.Background(),
+		identifier,
+		options.FindOne().SetProjection(bson.D{{"_id", 1}}),
+	).Decode(&result)
+	if oid, ok := result["_id"]; ok {
+		return oid.(primitive.ObjectID).Hex(), nil
+	}
+
+	return "", errors.New("Could not retrieve document ID")
+}
+
 func (wrapper *mongoCollection) Find(ctx context.Context, filter interface{}, projection interface{}) (ManyResultsHelper, error) {
 	var cursor *mongo.Cursor
 	var err error
@@ -160,9 +196,20 @@ func (wrapper *mongoCollection) Find(ctx context.Context, filter interface{}, pr
 	return &mongoManyResult{mongoCursor: cursor}, nil
 }
 
-// Will have to figure out how to do this - decode using one interface ?
-// decode by looping through and using the interface on each iteration?
-func (wrapper *mongoManyResult) DecodeCursor(payload []bson.M) ([]bson.M, error) {
+// CreateSubResource creates a new sub resource on a document
+func (wrapper *mongoCollection) PushToArray(primaryID string, arrayName string, payload interface{}) (interface{}, error) {
+	documentOID, err := primitive.ObjectIDFromHex(primaryID)
+	if err != nil {
+		return nil, err
+	}
+
+	filter := bson.M{"_id": documentOID}
+	projection := bson.D{{"$push", bson.D{{arrayName, payload}}}}
+	return wrapper.UpdateOne(context.Background(), filter, projection)
+}
+
+func (wrapper *mongoManyResult) Decode() ([]bson.M, error) {
+	var payload []bson.M
 	defer wrapper.mongoCursor.Close(context.Background())
 	for wrapper.mongoCursor.Next(context.Background()) {
 		var result bson.M

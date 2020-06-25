@@ -19,7 +19,7 @@ func GetResources() ([]bson.M, error) {
 
 // AddPostToResource adds a post to a learning resource
 func AddPostToResource(post resources.ResourcePost, resourceID string) (string, error) {
-	return addPost(getCollection(resourcesDB), post, resourceID)
+	return addPostToResource(getCollection(resourcesDB), post, resourceID)
 }
 
 func getResources(collectionHelper database.CollectionHelper) ([]bson.M, error) {
@@ -28,20 +28,24 @@ func getResources(collectionHelper database.CollectionHelper) ([]bson.M, error) 
 	if err != nil {
 		return nil, err
 	}
-	resources, err = cursor.DecodeCursor(resources)
+
+	if cursor == nil {
+		return nil, errors.New("No cursor returned from the Find query")
+	}
+
+	resources, err = cursor.Decode()
 	if err != nil {
 		return nil, err
 	}
 	return resources, nil
 }
 
-func addPost(collectionHelper database.CollectionHelper, post resources.ResourcePost, resourceID string) (string, error) {
-	// TODO: move this ?
-	resourceOID, err := primitive.ObjectIDFromHex(resourceID)
-	filter := bson.M{"_id": resourceOID}
-	projection := bson.D{{"$push", bson.D{{"posts", post}}}}
+func addPostToResource(collectionHelper database.CollectionHelper, post resources.ResourcePost, resourceID string) (string, error) {
+	if post.ID == primitive.NilObjectID {
+		post.ID = primitive.NewObjectID()
+	}
 
-	result, err := collectionHelper.UpdateOne(context.Background(), filter, projection)
+	result, err := collectionHelper.PushToArray(resourceID, "posts", post)
 	if err != nil {
 		return "", err
 	}
