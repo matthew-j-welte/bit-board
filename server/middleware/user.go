@@ -8,10 +8,8 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/gorilla/mux"
-	"github.com/matthew-j-welte/bit-board/server/database"
 	"github.com/matthew-j-welte/bit-board/server/database/collections"
 	"github.com/matthew-j-welte/bit-board/server/models/users"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -58,14 +56,11 @@ func GetEditorConfigurations(db *mongo.Database, w http.ResponseWriter, r *http.
 	contextLogger = contextLogger.WithField("user", id)
 	contextLogger.Info("Getting saved editor configurations for user")
 
-	result, err := database.FindOneRecordWithProjection(
-		db.Collection(userCollectionName),
-		id, bson.D{{"_id", 0}, {"editorconfs", 1}})
-
+	result, err := collections.GetEditorConfigurations(id)
 	if err != nil {
 		contextLogger.WithField("error", err).Error("Error when retrieving editor configurations")
 	}
-	json.NewEncoder(w).Encode(result["editorconfs"])
+	json.NewEncoder(w).Encode(result)
 }
 
 // GetPersonaSkills collects the persona skill info
@@ -77,15 +72,11 @@ func GetPersonaSkills(db *mongo.Database, w http.ResponseWriter, r *http.Request
 	contextLogger = contextLogger.WithField("user", id)
 	contextLogger.Info("Retrieving Persona Skills")
 
-	result, err := database.FindOneRecordWithProjection(
-		db.Collection(userCollectionName),
-		id, bson.D{{"_id", 0}, {"skills", 1}})
-
+	result, err := collections.GetUserSkills(id)
 	if err != nil {
 		contextLogger.WithField("error", err).Error("Error when retrieving skills")
 	}
-
-	json.NewEncoder(w).Encode(result["skills"])
+	json.NewEncoder(w).Encode(result)
 }
 
 // PostCodeSubmission accepts code and runs it
@@ -109,25 +100,19 @@ func UserSubmission(db *mongo.Database, w http.ResponseWriter, r *http.Request) 
 	contextLogger := RouteSetup(w, r)
 	contextLogger.Info("Creating a new user")
 
-	var userSignup = users.User{}
-	err := json.NewDecoder(r.Body).Decode(&userSignup)
+	var user = users.User{}
+	err := json.NewDecoder(r.Body).Decode(&user)
 
-	contextLogger.Info(userSignup)
 	if err != nil {
 		contextLogger.WithField("error", err).Error("An Error occured")
 	}
 
-	objectID, err := collections.CreateUser(userSignup)
-	res := map[string]string{
-		"_id": objectID}
-
+	insertID, err := collections.CreateUser(user)
 	if err != nil {
 		contextLogger.WithField("error", err).Error("An Error occured")
-		res["error"] = err.Error()
-	} else {
-		contextLogger.WithField("user", objectID).Info("New user created")
 	}
-	json.NewEncoder(w).Encode(res)
+	contextLogger.WithField("user", insertID).Info("New user created")
+	json.NewEncoder(w).Encode(insertID)
 }
 
 // NewEditorConfigSubmission creates a new editor configuration for a user

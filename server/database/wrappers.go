@@ -30,6 +30,7 @@ type CollectionHelper interface {
 	CountRecords(filter interface{}) (int64, error)
 	CountAllRecords() (int64, error)
 	GetObjectIDFromFilter(identifier bson.M) (string, error)
+	GetSubArray(primaryID string, arrayName string) (interface{}, error)
 }
 
 // SingleResultHelper wrapper around the mongo-driver SingleResult type
@@ -196,7 +197,20 @@ func (wrapper *mongoCollection) Find(ctx context.Context, filter interface{}, pr
 	return &mongoManyResult{mongoCursor: cursor}, nil
 }
 
-// CreateSubResource creates a new sub resource on a document
+func (wrapper *mongoCollection) GetSubArray(primaryID string, arrayName string) (interface{}, error) {
+	documentOID, err := primitive.ObjectIDFromHex(primaryID)
+	if err != nil {
+		return nil, err
+	}
+	var result bson.M
+	filter := bson.M{"_id": documentOID}
+	projection := bson.D{{"_id", 0}, {arrayName, 1}}
+	options := options.FindOne().SetProjection(projection)
+
+	wrapper.dbCollection.FindOne(context.Background(), filter, options).Decode(&result)
+	return result[arrayName], nil
+}
+
 func (wrapper *mongoCollection) PushToArray(primaryID string, arrayName string, payload interface{}) (interface{}, error) {
 	documentOID, err := primitive.ObjectIDFromHex(primaryID)
 	if err != nil {

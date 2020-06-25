@@ -22,14 +22,24 @@ func CreateUser(user users.User) (string, error) {
 	return createUser(getCollection(userDB), user)
 }
 
-// CreateUser creates a new user in the database
+// GetUserID gets the users ID based on a subsection of the user model
 func GetUserID(user users.User) (string, error) {
 	return getUserID(getCollection(userDB), user)
+}
+
+// GetEditorConfigurations retrieve all saved editor configurations for a user
+func GetEditorConfigurations(userID string) (interface{}, error) {
+	return getEditorConfigurations(getCollection(userDB), userID)
 }
 
 // CreateEditorConfiguration creates a new editor configuration for a user
 func CreateEditorConfiguration(editorConfig users.CodeEditorConfiguration, documentID string) (string, error) {
 	return addEditorConfigurationToUser(getCollection(userDB), editorConfig, documentID)
+}
+
+// GetUserSkills retrieve all saved editor configurations for a user
+func GetUserSkills(userID string) (interface{}, error) {
+	return getUserSkills(getCollection(userDB), userID)
 }
 
 func countUsers(collectionHelper database.CollectionHelper) (int64, error) {
@@ -50,6 +60,14 @@ func getUserID(collectionHelper database.CollectionHelper, user users.User) (str
 			"username": user.Username,
 			"password": user.Password},
 	)
+}
+
+func getEditorConfigurations(collectionHelper database.CollectionHelper, userID string) (interface{}, error) {
+	return collectionHelper.GetSubArray(userID, "editorconfs")
+}
+
+func getUserSkills(collectionHelper database.CollectionHelper, userID string) (interface{}, error) {
+	return collectionHelper.GetSubArray(userID, "skills")
 }
 
 func addEditorConfigurationToUser(collectionHelper database.CollectionHelper, editorConf users.CodeEditorConfiguration, documentID string) (string, error) {

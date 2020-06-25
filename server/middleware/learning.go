@@ -21,15 +21,10 @@ const suggestedResourceCollectionName = "suggested-resources"
 
 // GetLearningResources collects the persona skill info
 func GetLearningResources(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-	w.WriteHeader(http.StatusOK)
-	contextLogger := log.WithFields(log.Fields{"action": "READ"})
+	contextLogger := RouteSetup(w, r)
 	resources, err := collections.GetResources()
 	if err != nil {
 		contextLogger.WithField("error", err).Error("An error occured")
-		w.WriteHeader(http.StatusPartialContent)
 	}
 	contextLogger.WithField("retrieved", len(resources)).Info("Successfully retrived resources")
 	json.NewEncoder(w).Encode(resources)
@@ -37,21 +32,16 @@ func GetLearningResources(db *mongo.Database, w http.ResponseWriter, r *http.Req
 
 // NewResourceSuggestion creates a new suggestion for a learning resource
 func NewResourceSuggestion(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "POST")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	contextLogger := RouteSetup(w, r)
 	params := mux.Vars(r)
-	id := params["userId"]
-	contextLogger := log.WithFields(log.Fields{"action": "CREATE", "user": id})
+	userID := params["userId"]
+	contextLogger = contextLogger.WithField("user", userID)
 	contextLogger.Info("Creating new resource suggestion")
 
-	oid, err := primitive.ObjectIDFromHex(id)
-	var resourceSuggestion = resources.ResourceSuggestion{Poster: oid}
-	err = json.NewDecoder(r.Body).Decode(&resourceSuggestion)
+	var resourceSuggestion = resources.ResourceSuggestion{}
+	err := json.NewDecoder(r.Body).Decode(&resourceSuggestion)
 
-	insertID, err := collections.CreateResourceSuggestion(resourceSuggestion)
-
+	insertID, err := collections.CreateResourceSuggestion(resourceSuggestion, userID)
 	if err != nil {
 		contextLogger.WithField("error", err).Error("Error when posting suggestion")
 	}
@@ -61,14 +51,11 @@ func NewResourceSuggestion(db *mongo.Database, w http.ResponseWriter, r *http.Re
 
 // IncrementResourceValue incremements the views associated with a resource
 func IncrementResourceValue(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "POST")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	contextLogger := RouteSetup(w, r)
 	params := mux.Vars(r)
 	id := params["id"]
 	field := params["field"]
-	contextLogger := log.WithFields(log.Fields{"action": "INCREMENT", "field": field, "resource": id})
+	contextLogger = contextLogger.WithFields(log.Fields{"field": field, "resource": id})
 	contextLogger.Info("Incrementing Value")
 
 	updateID, err := database.IncrementField(db.Collection(resourceCollectionName), id, field)
@@ -81,10 +68,7 @@ func IncrementResourceValue(db *mongo.Database, w http.ResponseWriter, r *http.R
 
 // IncrementResourcePostValue incremements the views associated with a resource
 func IncrementResourcePostValue(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	contextLogger := RouteSetup(w, r)
 	params := mux.Vars(r)
 	resourceID := params["id"]
 	postID := params["postID"]
@@ -95,8 +79,11 @@ func IncrementResourcePostValue(db *mongo.Database, w http.ResponseWriter, r *ht
 		incrementValue = -1
 	}
 
-	contextLogger := log.WithFields(log.Fields{
-		"action": action, "field": field, "resource": resourceID, "postID": postID})
+	contextLogger = contextLogger.WithFields(log.Fields{
+		"field":    field,
+		"resource": resourceID,
+		"postID":   postID,
+	})
 
 	contextLogger.Info("Incrementing Value on Resource Post")
 	updateID, err := database.IncrementFieldInObjectArray(
@@ -117,10 +104,7 @@ func IncrementResourcePostValue(db *mongo.Database, w http.ResponseWriter, r *ht
 
 // NewPostOnResource adds a post to a learning resource
 func NewPostOnResource(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "POST")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	contextLogger := RouteSetup(w, r)
 	params := mux.Vars(r)
 
 	resourceID := params["id"]
@@ -128,7 +112,7 @@ func NewPostOnResource(db *mongo.Database, w http.ResponseWriter, r *http.Reques
 	json.NewDecoder(r.Body).Decode(&body)
 	userID := body["userID"]
 	userOID, err := primitive.ObjectIDFromHex(userID)
-	contextLogger := log.WithFields(log.Fields{"action": "NEW-RESOURCE-POST", "submittedBy": userID, "resource": resourceID})
+	contextLogger = contextLogger.WithFields(log.Fields{"submittedBy": userID, "resource": resourceID})
 	if err != nil {
 		contextLogger.WithField("error", err).Error("Error when decoding body")
 	}
@@ -147,7 +131,6 @@ func NewPostOnResource(db *mongo.Database, w http.ResponseWriter, r *http.Reques
 		FullName:     fullname,
 		ProfileImage: imageURL}
 	contextLogger.Info("Attemting to add post to resource")
-	contextLogger.Info(post)
 	success, err := collections.AddPostToResource(post, resourceID)
 
 	if err != nil {
@@ -157,22 +140,3 @@ func NewPostOnResource(db *mongo.Database, w http.ResponseWriter, r *http.Reques
 	contextLogger.Info(post)
 	json.NewEncoder(w).Encode(true)
 }
-
-// func getLearningResources(coll *mongo.Collection) ([]bson.M, error) {
-// 	cur, err := collections.GetResources(coll)
-// 	defer cur.Close(context.Background())
-// 	if err != nil {
-// 		return nil, cur.Err()
-// 	}
-
-// 	var resources []bson.M
-// 	for cur.Next(context.Background()) {
-// 		var result bson.M
-// 		err := cur.Decode(&result)
-// 		if err != nil {
-// 			return resources, cur.Err()
-// 		}
-// 		resources = append(resources, result)
-// 	}
-// 	return resources, cur.Err()
-// }

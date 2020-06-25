@@ -71,6 +71,11 @@ func (m *MockCollectionHelper) GetModifiedCount(result interface{}) int64 {
 	return args.Get(0).(int64)
 }
 
+func (m *MockCollectionHelper) GetSubArray(primaryID string, arrayName string) (interface{}, error) {
+	args := m.Called(primaryID, arrayName)
+	return args.Get(0), args.Error(1)
+}
+
 func (m *MockCollectionHelper) PushToArray(primaryID string, arrayName string, payload interface{}) (interface{}, error) {
 	args := m.Called(primaryID, arrayName, payload)
 	return args.Get(0), args.Error(1)
