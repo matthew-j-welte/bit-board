@@ -1,10 +1,13 @@
 package users
 
-import "github.com/matthew-j-welte/bit-board/server/models/common"
+import (
+	"github.com/matthew-j-welte/bit-board/server/models/common"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 // UserSkill a skill for a certain user
 type UserSkill struct {
-	common.UID
+	ID       primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
 	Skill    common.Skill
 	Level    int
 	Percent  int

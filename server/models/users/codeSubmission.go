@@ -1,9 +1,11 @@
 package users
 
-import "github.com/matthew-j-welte/bit-board/server/models/common"
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 // Submission represents a code submission
 type Submission struct {
-	common.UID
+	ID   primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
 	Code map[string]string
 }

@@ -12,14 +12,13 @@ import (
 	"github.com/matthew-j-welte/bit-board/server/database/collections"
 	"github.com/matthew-j-welte/bit-board/server/models/resources"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 const resourceCollectionName = "resources"
 const suggestedResourceCollectionName = "suggested-resources"
 
 // GetLearningResources collects the persona skill info
-func GetLearningResources(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
+func GetLearningResources(w http.ResponseWriter, r *http.Request) {
 	contextLogger := RouteSetup(w, r)
 	resources, err := collections.GetResources()
 	if err != nil {
@@ -30,7 +29,7 @@ func GetLearningResources(db *mongo.Database, w http.ResponseWriter, r *http.Req
 }
 
 // NewResourceSuggestion creates a new suggestion for a learning resource
-func NewResourceSuggestion(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
+func NewResourceSuggestion(w http.ResponseWriter, r *http.Request) {
 	contextLogger := RouteSetup(w, r)
 	params := mux.Vars(r)
 	userID := params["userId"]
@@ -49,7 +48,7 @@ func NewResourceSuggestion(db *mongo.Database, w http.ResponseWriter, r *http.Re
 }
 
 // HandleResourceView incremements the views associated with a resource
-func HandleResourceView(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
+func HandleResourceView(w http.ResponseWriter, r *http.Request) {
 	contextLogger := RouteSetup(w, r)
 	params := mux.Vars(r)
 	id := params["id"]
@@ -66,7 +65,7 @@ func HandleResourceView(db *mongo.Database, w http.ResponseWriter, r *http.Reque
 }
 
 // HandleResourcePostActionByUser handles a post on a resource being interacted with by a user
-func HandleResourcePostActionByUser(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
+func HandleResourcePostActionByUser(w http.ResponseWriter, r *http.Request) {
 	contextLogger := RouteSetup(w, r)
 	params := mux.Vars(r)
 	resourceID := params["id"]
@@ -83,7 +82,7 @@ func HandleResourcePostActionByUser(db *mongo.Database, w http.ResponseWriter, r
 	if err != nil {
 		contextLogger.WithField("error", err).Error("Error when incrementing value")
 	}
-	contextLogger.WithField("currentValue", currentCount).Info("Successfully handled resource view")
+	contextLogger.WithField("currentValue", currentCount).Info("Successfully handled value increment")
 	json.NewEncoder(w).Encode(true)
 }
 
@@ -104,7 +103,7 @@ func resourceFieldIncrementDecider(action string, fieldName string, resourceID s
 }
 
 // NewPostOnResource adds a post to a learning resource
-func NewPostOnResource(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
+func NewPostOnResource(w http.ResponseWriter, r *http.Request) {
 	contextLogger := RouteSetup(w, r)
 	params := mux.Vars(r)
 

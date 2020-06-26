@@ -22,13 +22,3 @@ type User struct {
 	YearsWorking   int    `json:"yearsWorking,omitempty,string"`
 	Image          string `bson:"image"`
 }
-
-// // User the user model
-// type User struct {
-// 	common.UID
-// 	Name            string
-// 	PersonaLvl      int          `json:"persona_lvl"`
-// 	CodeSubmissions []Submission `json:"codeSubmissions"`
-// 	Skills          []UserSkill
-// 	Projects        []Project
-// }

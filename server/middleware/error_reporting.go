@@ -8,13 +8,12 @@ import (
 
 	"github.com/matthew-j-welte/bit-board/server/database/collections"
 	"github.com/matthew-j-welte/bit-board/server/models/reports"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 const errorReportCollection = "error-reports"
 
 // HandleErrorReport handles an error report submission
-func HandleErrorReport(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
+func HandleErrorReport(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST")

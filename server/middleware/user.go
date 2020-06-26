@@ -10,13 +10,12 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/matthew-j-welte/bit-board/server/database/collections"
 	"github.com/matthew-j-welte/bit-board/server/models/users"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 const userCollectionName = "users"
 
 // GetUserCount get the current signed up user count
-func GetUserCount(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
+func GetUserCount(w http.ResponseWriter, r *http.Request) {
 	contextLogger := RouteSetup(w, r)
 	contextLogger.Info("Counting available users")
 
@@ -29,7 +28,7 @@ func GetUserCount(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
 }
 
 // GetUserID get the current signed up user count
-func GetUserID(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
+func GetUserID(w http.ResponseWriter, r *http.Request) {
 	contextLogger := RouteSetup(w, r)
 	contextLogger.Info("Retrieving User ID")
 
@@ -48,7 +47,7 @@ func GetUserID(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
 }
 
 // GetEditorConfigurations get all code editor confs for a user
-func GetEditorConfigurations(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
+func GetEditorConfigurations(w http.ResponseWriter, r *http.Request) {
 	contextLogger := RouteSetup(w, r)
 
 	params := mux.Vars(r)
@@ -64,7 +63,7 @@ func GetEditorConfigurations(db *mongo.Database, w http.ResponseWriter, r *http.
 }
 
 // GetPersonaSkills collects the persona skill info
-func GetPersonaSkills(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
+func GetPersonaSkills(w http.ResponseWriter, r *http.Request) {
 	contextLogger := RouteSetup(w, r)
 
 	params := mux.Vars(r)
@@ -80,7 +79,7 @@ func GetPersonaSkills(db *mongo.Database, w http.ResponseWriter, r *http.Request
 }
 
 // PostCodeSubmission accepts code and runs it
-func PostCodeSubmission(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
+func PostCodeSubmission(w http.ResponseWriter, r *http.Request) {
 	contextLogger := RouteSetup(w, r)
 
 	params := mux.Vars(r)
@@ -96,7 +95,7 @@ func PostCodeSubmission(db *mongo.Database, w http.ResponseWriter, r *http.Reque
 }
 
 // UserSubmission creates a new user
-func UserSubmission(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
+func UserSubmission(w http.ResponseWriter, r *http.Request) {
 	contextLogger := RouteSetup(w, r)
 	contextLogger.Info("Creating a new user")
 
@@ -116,7 +115,7 @@ func UserSubmission(db *mongo.Database, w http.ResponseWriter, r *http.Request) 
 }
 
 // NewEditorConfigSubmission creates a new editor configuration for a user
-func NewEditorConfigSubmission(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
+func NewEditorConfigSubmission(w http.ResponseWriter, r *http.Request) {
 	contextLogger := RouteSetup(w, r)
 
 	params := mux.Vars(r)

@@ -16,7 +16,7 @@ import (
 var db *mongo.Database
 var ctx context.Context
 
-type handler func(*mongo.Database, http.ResponseWriter, *http.Request)
+type handler func(http.ResponseWriter, *http.Request)
 type route struct {
 	URI         string
 	RESTMethods []string
@@ -128,6 +128,6 @@ func handleRoute(router *mux.Router, routeInfo route) {
 	router.HandleFunc(
 		routeInfo.URI,
 		func(w http.ResponseWriter, r *http.Request) {
-			routeInfo.Handler(db, w, r)
+			routeInfo.Handler(w, r)
 		}).Methods(routeInfo.RESTMethods...)
 }

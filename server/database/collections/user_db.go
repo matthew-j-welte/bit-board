@@ -73,11 +73,15 @@ func getUserSummary(collectionHelper database.CollectionHelper, userID string) (
 	if err != nil {
 		return users.User{}, err
 	}
-	collectionHelper.FindOne(
+	err = collectionHelper.FindOne(
 		context.Background(),
 		bson.M{"_id": userOID},
 		bson.M{"_id": 0, "fname": 1, "lname": 1, "image": 1},
 	).Decode(usrSummary)
+	if err != nil {
+		return users.User{}, err
+	}
+
 	return users.User{
 		FName: usrSummary["fname"].(string),
 		LName: usrSummary["lname"].(string),

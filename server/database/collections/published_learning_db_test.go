@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/matthew-j-welte/bit-board/server/database"
+	"github.com/matthew-j-welte/bit-board/server/database/mocks"
 	"github.com/matthew-j-welte/bit-board/server/models/resources"
 	"github.com/matthew-j-welte/bit-board/server/testutils"
 	"go.mongodb.org/mongo-driver/bson"
@@ -17,8 +17,8 @@ import (
 
 func TestGetResourcesSuccess(t *testing.T) {
 	expected := []bson.M{{"test": 1}, {"test": 2}}
-	mockCollectionHelper := new(database.MockCollectionHelper)
-	mockManyResultHelper := new(database.MockManyResultHelper)
+	mockCollectionHelper := new(mocks.CollectionHelper)
+	mockManyResultHelper := new(mocks.ManyResultsHelper)
 
 	mockManyResultHelper.On("Decode").Return(expected, nil)
 	mockCollectionHelper.On("Find", testutils.MockArgs(3)...).Return(mockManyResultHelper, nil)
@@ -29,7 +29,7 @@ func TestGetResourcesSuccess(t *testing.T) {
 }
 
 func TestGetResourcesFailure(t *testing.T) {
-	mockCollectionHelper := new(database.MockCollectionHelper)
+	mockCollectionHelper := new(mocks.CollectionHelper)
 
 	mockCollectionHelper.On("Find", testutils.MockArgs(3)...).Return(nil, errors.New("Some Error"))
 
@@ -39,7 +39,7 @@ func TestGetResourcesFailure(t *testing.T) {
 }
 
 func TestGetResourcesWithNilCursor(t *testing.T) {
-	mockCollectionHelper := new(database.MockCollectionHelper)
+	mockCollectionHelper := new(mocks.CollectionHelper)
 
 	mockCollectionHelper.On("Find", testutils.MockArgs(3)...).Return(nil, nil)
 
@@ -49,11 +49,12 @@ func TestGetResourcesWithNilCursor(t *testing.T) {
 }
 
 // addPostToResource tests
+
 func TestAddPostWithObjectID(t *testing.T) {
 	var modifiedCount int64 = 1
 	postID := primitive.NewObjectID()
 	resourceIDHex := primitive.NewObjectID().Hex()
-	mockCollectionHelper := new(database.MockCollectionHelper)
+	mockCollectionHelper := new(mocks.CollectionHelper)
 
 	mockCollectionHelper.On("PushToArray", testutils.MockArgs(3)...).Return(nil, nil)
 	mockCollectionHelper.On("GetModifiedCount", testutils.MockArgs(1)...).Return(modifiedCount)
@@ -66,7 +67,7 @@ func TestAddPostWithObjectID(t *testing.T) {
 func TestAddPostWithoutObjectID(t *testing.T) {
 	var modifiedCount int64 = 1
 	resourceIDHex := primitive.NewObjectID().Hex()
-	mockCollectionHelper := new(database.MockCollectionHelper)
+	mockCollectionHelper := new(mocks.CollectionHelper)
 
 	mockCollectionHelper.On("PushToArray", testutils.MockArgs(3)...).Return(nil, nil)
 	mockCollectionHelper.On("GetModifiedCount", testutils.MockArgs(1)...).Return(modifiedCount)
@@ -78,7 +79,7 @@ func TestAddPostWithoutObjectID(t *testing.T) {
 
 func TestAddPostWithErrorOnUpdate(t *testing.T) {
 	resourceIDHex := primitive.NewObjectID().Hex()
-	mockCollectionHelper := new(database.MockCollectionHelper)
+	mockCollectionHelper := new(mocks.CollectionHelper)
 
 	mockCollectionHelper.On("PushToArray", testutils.MockArgs(3)...).Return(nil, errors.New("err"))
 
@@ -90,7 +91,7 @@ func TestAddPostWithErrorOnUpdate(t *testing.T) {
 func TestAddPostWithNoRecordsModified(t *testing.T) {
 	var modifiedCount int64 = 0
 	resourceIDHex := primitive.NewObjectID().Hex()
-	mockCollectionHelper := new(database.MockCollectionHelper)
+	mockCollectionHelper := new(mocks.CollectionHelper)
 
 	mockCollectionHelper.On("PushToArray", testutils.MockArgs(3)...).Return(nil, nil)
 	mockCollectionHelper.On("GetModifiedCount", testutils.MockArgs(1)...).Return(modifiedCount)
@@ -98,4 +99,36 @@ func TestAddPostWithNoRecordsModified(t *testing.T) {
 	res, err := addPostToResource(mockCollectionHelper, resources.ResourcePost{}, resourceIDHex)
 	assert.Equal(t, res, "")
 	assert.NotNil(t, err)
+}
+
+// Increment functions
+
+func TestIncrementFunctions(t *testing.T) {
+	mockCollectionHelper := new(mocks.CollectionHelper)
+	val := 1
+	mockCollectionHelper.On("IncrementField", testutils.MockArgs(2)...).Return(val, nil)
+	mockCollectionHelper.On("IncrementFieldInObjectArray", testutils.MockArgs(4)...).Return(val, nil)
+	mockCollectionHelper.On("DecrementFieldInObjectArray", testutils.MockArgs(4)...).Return(val, nil)
+	mockCollectionHelper.On("IncrementFieldInObjectArray", testutils.MockArgs(4)...).Return(val, nil)
+	mockCollectionHelper.On("DecrementFieldInObjectArray", testutils.MockArgs(4)...).Return(val, nil)
+
+	res, err := incrementResourceViews(mockCollectionHelper, "id")
+	assert.Equal(t, res, val)
+	assert.Nil(t, err)
+
+	res, err = incrementResourcePostLikeCount(mockCollectionHelper, "id", "id")
+	assert.Equal(t, res, val)
+	assert.Nil(t, err)
+
+	res, err = decrementResourcePostLikeCount(mockCollectionHelper, "id", "id")
+	assert.Equal(t, res, val)
+	assert.Nil(t, err)
+
+	res, err = incrementResourcePostReportCount(mockCollectionHelper, "id", "id")
+	assert.Equal(t, res, val)
+	assert.Nil(t, err)
+
+	res, err = decrementResourcePostReportCount(mockCollectionHelper, "id", "id")
+	assert.Equal(t, res, val)
+	assert.Nil(t, err)
 }
