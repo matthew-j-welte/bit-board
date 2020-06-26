@@ -2,16 +2,15 @@ package middleware
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"time"
 
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/matthew-j-welte/bit-board/server/database"
 	"github.com/matthew-j-welte/bit-board/server/database/collections"
 	"github.com/matthew-j-welte/bit-board/server/models/resources"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -49,57 +48,59 @@ func NewResourceSuggestion(db *mongo.Database, w http.ResponseWriter, r *http.Re
 	json.NewEncoder(w).Encode(insertID)
 }
 
-// IncrementResourceValue incremements the views associated with a resource
-func IncrementResourceValue(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
+// HandleResourceView incremements the views associated with a resource
+func HandleResourceView(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
 	contextLogger := RouteSetup(w, r)
 	params := mux.Vars(r)
 	id := params["id"]
 	field := params["field"]
 	contextLogger = contextLogger.WithFields(log.Fields{"field": field, "resource": id})
-	contextLogger.Info("Incrementing Value")
 
-	updateID, err := database.IncrementField(db.Collection(resourceCollectionName), id, field)
+	contextLogger.Info("Incrementing Value")
+	currentCount, err := collections.IncrementResourceViews(id)
 	if err != nil {
 		contextLogger.WithField("error", err).Error("Error when incrementing resource value")
 	}
-	contextLogger.WithField("updateID", updateID).Info("Successfully incremented resource value")
-	json.NewEncoder(w).Encode(true)
+	contextLogger.WithField("currentValue", currentCount).Info("Successfully handled resource view")
+	json.NewEncoder(w).Encode(err == nil)
 }
 
-// IncrementResourcePostValue incremements the views associated with a resource
-func IncrementResourcePostValue(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
+// HandleResourcePostActionByUser handles a post on a resource being interacted with by a user
+func HandleResourcePostActionByUser(db *mongo.Database, w http.ResponseWriter, r *http.Request) {
 	contextLogger := RouteSetup(w, r)
 	params := mux.Vars(r)
 	resourceID := params["id"]
 	postID := params["postID"]
 	field := params["field"]
 	action := params["action"]
-	incrementValue := 1
-	if action == "decrement" {
-		incrementValue = -1
-	}
-
 	contextLogger = contextLogger.WithFields(log.Fields{
 		"field":    field,
 		"resource": resourceID,
 		"postID":   postID,
 	})
-
 	contextLogger.Info("Incrementing Value on Resource Post")
-	updateID, err := database.IncrementFieldInObjectArray(
-		db.Collection(resourceCollectionName),
-		resourceID,
-		"posts",
-		postID,
-		field,
-		incrementValue,
-	)
-
+	currentCount, err := resourceFieldIncrementDecider(action, field, resourceID, postID)
 	if err != nil {
-		contextLogger.WithField("error", err).Error("Error when incrementing resource value")
+		contextLogger.WithField("error", err).Error("Error when incrementing value")
 	}
-	contextLogger.WithField("updateID", updateID).Info("Successfully incremented resource value")
+	contextLogger.WithField("currentValue", currentCount).Info("Successfully handled resource view")
 	json.NewEncoder(w).Encode(true)
+}
+
+func resourceFieldIncrementDecider(action string, fieldName string, resourceID string, postID string) (int, error) {
+	if fieldName == "reports" {
+		if action == "increment" {
+			return collections.IncrementResourcePostReportCount(resourceID, postID)
+		}
+		return collections.DecrementResourcePostReportCount(resourceID, postID)
+	}
+	if fieldName == "likes" {
+		if action == "increment" {
+			return collections.IncrementResourcePostLikeCount(resourceID, postID)
+		}
+		return collections.DecrementResourcePostLikeCount(resourceID, postID)
+	}
+	return 0, errors.New("Invalid value passed in - could not increment")
 }
 
 // NewPostOnResource adds a post to a learning resource
@@ -112,17 +113,12 @@ func NewPostOnResource(db *mongo.Database, w http.ResponseWriter, r *http.Reques
 	json.NewDecoder(r.Body).Decode(&body)
 	userID := body["userID"]
 	userOID, err := primitive.ObjectIDFromHex(userID)
-	contextLogger = contextLogger.WithFields(log.Fields{"submittedBy": userID, "resource": resourceID})
 	if err != nil {
 		contextLogger.WithField("error", err).Error("Error when decoding body")
 	}
-	userInfo, err := database.FindOneRecordWithProjection(
-		db.Collection(userCollectionName),
-		userID,
-		bson.D{{"_id", 0}, {"fname", 1}, {"lname", 1}, {"image", 1}})
-
-	fullname := userInfo["fname"].(string) + " " + userInfo["lname"].(string)
-	imageURL := userInfo["image"].(string)
+	userSummary, err := collections.GetUserSummary(userID)
+	fullname := userSummary.FName + " " + userSummary.LName
+	imageURL := userSummary.Image
 
 	var post = resources.ResourcePost{
 		UserID:       userOID,
@@ -131,12 +127,10 @@ func NewPostOnResource(db *mongo.Database, w http.ResponseWriter, r *http.Reques
 		FullName:     fullname,
 		ProfileImage: imageURL}
 	contextLogger.Info("Attemting to add post to resource")
-	success, err := collections.AddPostToResource(post, resourceID)
-
+	postID, err := collections.AddPostToResource(post, resourceID)
 	if err != nil {
 		contextLogger.WithField("error", err).Error("Error when adding new post to resource")
 	}
-	contextLogger.WithField("success", success).Info("Successfully added post to resource")
-	contextLogger.Info(post)
-	json.NewEncoder(w).Encode(true)
+	contextLogger.WithField("postID", postID).Info("Successfully added post to resource")
+	json.NewEncoder(w).Encode(postID)
 }

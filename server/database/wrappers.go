@@ -19,7 +19,7 @@ type DBHelper interface {
 
 // CollectionHelper wrapper around the mongo-driver Collection type
 type CollectionHelper interface {
-	FindOne(context.Context, interface{}) SingleResultHelper
+	FindOne(context.Context, interface{}, interface{}) SingleResultHelper
 	Find(context.Context, interface{}, interface{}) (ManyResultsHelper, error)
 	InsertOne(context.Context, interface{}) (interface{}, error)
 	DeleteOne(ctx context.Context, filter interface{}) (int64, error)
@@ -31,6 +31,12 @@ type CollectionHelper interface {
 	CountAllRecords() (int64, error)
 	GetObjectIDFromFilter(identifier bson.M) (string, error)
 	GetSubArray(primaryID string, arrayName string) (interface{}, error)
+	IncrementField(primaryID string, fieldName string) (int, error)
+	DecrementField(primaryID string, fieldName string) (int, error)
+	UpdateFieldCount(primaryID string, fieldName string, amount int) (int, error)
+	IncrementFieldInObjectArray(primaryID string, arrName string, arrayElementID string, arrayObjectField string) (int, error)
+	DecrementFieldInObjectArray(primaryID string, arrName string, arrayElementID string, arrayObjectField string) (int, error)
+	UpdateCountFieldInObjectArray(primaryID string, arrName string, arrayElementID string, arrayObjectField string, val int) (int, error)
 }
 
 // SingleResultHelper wrapper around the mongo-driver SingleResult type
@@ -135,8 +141,13 @@ func (wrapper *mongoCollection) CountRecords(filter interface{}) (int64, error) 
 	return wrapper.dbCollection.CountDocuments(context.Background(), filter)
 }
 
-func (wrapper *mongoCollection) FindOne(ctx context.Context, filter interface{}) SingleResultHelper {
-	singleResult := wrapper.dbCollection.FindOne(ctx, filter)
+func (wrapper *mongoCollection) FindOne(ctx context.Context, filter interface{}, opts interface{}) SingleResultHelper {
+	var singleResult *mongo.SingleResult
+	if opts != nil {
+		singleResult = wrapper.dbCollection.FindOne(ctx, filter, options.FindOne().SetProjection(opts))
+	} else {
+		singleResult = wrapper.dbCollection.FindOne(ctx, filter)
+	}
 	return &mongoSingleResult{dbSingleResult: singleResult}
 }
 
@@ -165,6 +176,87 @@ func (wrapper *mongoSingleResult) Decode(payload interface{}) error {
 
 func (wrapper *mongoCollection) GetModifiedCount(result interface{}) int64 {
 	return result.(*mongo.UpdateResult).ModifiedCount
+}
+
+// IncrementField increments a value on a document by one
+func (wrapper *mongoCollection) IncrementField(primaryID string, fieldName string) (int, error) {
+	return wrapper.UpdateFieldCount(primaryID, fieldName, 1)
+}
+
+// IncrementField decrements a value on a document by one
+func (wrapper *mongoCollection) DecrementField(primaryID string, fieldName string) (int, error) {
+	return wrapper.UpdateFieldCount(primaryID, fieldName, -1)
+}
+
+// UpdateFieldCount increment/decrements an int value in a document by value passed in
+func (wrapper *mongoCollection) UpdateFieldCount(primaryID string, fieldName string, val int) (int, error) {
+	objectID, err := primitive.ObjectIDFromHex(primaryID)
+	if err != nil {
+		return 0, err
+	}
+
+	filter := bson.M{"_id": objectID}
+	projection := bson.M{fieldName: val}
+	updateExpr := bson.M{"$inc": projection}
+	result := wrapper.updateAndReturnValue(filter, updateExpr, projection)
+	if result.Err() != nil {
+		return 0, result.Err()
+	}
+
+	document := bson.M{}
+	result.Decode(document)
+	updatedVal := int(document[fieldName].(int32)) + val
+	return updatedVal, nil
+}
+
+// UpdateCountFieldInObjectArray increments/decrements a value in a document's element inside an object array
+func (wrapper *mongoCollection) IncrementFieldInObjectArray(primaryID string, arrName string, arrayElementID string, arrayObjectField string) (int, error) {
+	return wrapper.UpdateCountFieldInObjectArray(primaryID, arrName, arrayElementID, arrayObjectField, 1)
+}
+
+// UpdateCountFieldInObjectArray increments/decrements a value in a document's element inside an object array
+func (wrapper *mongoCollection) DecrementFieldInObjectArray(primaryID string, arrName string, arrayElementID string, arrayObjectField string) (int, error) {
+	return wrapper.UpdateCountFieldInObjectArray(primaryID, arrName, arrayElementID, arrayObjectField, -1)
+}
+
+// UpdateCountFieldInObjectArray increments/decrements a value in a document's element inside an object array
+func (wrapper *mongoCollection) UpdateCountFieldInObjectArray(primaryID string, arrName string, arrayElementID string, arrayObjectField string, val int) (int, error) {
+	objectID, err := primitive.ObjectIDFromHex(primaryID)
+	if err != nil {
+		return 0, nil
+	}
+	arrObjectID, err := primitive.ObjectIDFromHex(arrayElementID)
+	if err != nil {
+		return 0, nil
+	}
+
+	filterExpr := bson.M{
+		"_id":            objectID,
+		arrName + "._id": arrObjectID,
+	}
+	projection := bson.M{
+		arrName + ".$." + arrayObjectField: val,
+	}
+	updateExpr := bson.M{"$inc": projection}
+
+	result := wrapper.updateAndReturnValue(filterExpr, updateExpr, projection)
+	if result.Err() != nil {
+		return 0, result.Err()
+	}
+	document := bson.M{}
+	result.Decode(document)
+	updatedVal := int(document[arrName].(bson.A)[0].(bson.M)[arrayObjectField].(int32)) + val
+	return updatedVal, nil
+}
+
+func (wrapper *mongoCollection) updateAndReturnValue(filter bson.M, updateExpr bson.M, returnProjection bson.M) *mongo.SingleResult {
+	ctx := context.Background()
+	// after := options.After
+	findOpts := options.FindOneAndUpdateOptions{
+		// ReturnDocument: &after,
+		Projection: returnProjection,
+	}
+	return wrapper.dbCollection.FindOneAndUpdate(ctx, filter, updateExpr, &findOpts)
 }
 
 func (wrapper *mongoCollection) GetObjectIDFromFilter(identifier bson.M) (string, error) {

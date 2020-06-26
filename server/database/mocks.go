@@ -27,8 +27,8 @@ type MockSingleResultHelper struct {
 
 // Collection Helper mocks
 
-func (m *MockCollectionHelper) FindOne(ctx context.Context, filter interface{}) SingleResultHelper {
-	args := m.Called(ctx, filter)
+func (m *MockCollectionHelper) FindOne(ctx context.Context, filter interface{}, opts interface{}) SingleResultHelper {
+	args := m.Called(ctx, filter, opts)
 	r1 := args.Get(0)
 	if r1 == nil {
 		return nil

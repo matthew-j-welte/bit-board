@@ -12,7 +12,7 @@ import (
 
 const userDB = "users"
 
-// CreateUser creates a new user in the database
+// CountUsers counts all users
 func CountUsers() (int64, error) {
 	return countUsers(getCollection(userDB))
 }
@@ -25,6 +25,11 @@ func CreateUser(user users.User) (string, error) {
 // GetUserID gets the users ID based on a subsection of the user model
 func GetUserID(user users.User) (string, error) {
 	return getUserID(getCollection(userDB), user)
+}
+
+// GetUserSummary gets the name and profile photo of a user
+func GetUserSummary(userID string) (users.User, error) {
+	return getUserSummary(getCollection(userDB), userID)
 }
 
 // GetEditorConfigurations retrieve all saved editor configurations for a user
@@ -60,6 +65,24 @@ func getUserID(collectionHelper database.CollectionHelper, user users.User) (str
 			"username": user.Username,
 			"password": user.Password},
 	)
+}
+
+func getUserSummary(collectionHelper database.CollectionHelper, userID string) (users.User, error) {
+	usrSummary := bson.M{}
+	userOID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return users.User{}, err
+	}
+	collectionHelper.FindOne(
+		context.Background(),
+		bson.M{"_id": userOID},
+		bson.M{"_id": 0, "fname": 1, "lname": 1, "image": 1},
+	).Decode(usrSummary)
+	return users.User{
+		FName: usrSummary["fname"].(string),
+		LName: usrSummary["lname"].(string),
+		Image: usrSummary["image"].(string),
+	}, nil
 }
 
 func getEditorConfigurations(collectionHelper database.CollectionHelper, userID string) (interface{}, error) {
