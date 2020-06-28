@@ -6,14 +6,14 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/matthew-j-welte/bit-board/server/database/collections"
+	"github.com/matthew-j-welte/bit-board/server/database"
 	"github.com/matthew-j-welte/bit-board/server/models/reports"
 )
 
 const errorReportCollection = "error-reports"
 
 // HandleErrorReport handles an error report submission
-func HandleErrorReport(w http.ResponseWriter, r *http.Request) {
+func HandleErrorReport(db *database.Database, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST")
@@ -27,9 +27,8 @@ func HandleErrorReport(w http.ResponseWriter, r *http.Request) {
 		contextLogger.WithField("error", err).Error("An Error occured")
 	}
 
-	objectID, err := collections.CreateErrorReport(errorReport)
-	res := map[string]string{
-		"_id": objectID}
+	objectID, err := db.ErrorReports.Create(errorReport)
+	res := map[string]string{"_id": objectID}
 
 	if err != nil {
 		contextLogger.WithField("error", err).Error("An Error occured")

@@ -36,11 +36,6 @@ type mongoCollection struct {
 	dbCollection *mongo.Collection
 }
 
-func (wrapper *mongoDatabase) Collection(colName string) CollectionHelper {
-	collection := wrapper.db.Collection(colName)
-	return &mongoCollection{dbCollection: collection}
-}
-
 // CountAllRecords returns the amount of documents in a table
 func (wrapper *mongoCollection) CountAllRecords() (int64, error) {
 	return wrapper.CountRecords(bson.M{})

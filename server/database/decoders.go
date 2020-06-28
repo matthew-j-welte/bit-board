@@ -17,6 +17,13 @@ type ManyResultsHelper interface {
 	Decode() ([]bson.M, error)
 }
 
+type MongoCursor interface {
+	Close(context.Context) error
+	Next(context.Context) bool
+	Decode(interface{}) error
+	Err() error
+}
+
 type mongoSingleResult struct {
 	dbSingleResult *mongo.SingleResult
 }
@@ -25,20 +32,28 @@ type mongoManyResult struct {
 	mongoCursor *mongo.Cursor
 }
 
+type resultIterator struct {
+	cursor *mongo.Cursor
+}
+
 func (wrapper *mongoSingleResult) Decode(payload interface{}) error {
 	return wrapper.dbSingleResult.Decode(payload)
 }
 
 func (wrapper *mongoManyResult) Decode() ([]bson.M, error) {
+	return decodeCursor(wrapper.mongoCursor)
+}
+
+func decodeCursor(result MongoCursor) ([]bson.M, error) {
 	var payload []bson.M
-	defer wrapper.mongoCursor.Close(context.Background())
-	for wrapper.mongoCursor.Next(context.Background()) {
-		var result bson.M
-		err := wrapper.mongoCursor.Decode(&result)
+	defer result.Close(context.Background())
+	for result.Next(context.Background()) {
+		item := bson.M{}
+		err := result.Decode(item)
 		if err != nil {
-			return nil, wrapper.mongoCursor.Err()
+			return nil, result.Err()
 		}
-		payload = append(payload, result)
+		payload = append(payload, item)
 	}
-	return payload, wrapper.mongoCursor.Err()
+	return payload, result.Err()
 }

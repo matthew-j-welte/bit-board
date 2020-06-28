@@ -8,6 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// RouteSetup initializes route headers and returns a configured logger
 func RouteSetup(w http.ResponseWriter, r *http.Request) *log.Entry {
 	setHeaders(w, r)
 	return log.WithFields(log.Fields{

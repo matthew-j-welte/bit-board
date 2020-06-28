@@ -9,7 +9,7 @@ import (
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/matthew-j-welte/bit-board/server/database/collections"
+	"github.com/matthew-j-welte/bit-board/server/database"
 	"github.com/matthew-j-welte/bit-board/server/models/resources"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -18,9 +18,9 @@ const resourceCollectionName = "resources"
 const suggestedResourceCollectionName = "suggested-resources"
 
 // GetLearningResources collects the persona skill info
-func GetLearningResources(w http.ResponseWriter, r *http.Request) {
+func GetLearningResources(db *database.Database, w http.ResponseWriter, r *http.Request) {
 	contextLogger := RouteSetup(w, r)
-	resources, err := collections.GetResources()
+	resources, err := db.Learning.GetAll()
 	if err != nil {
 		contextLogger.WithField("error", err).Error("An error occured")
 	}
@@ -29,7 +29,7 @@ func GetLearningResources(w http.ResponseWriter, r *http.Request) {
 }
 
 // NewResourceSuggestion creates a new suggestion for a learning resource
-func NewResourceSuggestion(w http.ResponseWriter, r *http.Request) {
+func NewResourceSuggestion(db *database.Database, w http.ResponseWriter, r *http.Request) {
 	contextLogger := RouteSetup(w, r)
 	params := mux.Vars(r)
 	userID := params["userId"]
@@ -39,7 +39,7 @@ func NewResourceSuggestion(w http.ResponseWriter, r *http.Request) {
 	var resourceSuggestion = resources.ResourceSuggestion{}
 	err := json.NewDecoder(r.Body).Decode(&resourceSuggestion)
 
-	insertID, err := collections.CreateResourceSuggestion(resourceSuggestion, userID)
+	insertID, err := db.LearningSuggestions.Create(resourceSuggestion, userID)
 	if err != nil {
 		contextLogger.WithField("error", err).Error("Error when posting suggestion")
 	}
@@ -48,7 +48,7 @@ func NewResourceSuggestion(w http.ResponseWriter, r *http.Request) {
 }
 
 // HandleResourceView incremements the views associated with a resource
-func HandleResourceView(w http.ResponseWriter, r *http.Request) {
+func HandleResourceView(db *database.Database, w http.ResponseWriter, r *http.Request) {
 	contextLogger := RouteSetup(w, r)
 	params := mux.Vars(r)
 	id := params["id"]
@@ -56,7 +56,7 @@ func HandleResourceView(w http.ResponseWriter, r *http.Request) {
 	contextLogger = contextLogger.WithFields(log.Fields{"field": field, "resource": id})
 
 	contextLogger.Info("Incrementing Value")
-	currentCount, err := collections.IncrementResourceViews(id)
+	currentCount, err := db.Learning.IncrementResourceViews(id)
 	if err != nil {
 		contextLogger.WithField("error", err).Error("Error when incrementing resource value")
 	}
@@ -65,7 +65,7 @@ func HandleResourceView(w http.ResponseWriter, r *http.Request) {
 }
 
 // HandleResourcePostActionByUser handles a post on a resource being interacted with by a user
-func HandleResourcePostActionByUser(w http.ResponseWriter, r *http.Request) {
+func HandleResourcePostActionByUser(db *database.Database, w http.ResponseWriter, r *http.Request) {
 	contextLogger := RouteSetup(w, r)
 	params := mux.Vars(r)
 	resourceID := params["id"]
@@ -78,7 +78,7 @@ func HandleResourcePostActionByUser(w http.ResponseWriter, r *http.Request) {
 		"postID":   postID,
 	})
 	contextLogger.Info("Incrementing Value on Resource Post")
-	currentCount, err := resourceFieldIncrementDecider(action, field, resourceID, postID)
+	currentCount, err := resourceFieldIncrementDecider(action, field, resourceID, postID, db)
 	if err != nil {
 		contextLogger.WithField("error", err).Error("Error when incrementing value")
 	}
@@ -86,24 +86,24 @@ func HandleResourcePostActionByUser(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(true)
 }
 
-func resourceFieldIncrementDecider(action string, fieldName string, resourceID string, postID string) (int, error) {
+func resourceFieldIncrementDecider(action string, fieldName string, resourceID string, postID string, db *database.Database) (int, error) {
 	if fieldName == "reports" {
 		if action == "increment" {
-			return collections.IncrementResourcePostReportCount(resourceID, postID)
+			return db.Learning.IncrementResourcePostReportCount(resourceID, postID)
 		}
-		return collections.DecrementResourcePostReportCount(resourceID, postID)
+		return db.Learning.DecrementResourcePostReportCount(resourceID, postID)
 	}
 	if fieldName == "likes" {
 		if action == "increment" {
-			return collections.IncrementResourcePostLikeCount(resourceID, postID)
+			return db.Learning.IncrementResourcePostLikeCount(resourceID, postID)
 		}
-		return collections.DecrementResourcePostLikeCount(resourceID, postID)
+		return db.Learning.DecrementResourcePostLikeCount(resourceID, postID)
 	}
 	return 0, errors.New("Invalid value passed in - could not increment")
 }
 
 // NewPostOnResource adds a post to a learning resource
-func NewPostOnResource(w http.ResponseWriter, r *http.Request) {
+func NewPostOnResource(db *database.Database, w http.ResponseWriter, r *http.Request) {
 	contextLogger := RouteSetup(w, r)
 	params := mux.Vars(r)
 
@@ -115,7 +115,7 @@ func NewPostOnResource(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		contextLogger.WithField("error", err).Error("Error when decoding body")
 	}
-	userSummary, err := collections.GetUserSummary(userID)
+	userSummary, err := db.Users.GetUserSummary(userID)
 	fullname := userSummary.FName + " " + userSummary.LName
 	imageURL := userSummary.Image
 
@@ -126,7 +126,7 @@ func NewPostOnResource(w http.ResponseWriter, r *http.Request) {
 		FullName:     fullname,
 		ProfileImage: imageURL}
 	contextLogger.Info("Attemting to add post to resource")
-	postID, err := collections.AddPostToResource(post, resourceID)
+	postID, err := db.Learning.AddPostToResource(post, resourceID)
 	if err != nil {
 		contextLogger.WithField("error", err).Error("Error when adding new post to resource")
 	}

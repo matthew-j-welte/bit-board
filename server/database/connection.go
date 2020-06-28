@@ -11,6 +11,7 @@ import (
 // DBHelper wrapper around the mongo-driver Database type
 type DBHelper interface {
 	Collection(name string) CollectionHelper
+	GetCollection(name string) CollectionHelper
 	Client() ClientHelper
 }
 
@@ -21,12 +22,17 @@ type ClientHelper interface {
 	StartSession() (mongo.Session, error)
 }
 
-type mongoClient struct {
-	dbClient *mongo.Client
+// Database main database struct
+type Database struct {
+	db                  *mongo.Database
+	ErrorReports        ErrorReportDB
+	Learning            LearningDB
+	LearningSuggestions LearningSuggestionDB
+	Users               UserDB
 }
 
-type mongoDatabase struct {
-	db *mongo.Database
+type mongoClient struct {
+	dbClient *mongo.Client
 }
 
 type mongoSession struct {
@@ -52,7 +58,7 @@ func TestConnection() error {
 
 func (wrapper *mongoClient) Database(dbName string) DBHelper {
 	db := wrapper.dbClient.Database(dbName)
-	return &mongoDatabase{db: db}
+	return &Database{db: db}
 }
 
 func (wrapper *mongoClient) StartSession() (mongo.Session, error) {
@@ -74,7 +80,18 @@ func (wrapper *mongoClient) Connect() error {
 	return nil
 }
 
-func (wrapper *mongoDatabase) Client() ClientHelper {
+func (wrapper *Database) Client() ClientHelper {
 	client := wrapper.db.Client()
 	return &mongoClient{dbClient: client}
+}
+
+func (wrapper *Database) Collection(colName string) CollectionHelper {
+	collection := wrapper.db.Collection(colName)
+	return &mongoCollection{dbCollection: collection}
+}
+
+func (wrapper *Database) GetCollection(name string) CollectionHelper {
+	client, _ := NewClient()
+	client.Connect()
+	return NewDatabase(client).Collection(name)
 }

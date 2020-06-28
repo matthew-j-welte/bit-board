@@ -1,22 +1,17 @@
 package router
 
 import (
-	"context"
 	"net/http"
 	"os"
 
 	log "github.com/sirupsen/logrus"
-	"go.mongodb.org/mongo-driver/mongo"
 
 	"github.com/gorilla/mux"
 	"github.com/matthew-j-welte/bit-board/server/database"
 	"github.com/matthew-j-welte/bit-board/server/middleware"
 )
 
-var db *mongo.Database
-var ctx context.Context
-
-type handler func(http.ResponseWriter, *http.Request)
+type handler func(*database.Database, http.ResponseWriter, *http.Request)
 type route struct {
 	URI         string
 	RESTMethods []string
@@ -125,9 +120,10 @@ func Router() *mux.Router {
 }
 
 func handleRoute(router *mux.Router, routeInfo route) {
+	db := new(database.Database)
 	router.HandleFunc(
 		routeInfo.URI,
 		func(w http.ResponseWriter, r *http.Request) {
-			routeInfo.Handler(w, r)
+			routeInfo.Handler(db, w, r)
 		}).Methods(routeInfo.RESTMethods...)
 }

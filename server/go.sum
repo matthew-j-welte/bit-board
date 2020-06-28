@@ -56,6 +56,7 @@ github.com/matthew-j-welte/bit-board v0.0.0-20200618062121-88899e97248f h1:rkvgN
 github.com/matthew-j-welte/bit-board v0.0.0-20200623021315-eb24ae2f559a h1:H4T+V3hwbwzXtP/ZnrCgJMCn2bpCap0ZwNwjCi8pdBc=
 github.com/matthew-j-welte/bit-board v0.0.0-20200624072045-a4033f799138 h1:vl6Am4smBBc2J8n3dcTFT3twdCygWIOfWNppBc1vpoY=
 github.com/matthew-j-welte/bit-board v0.0.0-20200626040738-6a6db5b312db h1:5Kle0ggWq2XLYuJVIjegkpI608RSI76gLxVX5Iy9CmQ=
+github.com/matthew-j-welte/bit-board v0.0.0-20200628042254-b7c09ebb3a54 h1:OmK8x+rv5UfofKVleqUFTzvx6mabVomODJOrKsomd+I=
 github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe/go.mod h1:wL8QJuTMNUDYhXwkmfOly8iTdp5TEcJFWZD2D7SIkUc=
 github.com/pelletier/go-toml v1.4.0/go.mod h1:PN7xzY2wHTK0K9p34ErDQMlFxa51Fk0OUruD3k1mMwo=
 github.com/pkg/errors v0.8.0/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
