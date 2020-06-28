@@ -170,7 +170,7 @@ func (wrapper *mongoCollection) GetObjectIDFromFilter(identifier bson.M) (string
 	wrapper.dbCollection.FindOne(
 		context.Background(),
 		identifier,
-		options.FindOne().SetProjection(bson.D{{"_id", 1}}),
+		options.FindOne().SetProjection(bson.M{"_id": 1}),
 	).Decode(&result)
 	if oid, ok := result["_id"]; ok {
 		return oid.(primitive.ObjectID).Hex(), nil
@@ -202,7 +202,7 @@ func (wrapper *mongoCollection) GetSubArray(primaryID string, arrayName string) 
 	}
 	var result bson.M
 	filter := bson.M{"_id": documentOID}
-	projection := bson.D{{"_id", 0}, {arrayName, 1}}
+	projection := bson.M{"_id": 0, arrayName: 1}
 	options := options.FindOne().SetProjection(projection)
 
 	wrapper.dbCollection.FindOne(context.Background(), filter, options).Decode(&result)
@@ -216,6 +216,6 @@ func (wrapper *mongoCollection) PushToArray(primaryID string, arrayName string, 
 	}
 
 	filter := bson.M{"_id": documentOID}
-	projection := bson.D{{"$push", bson.D{{arrayName, payload}}}}
+	projection := bson.M{"$push": bson.M{arrayName: payload}}
 	return wrapper.UpdateOne(context.Background(), filter, projection)
 }
