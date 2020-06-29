@@ -6,7 +6,9 @@ import ResourceTypeTabs from './ResourceTypeTabs/ResourceTypeTabs'
 import LearningResources from './LearningResources/LearningResources'
 import { requiredFieldsFromConfig } from '../../utilities/forms/formBuilder'
 import { vidFormConfig } from './ResourceTypeTabs/forms/newResource/config'
+
 import * as requests from './requests'
+import * as styles from './styles'
 
 class LearnPage extends Component {
   displayName = "LearnPage"
@@ -90,10 +92,9 @@ class LearnPage extends Component {
     }
 
     const { activeResourceTypeTab } = this.state;
-    console.log(this.state.resources)
     return (
-      <Segment basic style={{minHeight: "1200px"}}>
-        <Segment style={{margin: "2em 10em 1em 10em"}}>
+      <Segment basic style={styles.resourceTabsSegment}>
+        <Segment style={styles.resourceTabsInnerSegment}>
           <ResourceTypeTabs 
             handleFormFieldChange={this.handleFormFieldChange}
             queryFormState={this.queryFormState}
@@ -109,7 +110,7 @@ class LearnPage extends Component {
             formSatisfied={this.state.formSatisfied}
           />
         </Segment>
-        <Segment style={{minHeight: "1200px", margin: "2em 10em 5em 10em"}}>
+        <Segment style={styles.resourcesSegment}>
             <LearningResources
               resources={{...this.state.resources}}
               activeResourceTypeTab={activeResourceTypeTab}

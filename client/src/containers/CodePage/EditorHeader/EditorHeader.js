@@ -1,12 +1,12 @@
 import React from 'react'
-import { Image, Header, Divider } from 'semantic-ui-react'
+import { Header, Divider } from 'semantic-ui-react'
 
-import { headerStyle, headerLogoStyle, headerLowerDividerStyle } from './styles'
+import * as styles from './styles'
 
 const EditorHeader = (props) => (
   <div>
-    <Header as='h2' style={headerStyle}>{props.language}</Header>
-    <Divider style={headerLowerDividerStyle}/>
+    <Header as='h2' style={styles.headerStyle}>{props.language}</Header>
+    <Divider style={styles.headerLowerDividerStyle}/>
   </div>
 )
 

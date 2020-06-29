@@ -79,7 +79,6 @@ const ResourceModal = (props) => {
     )
   }
 
-  console.log(props)
   return (
     <Modal style={{minHeight: "1800px"}} size="large" dimmer="blurring"
       trigger={props.resourceRow}
@@ -112,7 +111,9 @@ const ResourceModal = (props) => {
             color={newPostSubmitted ? "teal" : "green"}
             content={newPostSubmitted ? "Edit" : "Submit"}
             onClick={() => {
-              newPostHandler()
+              if (!newPostSubmitted) {
+                newPostHandler()
+              }
               handlePostSubmission(!newPostSubmitted)
             }}
           />

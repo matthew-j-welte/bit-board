@@ -1,11 +1,11 @@
 import React from 'react'
 import { Header, Card, Reveal, Image } from 'semantic-ui-react'
 import { languages, statSectionData } from '../mockdata'
-import { cardStyle, imgStyle, langCardHeader } from './styles'
+import * as styles from './styles'
 
 const LanguageCard = (props) => {
   const statSections = statSectionData.map(statSec => (
-    <Header textAlign="center" as='h5' floated="left" style={{marginLeft: "1em", marginTop: "1em"}}>
+    <Header textAlign="center" as='h5' floated="left" style={styles.headerStyle}>
       <Header.Content>
         {statSec.lvl}
         <Header.Subheader>{statSec.done}/{statSec.total} Completed</Header.Subheader>
@@ -17,7 +17,7 @@ const LanguageCard = (props) => {
     <Card 
       raised 
       onClick={() => props.languageSelectHandler(props.lang)} 
-      style={cardStyle}
+      style={styles.cardStyle}
     >
       <Reveal 
         instant 
@@ -27,7 +27,7 @@ const LanguageCard = (props) => {
           <Image 
             fluid
             src={props.logo}  
-            style={imgStyle}
+            style={styles.imgStyle}
           />
         </Reveal.Content>
         <Reveal.Content hidden>
@@ -35,7 +35,7 @@ const LanguageCard = (props) => {
             textAlign="center" 
             color={props.color} 
             as="h3" 
-            style={langCardHeader}
+            style={styles.langCardHeader}
             content={props.lang}
           />
           {statSections}

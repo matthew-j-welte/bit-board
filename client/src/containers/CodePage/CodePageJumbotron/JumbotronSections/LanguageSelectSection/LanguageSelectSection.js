@@ -4,6 +4,8 @@ import { Segment, Card } from 'semantic-ui-react'
 import SelectionCard from '../components/SelectionCard/SelectionCard'
 import LanguageCards from './LanguageCards/LanguageCards'
 
+import * as styles from './styles'
+
 export const LanguageSelectButton = (props) => (
   <SelectionCard 
     activeTab={props.activeTab}  
@@ -15,7 +17,7 @@ export const LanguageSelectButton = (props) => (
 
 
 export const LanguageSelectSection = (props) => (
-  <Segment basic style={{margin: "3em", padding: "2em", borderRadius: "3em"}}>
+  <Segment basic style={styles.mainSegment}>
     <Card.Group itemsPerRow={5}>
       <LanguageCards
         newLabelPulsing={props.newLabelPulsing}

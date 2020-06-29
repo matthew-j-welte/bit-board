@@ -3,6 +3,8 @@ import { Segment, Card, Label, Header, Divider } from 'semantic-ui-react'
 
 import SelectionCard from '../components/SelectionCard/SelectionCard'
 
+import * as styles from './styles'
+
 export const KeyboardShortcutButton = (props) => (
   <SelectionCard 
     activeTab={props.activeTab}    
@@ -34,7 +36,7 @@ export const KeyboardShortcutSection = (props) => {
   )
 
   return (
-    <Segment basic style={{margin: "3em", padding: "2em", borderRadius: "3em"}}>
+    <Segment basic style={styles.mainSegment}>
       <Header>Sizing Shortcuts</Header>
       <Card.Group itemsPerRow={6}>
         {cards}

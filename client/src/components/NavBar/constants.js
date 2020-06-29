@@ -5,7 +5,6 @@ import BitBoardLogo from '../../assets/images/BitBoard.png'
 
 export const routeInfo = [
   {key: "code", title: "Code", path: CLIENT_ROUTES.CODEPAGE},
-  {key: "workspace", title: "Workspace", path: CLIENT_ROUTES.WORKSPACEPAGE},
   {key: "learn", title: "Learn", path: CLIENT_ROUTES.LEARNPAGE}, 
   {key: "network", title: "Network", path: CLIENT_ROUTES.LANDINGPAGE}, // Still not defined
   {key: "level-up", title: "Level Up", path: CLIENT_ROUTES.PERSONAPAGE},

@@ -4,6 +4,11 @@ import { Segment, Form, Divider } from 'semantic-ui-react'
 import SelectionCard from '../components/SelectionCard/SelectionCard'
 import EditorConfigurationForm from './EditorConfigurationForm/EditorConfigurationForm'
 
+import * as styles from './styles'
+
+const MINUS = "-"
+const PLUS = "+"
+
 export const CustomizeEditorButton = (props) => (
   <SelectionCard 
     activeTab={props.activeTab}  
@@ -33,10 +38,10 @@ export const CustomizeEditorSection = (props) => {
   return (
     <Segment 
       basic 
-      style={{margin: "3em", padding: "2em", borderRadius: "3em"}}
+      style={styles.segmentStyle}
     >
       <Form>
-        <Form.Group style={{marginBottom: "-2em"}}>
+        <Form.Group style={styles.formGroupStyle}>
           <Form.Button 
             fluid
             active={props.formState.newConfigurationOpen} 
@@ -44,7 +49,7 @@ export const CustomizeEditorSection = (props) => {
             label="New Configuration"
             onClick={() => props.formValueHandler("newConfigurationOpen", !props.formState.newConfigurationOpen)}
           >
-              +
+              {PLUS}
             </Form.Button>
           <Form.Dropdown 
             search 
@@ -54,10 +59,15 @@ export const CustomizeEditorSection = (props) => {
             width={8}
             options={savedEditorConfOptions}
             onChange={(e, { value }) => props.setEditorConfigurationFromID(value)}
-            style={{marginBottom: "2em"}}
+            style={styles.formDropdownStyle}
           />
-          <Form.Button width={4} fluid label="Edit Saved Configuration" disabled={props.formState.selectedSavedConfiguration ? false : true}>
-            -
+          <Form.Button 
+            fluid 
+            width={4} 
+            label="Edit Saved Configuration" 
+            disabled={props.formState.selectedSavedConfiguration ? false : true}
+          >
+            {MINUS}
           </Form.Button>
         </Form.Group>
         <Divider/>

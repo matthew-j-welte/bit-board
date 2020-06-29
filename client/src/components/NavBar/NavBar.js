@@ -3,7 +3,7 @@ import { Menu } from 'semantic-ui-react'
 import { NavLink } from 'react-router-dom'
 
 import { routeInfo } from './constants'
-import { menuStyle } from './styles'
+import * as styles from './styles'
 
 class NavBar extends Component {
   state = {}
@@ -20,7 +20,7 @@ class NavBar extends Component {
         active={this.state.activeItem === el.key}
         onClick={this.handleItemClick}
       >
-        {el.title}
+        <p style={styles.textStyle}>{el.title}</p>
       </Menu.Item>
     </NavLink>
   )
@@ -32,7 +32,7 @@ class NavBar extends Component {
       <Menu 
         stackable 
         size="huge" 
-        style={menuStyle}
+        style={styles.menuStyle}
       >
         <Menu.Menu position="right">
           {navlinks}

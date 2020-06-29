@@ -10,6 +10,8 @@ import {
   tabSizeOptions 
 } from './constants'
 
+import * as styles from './styles'
+
 const EditorConfigurationMutator = (props) => {
   const themes = colorThemes.map(col => (
     <Menu.Item
@@ -23,7 +25,7 @@ const EditorConfigurationMutator = (props) => {
       
   return (
     <Segment
-      style={{padding: "3em 3em 0 3em", background: "#f7fdff"}}
+      style={styles.mainSegment}
     >
       <Form.Group widths="equal">
         <Form.Input
@@ -51,10 +53,10 @@ const EditorConfigurationMutator = (props) => {
         />
       </Form.Group>
       <Form.Group>
-        <Form.Field width={4} style={{marginTop: "2em"}}>
+        <Form.Field width={4} style={styles.themeSubHeader}>
           <label>Color Theme</label>
         </Form.Field>
-        <Form.Field width={12} style={{marginTop: "2em"}}>
+        <Form.Field width={12} style={styles.themeSubHeader}>
           <label>Sample Editor</label>
         </Form.Field>
       </Form.Group>
@@ -62,20 +64,14 @@ const EditorConfigurationMutator = (props) => {
         <Grid>
           <Grid.Column 
             width={4} 
-            style={{padding: "0"}}
+            style={styles.themeColumn}
           >
             <Menu 
               color="blue"
               pointing 
               fluid 
               vertical
-              style={{
-                height: "300px", 
-                background: "white", 
-                padding: "0",
-                "overflow-y": "scroll", 
-                "overflow-x": "hidden", 
-              }}
+              style={styles.themeMenu}
             >
               {themes}
             </Menu>
@@ -83,7 +79,7 @@ const EditorConfigurationMutator = (props) => {
           <Grid.Column 
             stretched 
             width={12} 
-            style={{padding: "0"}}
+            style={styles.themeColumn}
           >
           <AceEditor
             mode="golang"
@@ -108,7 +104,7 @@ const EditorConfigurationMutator = (props) => {
           </Grid.Column>
         </Grid>            
       </Segment>
-      <Form.Field style={{marginTop: "3em"}}>
+      <Form.Field style={styles.extraConfSubHeader}>
         <label>Extra Configuration</label>
       </Form.Field>
       <Divider/>
@@ -131,8 +127,7 @@ const EditorConfigurationMutator = (props) => {
       </Form.Group>
       <Divider/>
       <Form.Group>
-        <Form.Button color="blue" onClick={() => props.setEditorConfiguration(props.formState)} style={{marginLeft: "-2em", marginTop: "2em"}}>Apply Changes</Form.Button>
-        {/* <Form.Button color="teal" style={{marginTop: "2em"}}>Save Current Configuration</Form.Button> */}
+        <Form.Button color="blue" onClick={() => props.setEditorConfiguration(props.formState)} style={styles.applyChangesButton}>Apply Changes</Form.Button>
         <Form.Input 
           action={{
             color: 'teal',
@@ -145,7 +140,7 @@ const EditorConfigurationMutator = (props) => {
           placeholder="Configuration Name..."
           value={props.formState.configurationName}
           onChange={(e) => props.formValueHandler("configurationName", e.target.value)}
-          style={{marginTop: "2em", width: "300px"}}
+          style={styles.saveAsBox}
         />
       </Form.Group>
     </Segment>

@@ -10,11 +10,7 @@ import BitBoardLogo from '../../assets/images/BitBoard.png'
 import UserCountHeader from './UserCountHeader/UserCountHeader'
 import { signupFormConfig } from './forms/SignupForm/config'
 import { FormBuilder } from '../../utilities/forms/formBuilder'
-import { 
-  landingPageStyle, 
-  topInfoBoxStyle, 
-  infoBoxStyle 
-} from './styles'
+import * as styles from './styles'
 
 
 class LandingPage extends Component {
@@ -108,7 +104,7 @@ class LandingPage extends Component {
         content="Sign Up"
         color="black" 
         onClick={() => this.createNewUserState()}
-        style={{margin: "0px 0px 0px 5px"}}
+        style={styles.signupTriggerButton}
       />
     )
     const signUpSection = (
@@ -120,10 +116,10 @@ class LandingPage extends Component {
         vertical  
         inverted
         textAlign='center'
-        style={landingPageStyle}
+        style={styles.landingPageStyle}
       >
         <Container>
-          <Image centered size="massive" style={{padding: "6em 1em 6em 1em"}} src={BitBoardLogo}/>
+          <Image centered size="massive" style={styles.mainHeader} src={BitBoardLogo}/>
           <UserCountHeader userCount={this.state.userCount}/>
           <LoginForm 
             handler={this.loginHandler}
@@ -135,13 +131,13 @@ class LandingPage extends Component {
           inverted
           header="Explore"
           infoText="Viverra ipsum nunc aliquet bibendum enim facilisis gravida neque convallis. Mauris a diam maecenas sed enim ut sem viverra. In metus vulputate eu scelerisque felis. Sed augue lacus viverra vitae congue. Sed risus ultricies tristique nulla. In massa tempor nec feugiat nisl pretium fusce. Non consectetur a erat nam at. Aliquet nec ullamcorper sit amet risus nullam. Ipsum dolor sit amet consectetur adipiscing elit duis tristique. Nunc consequat interdum varius sit. Ut lectus arcu bibendum at varius. Facilisis mauris sit amet massa. Eget nulla facilisi etiam dignissim. Orci porta non pulvinar neque laoreet suspendisse interdum. Id ornare arcu odio ut sem nulla pharetra diam sit. Ut enim blandit volutpat maecenas volutpat blandit. Mi in nulla posuere sollicitudin aliquam. Quis blandit turpis cursus in. Eu facilisis sed odio morbi quis commodo odio aenean. Pharetra diam sit amet nisl suscipit adipiscing."
-          style={topInfoBoxStyle}
+          style={styles.topInfoBoxStyle}
         />
         <InfoBox
           inverted
           header="Rank Up"
           infoText="Viverra ipsum nunc aliquet bibendum enim facilisis gravida neque convallis. Mauris a diam maecenas sed enim ut sem viverra. In metus vulputate eu scelerisque felis. Sed augue lacus viverra vitae congue. Sed risus ultricies tristique nulla. In massa tempor nec feugiat nisl pretium fusce. Non consectetur a erat nam at. Aliquet nec ullamcorper sit amet risus nullam. Ipsum dolor sit amet consectetur adipiscing elit duis tristique. Nunc consequat interdum varius sit. Ut lectus arcu bibendum at varius. Facilisis mauris sit amet massa. Eget nulla facilisi etiam dignissim. Orci porta non pulvinar neque laoreet suspendisse interdum. Id ornare arcu odio ut sem nulla pharetra diam sit. Ut enim blandit volutpat maecenas volutpat blandit. Mi in nulla posuere sollicitudin aliquam. Quis blandit turpis cursus in. Eu facilisis sed odio morbi quis commodo odio aenean. Pharetra diam sit amet nisl suscipit adipiscing."
-          style={infoBoxStyle}
+          style={styles.infoBoxStyle}
         />
       </Segment>
     )

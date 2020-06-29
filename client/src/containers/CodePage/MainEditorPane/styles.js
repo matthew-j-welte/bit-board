@@ -1,8 +1,4 @@
-export const editorTextAreaStyle = {
-  fontSize: "1.3em",
-  background: "#cbf0f7", 
-  width: "100%", 
-  minHeight: "550px", 
-  maxHeight: "850px", 
-  overflow: "auto"
+export const submitCodeButton = {
+  width: "40%",
+  margin: "1em 3em 0em 0em"
 }

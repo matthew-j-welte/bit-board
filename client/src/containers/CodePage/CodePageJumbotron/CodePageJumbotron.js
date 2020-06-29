@@ -6,6 +6,8 @@ import { LanguageSelectButton, LanguageSelectSection } from './JumbotronSections
 import { CustomizeEditorButton, CustomizeEditorSection } from './JumbotronSections/CustomizeEditorSection/CustomizeEditorSection'
 import { KeyboardShortcutButton, KeyboardShortcutSection } from './JumbotronSections/KeyboardShortcutSection/KeyboardShortcutSection'
 
+import * as styles from './styles'
+  
 const LANGUAGE_TAB = "SELECT A LANGUAGE"
 const CUSTOMIZE_EDITOR_TAB = "CUSTOMIZE YOUR EDITOR"
 const KEYBOARD_TAB = "VIEW KEYBOARD SHORTCUTS"
@@ -42,7 +44,7 @@ const CodePageJumbotron = (props) => {
   }
 
   const sectionButtons = (
-    <Card.Group style={{margin: "2em"}} itemsPerRow={3}>
+    <Card.Group style={styles.sectionButtonsStyle} itemsPerRow={3}>
       <LanguageSelectButton 
         activeTab={activeTab}
         selectionButtonClickHandler={() => {
@@ -103,7 +105,7 @@ const CodePageJumbotron = (props) => {
   )
 
   return (
-    <Segment style={{background: "#f2f3f5", margin: "6em 15em 3em 15em", borderRadius: "5em"}}>
+    <Segment style={styles.jumbotronSegmentStyle}>
       <JumbotronHeader/>
       {sectionButtons}
       {activeTab === LANGUAGE_TAB ? langSelectSection : null}

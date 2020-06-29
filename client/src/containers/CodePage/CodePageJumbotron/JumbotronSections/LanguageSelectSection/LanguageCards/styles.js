@@ -20,3 +20,8 @@ export const langCardHeader = {
   borderRadius: "2.5em 2.5em 0 0", 
   marginBottom: "1em"
 }
+
+export const headerStyle = {
+  marginLeft: "1em", 
+  marginTop: "1em"
+}

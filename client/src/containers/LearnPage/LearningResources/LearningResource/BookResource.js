@@ -5,11 +5,13 @@ import CppBook from '../../../../assets/images/cpp-book.jpg'
 import BookProgressionTable from './ResourceModal/BookProgressionTable/BookProgressionTable'
 import LearningResourceCard from './LearningResource'
 
+import * as styles from './styles'
+
 const BookResourceCard = (props) => {
   const graphicPreview = (
     <Image
       fluid
-      style={{maxHeight: "400px", minHeight: "400px"}}
+      style={styles.imageStyle}
       src={CppBook}
     />
   )

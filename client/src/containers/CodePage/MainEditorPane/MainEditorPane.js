@@ -14,17 +14,8 @@ import "ace-builds/src-noconflict/mode-mysql";
 import "ace-builds/src-noconflict/mode-ruby";
 import "ace-builds/src-noconflict/ext-language_tools"
 
-const languageToModeMapping = {
-  "Python": "python",
-  "Golang": "golang",
-  "Javascript": "javascript",
-  "C#": "csharp",
-  "C++": "c_cpp",
-  "Java": "java",
-  "Coffeescript": "coffee",
-  "MySQL": "mysql",
-  "Ruby": "ruby"
-}
+import * as styles from './styles'
+import * as constants from './constants'
 
 const toLowerDictionary = (conf) => {
   let newConf = {}
@@ -41,7 +32,7 @@ const MainEditorPane = (props) => {
   return (
       <Form>
         <AceEditor
-          mode={languageToModeMapping[props.activeLanguage] ? languageToModeMapping[props.activeLanguage] : "golang"}
+          mode={constants.languageToModeMapping[props.activeLanguage] ? constants.languageToModeMapping[props.activeLanguage] : "golang"}
           theme={editorConf.colorthemeurl ? editorConf.colorthemeurl : "dracula"}
           value={props.activeFileContents}
           onChange={props.codeInputHandler}
@@ -67,10 +58,7 @@ const MainEditorPane = (props) => {
           onClick={props.codeSubmitHandler}
           content="Submit Code"
           floated="right"
-          style={{
-            width: "40%",
-            margin: "1em 3em 0em 0em"
-          }}
+          style={styles.submitCodeButton}
         />
       </Form>
   )

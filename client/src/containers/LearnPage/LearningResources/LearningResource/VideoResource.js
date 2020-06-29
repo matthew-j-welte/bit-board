@@ -3,11 +3,13 @@ import { Embed, Image } from 'semantic-ui-react'
 
 import LearningResourceCard from './LearningResource'
 
+import * as styles from './styles'
+
 const VideoResourceCard = (props) => (
   <LearningResourceCard
     graphicPreview={
       <Image
-        style={{maxHeight: "400px", minHeight: "400px"}}
+        style={styles.imageStyle}
         src={props.image}
       />
     }

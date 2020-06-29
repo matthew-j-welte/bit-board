@@ -7,10 +7,7 @@ import CodePageJumbotron from './CodePageJumbotron/CodePageJumbotron'
 import FileExplorer from './FileExplorer/FileExplorer'
 import EditorHeader from './EditorHeader/EditorHeader'
 import MainEditorPane from './MainEditorPane/MainEditorPane'
-import { 
-  codePageSegmentStyle, 
-  editorSegmentStyle, 
-  editorMiddleColumnStyle } from './styles'
+import * as styles from './styles'
 
 import { postNewEditorConfiguration, getEditorConfigurations } from './requests'
 
@@ -111,8 +108,8 @@ class CodePage extends Component {
           savedEditorConfigurations={this.state.savedConfigurations}
           setEditorConfigurationFromID={this.setEditorConfigurationFromID}
         />
-        <Segment basic style={codePageSegmentStyle}>
-          <Segment raised style={editorSegmentStyle}>
+        <Segment basic style={styles.codePageSegmentStyle}>
+          <Segment raised style={styles.editorSegmentStyle}>
             <EditorHeader
               language={this.state.activeLanguage}
             />
@@ -124,7 +121,7 @@ class CodePage extends Component {
                   fileClickHandler={this.handleFileClick}
                 />
               </Grid.Column>
-              <Grid.Column width={12} style={editorMiddleColumnStyle}>
+              <Grid.Column width={12} style={styles.editorMiddleColumnStyle}>
                 <MainEditorPane 
                   activeFileContents={this.state.activeFileContents}
                   codeInputHandler={this.codeInputHandler}
