@@ -9,20 +9,23 @@ import (
 
 const resourceSuggestionDB = "suggested-resources"
 
-type LearningSuggestionAccessor interface {
-	Create(db *Database, resource resources.ResourceSuggestion, userID string) (string, error)
+type LearningSuggestionDB interface {
+	Create(resource resources.ResourceSuggestion, userID string) (string, error)
 }
 
-type LearningSuggestionDB struct {
-	*Database
+type learningSuggestionDB struct {
+	db DBHelper
+}
+
+func NewLearningSuggestionDB(db DBHelper) LearningSuggestionDB {
+	return &learningSuggestionDB{
+		db: db,
+	}
 }
 
 // CreateResourceSuggestion creates a learning resource suggestion in the db
-func (db *LearningSuggestionDB) Create(resource resources.ResourceSuggestion, userID string) (string, error) {
-	return createResourceSuggestion(db.GetCollection(resourceSuggestionDB), resource, userID)
-}
-
-func createResourceSuggestion(collectionHelper CollectionHelper, resource resources.ResourceSuggestion, userID string) (string, error) {
+func (learningSuggestion *learningSuggestionDB) Create(resource resources.ResourceSuggestion, userID string) (string, error) {
+	collectionHelper := learningSuggestion.db.GetCollection(resourceSuggestionDB)
 	userOID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
 		return "", nil

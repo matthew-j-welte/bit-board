@@ -51,6 +51,7 @@ const MainEditorPane = (props) => {
             showLineNumbers: editorConf.haslinenumbers,
             highlightActiveLine: editorConf.highlightline
           }}
+          style={{borderRadius: "1em"}}
         />
         <Button 
           circular

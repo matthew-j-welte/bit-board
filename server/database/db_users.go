@@ -9,9 +9,9 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-const userDB = "users"
+const userDBName = "users"
 
-type UserAccessor interface {
+type UserDB interface {
 	CountUsers() (int64, error)
 	CreateUser(user users.User) (string, error)
 	GetUserID(user users.User) (string, error)
@@ -21,50 +21,25 @@ type UserAccessor interface {
 	GetUserSkills(userID string) (interface{}, error)
 }
 
-type UserDB struct {
-	*Database
+type userDB struct {
+	db DBHelper
+}
+
+func NewUserDB(db DBHelper) UserDB {
+	return &userDB{
+		db: db,
+	}
 }
 
 // CountUsers counts all users
-func (db *UserDB) CountUsers() (int64, error) {
-	return countUsers(db.GetCollection(userDB))
-}
-
-// CreateUser creates a new user in the database
-func (db *UserDB) CreateUser(user users.User) (string, error) {
-	return createUser(db.GetCollection(userDB), user)
-}
-
-// GetUserID gets the users ID based on a subsection of the user model
-func (db *UserDB) GetUserID(user users.User) (string, error) {
-	return getUserID(db.GetCollection(userDB), user)
-}
-
-// GetUserSummary gets the name and profile photo of a user
-func (db *UserDB) GetUserSummary(userID string) (users.User, error) {
-	return getUserSummary(db.GetCollection(userDB), userID)
-}
-
-// GetEditorConfigurations retrieve all saved editor configurations for a user
-func (db *UserDB) GetEditorConfigurations(userID string) (interface{}, error) {
-	return getEditorConfigurations(db.GetCollection(userDB), userID)
-}
-
-// CreateEditorConfiguration creates a new editor configuration for a user
-func (db *UserDB) CreateEditorConfiguration(editorConfig users.CodeEditorConfiguration, documentID string) (string, error) {
-	return addEditorConfigurationToUser(db.GetCollection(userDB), editorConfig, documentID)
-}
-
-// GetUserSkills retrieve all saved editor configurations for a user
-func (db *UserDB) GetUserSkills(userID string) (interface{}, error) {
-	return getUserSkills(db.GetCollection(userDB), userID)
-}
-
-func countUsers(collectionHelper CollectionHelper) (int64, error) {
+func (usr *userDB) CountUsers() (int64, error) {
+	collectionHelper := usr.db.GetCollection(userDBName)
 	return collectionHelper.CountAllRecords()
 }
 
-func createUser(collectionHelper CollectionHelper, user users.User) (string, error) {
+// CreateUser creates a new user in the database
+func (usr *userDB) CreateUser(user users.User) (string, error) {
+	collectionHelper := usr.db.GetCollection(userDBName)
 	result, err := collectionHelper.InsertOne(context.Background(), user)
 	if err != nil {
 		return "", err
@@ -72,7 +47,9 @@ func createUser(collectionHelper CollectionHelper, user users.User) (string, err
 	return collectionHelper.GetInsertID(result), nil
 }
 
-func getUserID(collectionHelper CollectionHelper, user users.User) (string, error) {
+// GetUserID gets the users ID based on a subsection of the user model
+func (usr *userDB) GetUserID(user users.User) (string, error) {
+	collectionHelper := usr.db.GetCollection(userDBName)
 	return collectionHelper.GetObjectIDFromFilter(
 		bson.M{
 			"username": user.Username,
@@ -80,7 +57,9 @@ func getUserID(collectionHelper CollectionHelper, user users.User) (string, erro
 	)
 }
 
-func getUserSummary(collectionHelper CollectionHelper, userID string) (users.User, error) {
+// GetUserSummary gets the name and profile photo of a user
+func (usr *userDB) GetUserSummary(userID string) (users.User, error) {
+	collectionHelper := usr.db.GetCollection(userDBName)
 	usrSummary := bson.M{}
 	userOID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
@@ -102,20 +81,20 @@ func getUserSummary(collectionHelper CollectionHelper, userID string) (users.Use
 	}, nil
 }
 
-func getEditorConfigurations(collectionHelper CollectionHelper, userID string) (interface{}, error) {
+// GetEditorConfigurations retrieve all saved editor configurations for a user
+func (usr *userDB) GetEditorConfigurations(userID string) (interface{}, error) {
+	collectionHelper := usr.db.GetCollection(userDBName)
 	return collectionHelper.GetSubArray(userID, "editorconfs")
 }
 
-func getUserSkills(collectionHelper CollectionHelper, userID string) (interface{}, error) {
-	return collectionHelper.GetSubArray(userID, "skills")
-}
-
-func addEditorConfigurationToUser(collectionHelper CollectionHelper, editorConf users.CodeEditorConfiguration, documentID string) (string, error) {
-	if editorConf.ID == primitive.NilObjectID {
-		editorConf.ID = primitive.NewObjectID()
+// CreateEditorConfiguration creates a new editor configuration for a user
+func (usr *userDB) CreateEditorConfiguration(editorConfig users.CodeEditorConfiguration, documentID string) (string, error) {
+	collectionHelper := usr.db.GetCollection(userDBName)
+	if editorConfig.ID == primitive.NilObjectID {
+		editorConfig.ID = primitive.NewObjectID()
 	}
 
-	result, err := collectionHelper.PushToArray(documentID, "editorconfs", editorConf)
+	result, err := collectionHelper.PushToArray(documentID, "editorconfs", editorConfig)
 	if err != nil {
 		return "", err
 	}
@@ -123,5 +102,12 @@ func addEditorConfigurationToUser(collectionHelper CollectionHelper, editorConf 
 	if collectionHelper.GetModifiedCount(result) == 0 {
 		return "", errors.New("Failed to save editor configuration - No documents were modified")
 	}
-	return editorConf.ID.Hex(), nil
+	return editorConfig.ID.Hex(), nil
+
+}
+
+// GetUserSkills retrieve all saved editor configurations for a user
+func (usr *userDB) GetUserSkills(userID string) (interface{}, error) {
+	collectionHelper := usr.db.GetCollection(userDBName)
+	return collectionHelper.GetSubArray(userID, "skills")
 }

@@ -11,7 +11,7 @@ import (
 
 const resourcesDB = "resources"
 
-type LearningAccessor interface {
+type LearningDB interface {
 	GetAll() ([]bson.M, error)
 	AddPostToResource(post resources.ResourcePost, resourceID string) (string, error)
 	IncrementResourceViews(resourceID string) (int, error)
@@ -21,46 +21,19 @@ type LearningAccessor interface {
 	DecrementResourcePostReportCount(resourceID string, postID string) (int, error)
 }
 
-type LearningDB struct {
-	*Database
+type learningDB struct {
+	db DBHelper
+}
+
+func NewLearningDB(db DBHelper) LearningDB {
+	return &learningDB{
+		db: db,
+	}
 }
 
 // GetResources get all learning resources
-func (db *LearningDB) GetAll() ([]bson.M, error) {
-	return getResources(db.GetCollection(resourcesDB))
-}
-
-// AddPostToResource adds a post to a learning resource
-func (db *LearningDB) AddPostToResource(post resources.ResourcePost, resourceID string) (string, error) {
-	return addPostToResource(db.GetCollection(resourcesDB), post, resourceID)
-}
-
-// IncrementResourceViews increments the views on a resource
-func (db *LearningDB) IncrementResourceViews(resourceID string) (int, error) {
-	return incrementResourceViews(db.GetCollection(resourcesDB), resourceID)
-}
-
-// IncrementResourcePostLikeCount increments the likes on a resources post
-func (db *LearningDB) IncrementResourcePostLikeCount(resourceID string, postID string) (int, error) {
-	return incrementResourcePostLikeCount(db.GetCollection(resourcesDB), resourceID, postID)
-}
-
-// DecrementResourcePostLikeCount decrements the likes on a resources post
-func (db *LearningDB) DecrementResourcePostLikeCount(resourceID string, postID string) (int, error) {
-	return decrementResourcePostLikeCount(db.GetCollection(resourcesDB), resourceID, postID)
-}
-
-// IncrementResourcePostReportCount increments the likes on a resources post
-func (db *LearningDB) IncrementResourcePostReportCount(resourceID string, postID string) (int, error) {
-	return incrementResourcePostReportCount(db.GetCollection(resourcesDB), resourceID, postID)
-}
-
-// DecrementResourcePostReportCount decrements the likes on a resources post
-func (db *LearningDB) DecrementResourcePostReportCount(resourceID string, postID string) (int, error) {
-	return decrementResourcePostReportCount(db.GetCollection(resourcesDB), resourceID, postID)
-}
-
-func getResources(collectionHelper CollectionHelper) ([]bson.M, error) {
+func (learning *learningDB) GetAll() ([]bson.M, error) {
+	collectionHelper := learning.db.GetCollection(resourcesDB)
 	var resources []bson.M
 	cursor, err := collectionHelper.Find(context.Background(), bson.D{}, nil)
 	if err != nil {
@@ -78,7 +51,9 @@ func getResources(collectionHelper CollectionHelper) ([]bson.M, error) {
 	return resources, nil
 }
 
-func addPostToResource(collectionHelper CollectionHelper, post resources.ResourcePost, resourceID string) (string, error) {
+// AddPostToResource adds a post to a learning resource
+func (learning *learningDB) AddPostToResource(post resources.ResourcePost, resourceID string) (string, error) {
+	collectionHelper := learning.db.GetCollection(resourcesDB)
 	if post.ID == primitive.NilObjectID {
 		post.ID = primitive.NewObjectID()
 	}
@@ -94,22 +69,32 @@ func addPostToResource(collectionHelper CollectionHelper, post resources.Resourc
 	return post.ID.Hex(), nil
 }
 
-func incrementResourceViews(collectionHelper CollectionHelper, resourceID string) (int, error) {
+// IncrementResourceViews increments the views on a resource
+func (learning *learningDB) IncrementResourceViews(resourceID string) (int, error) {
+	collectionHelper := learning.db.GetCollection(resourcesDB)
 	return collectionHelper.IncrementField(resourceID, "viewers")
 }
 
-func incrementResourcePostLikeCount(collectionHelper CollectionHelper, resourceID string, postID string) (int, error) {
+// IncrementResourcePostLikeCount increments the likes on a resources post
+func (learning *learningDB) IncrementResourcePostLikeCount(resourceID string, postID string) (int, error) {
+	collectionHelper := learning.db.GetCollection(resourcesDB)
 	return collectionHelper.IncrementFieldInObjectArray(resourceID, "posts", postID, "likes")
 }
 
-func decrementResourcePostLikeCount(collectionHelper CollectionHelper, resourceID string, postID string) (int, error) {
+// DecrementResourcePostLikeCount decrements the likes on a resources post
+func (learning *learningDB) DecrementResourcePostLikeCount(resourceID string, postID string) (int, error) {
+	collectionHelper := learning.db.GetCollection(resourcesDB)
 	return collectionHelper.DecrementFieldInObjectArray(resourceID, "posts", postID, "likes")
 }
 
-func incrementResourcePostReportCount(collectionHelper CollectionHelper, resourceID string, postID string) (int, error) {
+// IncrementResourcePostReportCount increments the likes on a resources post
+func (learning *learningDB) IncrementResourcePostReportCount(resourceID string, postID string) (int, error) {
+	collectionHelper := learning.db.GetCollection(resourcesDB)
 	return collectionHelper.IncrementFieldInObjectArray(resourceID, "posts", postID, "reports")
 }
 
-func decrementResourcePostReportCount(collectionHelper CollectionHelper, resourceID string, postID string) (int, error) {
+// DecrementResourcePostReportCount decrements the likes on a resources post
+func (learning *learningDB) DecrementResourcePostReportCount(resourceID string, postID string) (int, error) {
+	collectionHelper := learning.db.GetCollection(resourcesDB)
 	return collectionHelper.DecrementFieldInObjectArray(resourceID, "posts", postID, "reports")
 }
