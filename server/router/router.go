@@ -11,7 +11,7 @@ import (
 	"github.com/matthew-j-welte/bit-board/server/middleware"
 )
 
-type handler func(*database.Database, http.ResponseWriter, *http.Request)
+type handler func(*database.Datastore, http.ResponseWriter, *http.Request)
 type route struct {
 	URI         string
 	RESTMethods []string
@@ -120,10 +120,10 @@ func Router() *mux.Router {
 }
 
 func handleRoute(router *mux.Router, routeInfo route) {
-	db := new(database.Database)
+	db := database.GetDatastore()
 	router.HandleFunc(
 		routeInfo.URI,
 		func(w http.ResponseWriter, r *http.Request) {
-			routeInfo.Handler(db, w, r)
+			routeInfo.Handler(&db, w, r)
 		}).Methods(routeInfo.RESTMethods...)
 }

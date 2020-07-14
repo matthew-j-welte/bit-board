@@ -11,15 +11,15 @@ import (
 
 // CollectionHelper Helper functions for completing common collection CRUD
 type CollectionHelper interface {
-	FindOne(filter interface{}, opts ...*options.FindOneOptions) SingleResultHelper
+	FindOne(filter interface{}, projection interface{}) SingleResultHelper
 	Find(interface{}, interface{}) (ManyResultsHelper, error)
 	InsertOne(interface{}) (interface{}, error)
 	DeleteOne(filter interface{}) (int64, error)
 	CountDocuments(filter interface{}, opts ...*options.CountOptions) (int64, error)
 	UpdateOne(filter interface{}, projection interface{}) (interface{}, error)
 	FindOneAndUpdate(filter interface{}, update interface{}, opts ...*options.FindOneAndUpdateOptions) SingleResultHelper
-	GetInsertID(result interface{}) string
-	GetModifiedCount(result interface{}) int64
+	GetInsertID(result interface{}) (string, error)
+	GetModifiedCount(result interface{}) (int64, error)
 	PushToArray(primaryID string, arrayName string, payload interface{}) (interface{}, error)
 	CountRecords(filter interface{}) (int64, error)
 	CountAllRecords() (int64, error)
@@ -37,7 +37,7 @@ type mongoCollection struct {
 	accessor MongoCollection
 }
 
-func GetAccessor(accessor MongoCollection) CollectionHelper {
+func GetCollectionHelper(accessor MongoCollection) CollectionHelper {
 	return &mongoCollection{
 		accessor: accessor,
 	}
@@ -53,10 +53,12 @@ func (coll *mongoCollection) CountRecords(filter interface{}) (int64, error) {
 	return coll.accessor.CountDocuments(filter)
 }
 
-func (coll *mongoCollection) FindOne(filter interface{}, opts ...*options.FindOneOptions) SingleResultHelper {
-	var singleResult *mongo.SingleResult
-	singleResult = coll.accessor.FindOne(filter, opts...)
-	return &mongoSingleResult{dbSingleResult: singleResult}
+func (coll *mongoCollection) FindOne(filter interface{}, projection interface{}) SingleResultHelper {
+	optionsCasted := make([]*options.FindOneOptions, 0)
+	if projection != nil {
+		optionsCasted = append(optionsCasted, options.FindOne().SetProjection(projection))
+	}
+	return coll.accessor.FindOne(filter, optionsCasted...)
 }
 
 func (coll *mongoCollection) InsertOne(document interface{}) (interface{}, error) {
@@ -69,17 +71,24 @@ func (coll *mongoCollection) DeleteOne(filter interface{}) (int64, error) {
 	return count.DeletedCount, err
 }
 
-func (coll *mongoCollection) GetInsertID(result interface{}) string {
-	insertID := result.(primitive.ObjectID)
-	return insertID.Hex()
+func (coll *mongoCollection) GetInsertID(result interface{}) (string, error) {
+	insertID, ok := result.(primitive.ObjectID)
+	if !ok {
+		return "", errors.New("Interface conversion error - could not cast to primitive.ObjectID")
+	}
+	return insertID.Hex(), nil
 }
 
 func (coll *mongoCollection) UpdateOne(filter interface{}, projection interface{}) (interface{}, error) {
 	return coll.accessor.UpdateOne(filter, projection)
 }
 
-func (coll *mongoCollection) GetModifiedCount(result interface{}) int64 {
-	return result.(*mongo.UpdateResult).ModifiedCount
+func (coll *mongoCollection) GetModifiedCount(result interface{}) (int64, error) {
+	updateResult, ok := result.(*mongo.UpdateResult)
+	if !ok {
+		return 0, errors.New("Interface conversion error - could not cast to mongo.UpdateResult")
+	}
+	return updateResult.ModifiedCount, nil
 }
 
 // IncrementField increments a value on a document by one
@@ -90,6 +99,16 @@ func (coll *mongoCollection) IncrementField(primaryID string, fieldName string) 
 // IncrementField decrements a value on a document by one
 func (coll *mongoCollection) DecrementField(primaryID string, fieldName string) (int, error) {
 	return coll.UpdateFieldCount(primaryID, fieldName, -1)
+}
+
+// UpdateCountFieldInObjectArray increments/decrements a value in a document's element inside an object array
+func (coll *mongoCollection) IncrementFieldInObjectArray(primaryID string, arrName string, arrayElementID string, arrayObjectField string) (int, error) {
+	return coll.UpdateCountFieldInObjectArray(primaryID, arrName, arrayElementID, arrayObjectField, 1)
+}
+
+// UpdateCountFieldInObjectArray increments/decrements a value in a document's element inside an object array
+func (coll *mongoCollection) DecrementFieldInObjectArray(primaryID string, arrName string, arrayElementID string, arrayObjectField string) (int, error) {
+	return coll.UpdateCountFieldInObjectArray(primaryID, arrName, arrayElementID, arrayObjectField, -1)
 }
 
 // UpdateFieldCount increment/decrements an int value in a document by value passed in
@@ -114,24 +133,14 @@ func (coll *mongoCollection) UpdateFieldCount(primaryID string, fieldName string
 }
 
 // UpdateCountFieldInObjectArray increments/decrements a value in a document's element inside an object array
-func (coll *mongoCollection) IncrementFieldInObjectArray(primaryID string, arrName string, arrayElementID string, arrayObjectField string) (int, error) {
-	return coll.UpdateCountFieldInObjectArray(primaryID, arrName, arrayElementID, arrayObjectField, 1)
-}
-
-// UpdateCountFieldInObjectArray increments/decrements a value in a document's element inside an object array
-func (coll *mongoCollection) DecrementFieldInObjectArray(primaryID string, arrName string, arrayElementID string, arrayObjectField string) (int, error) {
-	return coll.UpdateCountFieldInObjectArray(primaryID, arrName, arrayElementID, arrayObjectField, -1)
-}
-
-// UpdateCountFieldInObjectArray increments/decrements a value in a document's element inside an object array
 func (coll *mongoCollection) UpdateCountFieldInObjectArray(primaryID string, arrName string, arrayElementID string, arrayObjectField string, val int) (int, error) {
 	objectID, err := primitive.ObjectIDFromHex(primaryID)
 	if err != nil {
-		return 0, nil
+		return 0, err
 	}
 	arrObjectID, err := primitive.ObjectIDFromHex(arrayElementID)
 	if err != nil {
-		return 0, nil
+		return 0, err
 	}
 
 	filterExpr := bson.M{
@@ -153,19 +162,19 @@ func (coll *mongoCollection) UpdateCountFieldInObjectArray(primaryID string, arr
 	return updatedVal, nil
 }
 
-func (coll *mongoCollection) updateAndReturnValue(filter bson.M, updateExpr bson.M, returnProjection bson.M) *mongo.SingleResult {
+func (coll *mongoCollection) updateAndReturnValue(filter bson.M, updateExpr bson.M, returnProjection bson.M) SingleResultHelper {
 	findOpts := options.FindOneAndUpdateOptions{
 		Projection: returnProjection,
 	}
-	return coll.accessor.FindOneAndUpdate(filter, updateExpr, &findOpts)
+	return coll.FindOneAndUpdate(filter, updateExpr, &findOpts)
 }
 
 func (coll *mongoCollection) GetObjectIDFromFilter(identifier bson.M) (string, error) {
-	var result bson.M
-	coll.accessor.FindOne(
+	result := bson.M{}
+	coll.FindOne(
 		identifier,
-		options.FindOne().SetProjection(bson.M{"_id": 1}),
-	).Decode(&result)
+		bson.M{"_id": 1},
+	).Decode(result)
 	if oid, ok := result["_id"]; ok {
 		return oid.(primitive.ObjectID).Hex(), nil
 	}
@@ -174,7 +183,7 @@ func (coll *mongoCollection) GetObjectIDFromFilter(identifier bson.M) (string, e
 }
 
 func (coll *mongoCollection) Find(filter interface{}, projection interface{}) (ManyResultsHelper, error) {
-	var cursor *mongo.Cursor
+	var cursor ManyResultsHelper
 	var err error
 
 	if projection != nil {
@@ -186,7 +195,7 @@ func (coll *mongoCollection) Find(filter interface{}, projection interface{}) (M
 	if err != nil {
 		return nil, err
 	}
-	return &mongoManyResult{mongoCursor: cursor}, nil
+	return cursor, nil
 }
 
 func (coll *mongoCollection) GetSubArray(primaryID string, arrayName string) (interface{}, error) {

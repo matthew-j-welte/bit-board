@@ -1,8 +1,6 @@
 package database
 
 import (
-	"context"
-
 	"github.com/matthew-j-welte/bit-board/server/models/resources"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -14,27 +12,27 @@ type LearningSuggestionDB interface {
 }
 
 type learningSuggestionDB struct {
-	db DBHelper
+	helper DBHelper
 }
 
-func NewLearningSuggestionDB(db DBHelper) LearningSuggestionDB {
+func NewLearningSuggestionDB(helper *DBHelper) LearningSuggestionDB {
 	return &learningSuggestionDB{
-		db: db,
+		helper: *helper,
 	}
 }
 
-// CreateResourceSuggestion creates a learning resource suggestion in the db
+// CreateResourceSuggestion creates a learning resource suggestion in the helper
 func (learningSuggestion *learningSuggestionDB) Create(resource resources.ResourceSuggestion, userID string) (string, error) {
-	collectionHelper := learningSuggestion.db.GetCollection(resourceSuggestionDB)
+	collectionHelper := learningSuggestion.helper.GetCollection(resourceSuggestionDB)
 	userOID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
 		return "", nil
 	}
 
 	resource.Poster = userOID
-	result, err := collectionHelper.InsertOne(context.Background(), resource)
+	result, err := collectionHelper.InsertOne(resource)
 	if err != nil {
 		return "", err
 	}
-	return collectionHelper.GetInsertID(result), nil
+	return collectionHelper.GetInsertID(result)
 }

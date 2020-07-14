@@ -15,11 +15,11 @@ import (
 const userCollectionName = "users"
 
 // GetUserCount get the current signed up user count
-func GetUserCount(db *database.Database, w http.ResponseWriter, r *http.Request) {
+func GetUserCount(db *database.Datastore, w http.ResponseWriter, r *http.Request) {
 	contextLogger := RouteSetup(w, r)
 	contextLogger.Info("Counting available users")
 
-	count, err := db.Users.CountUsers()
+	count, err := (*db).GetUserDB().CountUsers()
 	if err != nil {
 		log.WithField("error", err).Error("Error when getting user count")
 	}
@@ -28,7 +28,7 @@ func GetUserCount(db *database.Database, w http.ResponseWriter, r *http.Request)
 }
 
 // GetUserID get the current signed up user count
-func GetUserID(db *database.Database, w http.ResponseWriter, r *http.Request) {
+func GetUserID(db *database.Datastore, w http.ResponseWriter, r *http.Request) {
 	contextLogger := RouteSetup(w, r)
 	contextLogger.Info("Retrieving User ID")
 
@@ -38,7 +38,7 @@ func GetUserID(db *database.Database, w http.ResponseWriter, r *http.Request) {
 		contextLogger.WithField("error", err).Error("A Decode error occured")
 	}
 
-	id, err := db.Users.GetUserID(user)
+	id, err := (*db).GetUserDB().GetUserID(user)
 	if err != nil {
 		contextLogger.WithField("error", err).Error("DB retrieval error occured")
 	}
@@ -47,7 +47,7 @@ func GetUserID(db *database.Database, w http.ResponseWriter, r *http.Request) {
 }
 
 // GetEditorConfigurations get all code editor confs for a user
-func GetEditorConfigurations(db *database.Database, w http.ResponseWriter, r *http.Request) {
+func GetEditorConfigurations(db *database.Datastore, w http.ResponseWriter, r *http.Request) {
 	contextLogger := RouteSetup(w, r)
 
 	params := mux.Vars(r)
@@ -55,7 +55,7 @@ func GetEditorConfigurations(db *database.Database, w http.ResponseWriter, r *ht
 	contextLogger = contextLogger.WithField("user", id)
 	contextLogger.Info("Getting saved editor configurations for user")
 
-	result, err := db.Users.GetEditorConfigurations(id)
+	result, err := (*db).GetUserDB().GetEditorConfigurations(id)
 	if err != nil {
 		contextLogger.WithField("error", err).Error("Error when retrieving editor configurations")
 	}
@@ -63,7 +63,7 @@ func GetEditorConfigurations(db *database.Database, w http.ResponseWriter, r *ht
 }
 
 // GetPersonaSkills collects the persona skill info
-func GetPersonaSkills(db *database.Database, w http.ResponseWriter, r *http.Request) {
+func GetPersonaSkills(db *database.Datastore, w http.ResponseWriter, r *http.Request) {
 	contextLogger := RouteSetup(w, r)
 
 	params := mux.Vars(r)
@@ -71,7 +71,7 @@ func GetPersonaSkills(db *database.Database, w http.ResponseWriter, r *http.Requ
 	contextLogger = contextLogger.WithField("user", id)
 	contextLogger.Info("Retrieving Persona Skills")
 
-	result, err := db.Users.GetUserSkills(id)
+	result, err := (*db).GetUserDB().GetUserSkills(id)
 	if err != nil {
 		contextLogger.WithField("error", err).Error("Error when retrieving skills")
 	}
@@ -79,7 +79,7 @@ func GetPersonaSkills(db *database.Database, w http.ResponseWriter, r *http.Requ
 }
 
 // PostCodeSubmission accepts code and runs it
-func PostCodeSubmission(db *database.Database, w http.ResponseWriter, r *http.Request) {
+func PostCodeSubmission(db *database.Datastore, w http.ResponseWriter, r *http.Request) {
 	contextLogger := RouteSetup(w, r)
 
 	params := mux.Vars(r)
@@ -95,7 +95,7 @@ func PostCodeSubmission(db *database.Database, w http.ResponseWriter, r *http.Re
 }
 
 // UserSubmission creates a new user
-func UserSubmission(db *database.Database, w http.ResponseWriter, r *http.Request) {
+func UserSubmission(db *database.Datastore, w http.ResponseWriter, r *http.Request) {
 	contextLogger := RouteSetup(w, r)
 	contextLogger.Info("Creating a new user")
 
@@ -106,7 +106,7 @@ func UserSubmission(db *database.Database, w http.ResponseWriter, r *http.Reques
 		contextLogger.WithField("error", err).Error("An Error occured")
 	}
 
-	insertID, err := db.Users.CreateUser(user)
+	insertID, err := (*db).GetUserDB().CreateUser(user)
 	if err != nil {
 		contextLogger.WithField("error", err).Error("An Error occured")
 	}
@@ -115,7 +115,7 @@ func UserSubmission(db *database.Database, w http.ResponseWriter, r *http.Reques
 }
 
 // NewEditorConfigSubmission creates a new editor configuration for a user
-func NewEditorConfigSubmission(db *database.Database, w http.ResponseWriter, r *http.Request) {
+func NewEditorConfigSubmission(db *database.Datastore, w http.ResponseWriter, r *http.Request) {
 	contextLogger := RouteSetup(w, r)
 
 	params := mux.Vars(r)
@@ -126,7 +126,7 @@ func NewEditorConfigSubmission(db *database.Database, w http.ResponseWriter, r *
 	var newEditorConfiguration = users.CodeEditorConfiguration{}
 	err := json.NewDecoder(r.Body).Decode(&newEditorConfiguration)
 
-	editorID, err := db.Users.CreateEditorConfiguration(newEditorConfiguration, id)
+	editorID, err := (*db).GetUserDB().CreateEditorConfiguration(newEditorConfiguration, id)
 	if err != nil {
 		contextLogger.WithField("error", err).Error("An Error occured")
 	}

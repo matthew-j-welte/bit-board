@@ -1,7 +1,6 @@
 package database
 
 import (
-	"context"
 	"errors"
 
 	"github.com/matthew-j-welte/bit-board/server/models/resources"
@@ -22,20 +21,20 @@ type LearningDB interface {
 }
 
 type learningDB struct {
-	db DBHelper
+	helper DBHelper
 }
 
-func NewLearningDB(db DBHelper) LearningDB {
+func NewLearningDB(helper *DBHelper) LearningDB {
 	return &learningDB{
-		db: db,
+		helper: *helper,
 	}
 }
 
 // GetResources get all learning resources
 func (learning *learningDB) GetAll() ([]bson.M, error) {
-	collectionHelper := learning.db.GetCollection(resourcesDB)
+	collectionHelper := learning.helper.GetCollection(resourcesDB)
 	var resources []bson.M
-	cursor, err := collectionHelper.Find(context.Background(), bson.D{}, nil)
+	cursor, err := collectionHelper.Find(bson.D{}, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -43,7 +42,6 @@ func (learning *learningDB) GetAll() ([]bson.M, error) {
 	if cursor == nil {
 		return nil, errors.New("No cursor returned from the Find query")
 	}
-
 	resources, err = cursor.Decode()
 	if err != nil {
 		return nil, err
@@ -53,7 +51,7 @@ func (learning *learningDB) GetAll() ([]bson.M, error) {
 
 // AddPostToResource adds a post to a learning resource
 func (learning *learningDB) AddPostToResource(post resources.ResourcePost, resourceID string) (string, error) {
-	collectionHelper := learning.db.GetCollection(resourcesDB)
+	collectionHelper := learning.helper.GetCollection(resourcesDB)
 	if post.ID == primitive.NilObjectID {
 		post.ID = primitive.NewObjectID()
 	}
@@ -63,7 +61,8 @@ func (learning *learningDB) AddPostToResource(post resources.ResourcePost, resou
 		return "", err
 	}
 
-	if collectionHelper.GetModifiedCount(result) == 0 {
+	modifiedCount, err := collectionHelper.GetModifiedCount(result)
+	if err != nil || modifiedCount == 0 {
 		return "", errors.New("Failed to add post to resource - No documents modified")
 	}
 	return post.ID.Hex(), nil
@@ -71,30 +70,30 @@ func (learning *learningDB) AddPostToResource(post resources.ResourcePost, resou
 
 // IncrementResourceViews increments the views on a resource
 func (learning *learningDB) IncrementResourceViews(resourceID string) (int, error) {
-	collectionHelper := learning.db.GetCollection(resourcesDB)
+	collectionHelper := learning.helper.GetCollection(resourcesDB)
 	return collectionHelper.IncrementField(resourceID, "viewers")
 }
 
 // IncrementResourcePostLikeCount increments the likes on a resources post
 func (learning *learningDB) IncrementResourcePostLikeCount(resourceID string, postID string) (int, error) {
-	collectionHelper := learning.db.GetCollection(resourcesDB)
+	collectionHelper := learning.helper.GetCollection(resourcesDB)
 	return collectionHelper.IncrementFieldInObjectArray(resourceID, "posts", postID, "likes")
 }
 
 // DecrementResourcePostLikeCount decrements the likes on a resources post
 func (learning *learningDB) DecrementResourcePostLikeCount(resourceID string, postID string) (int, error) {
-	collectionHelper := learning.db.GetCollection(resourcesDB)
+	collectionHelper := learning.helper.GetCollection(resourcesDB)
 	return collectionHelper.DecrementFieldInObjectArray(resourceID, "posts", postID, "likes")
 }
 
 // IncrementResourcePostReportCount increments the likes on a resources post
 func (learning *learningDB) IncrementResourcePostReportCount(resourceID string, postID string) (int, error) {
-	collectionHelper := learning.db.GetCollection(resourcesDB)
+	collectionHelper := learning.helper.GetCollection(resourcesDB)
 	return collectionHelper.IncrementFieldInObjectArray(resourceID, "posts", postID, "reports")
 }
 
 // DecrementResourcePostReportCount decrements the likes on a resources post
 func (learning *learningDB) DecrementResourcePostReportCount(resourceID string, postID string) (int, error) {
-	collectionHelper := learning.db.GetCollection(resourcesDB)
+	collectionHelper := learning.helper.GetCollection(resourcesDB)
 	return collectionHelper.DecrementFieldInObjectArray(resourceID, "posts", postID, "reports")
 }

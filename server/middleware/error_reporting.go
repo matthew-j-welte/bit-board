@@ -13,7 +13,7 @@ import (
 const errorReportCollection = "error-reports"
 
 // HandleErrorReport handles an error report submission
-func HandleErrorReport(db *database.Database, w http.ResponseWriter, r *http.Request) {
+func HandleErrorReport(db *database.Datastore, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST")
@@ -27,7 +27,7 @@ func HandleErrorReport(db *database.Database, w http.ResponseWriter, r *http.Req
 		contextLogger.WithField("error", err).Error("An Error occured")
 	}
 
-	objectID, err := db.ErrorReports.Create(errorReport)
+	objectID, err := (*db).GetErrorReportDB().Create(errorReport)
 	res := map[string]string{"_id": objectID}
 
 	if err != nil {

@@ -10,6 +10,7 @@ import (
 // SingleResultHelper wrapper around the mongo-driver SingleResult type
 type SingleResultHelper interface {
 	Decode(v interface{}) error
+	Err() error
 }
 
 // ManyResultsHelper wrapper around the mongo-driver Cursor type
@@ -38,6 +39,10 @@ type resultIterator struct {
 
 func (wrapper *mongoSingleResult) Decode(payload interface{}) error {
 	return wrapper.dbSingleResult.Decode(payload)
+}
+
+func (wrapper *mongoSingleResult) Err() error {
+	return wrapper.dbSingleResult.Err()
 }
 
 func (wrapper *mongoManyResult) Decode() ([]bson.M, error) {

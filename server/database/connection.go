@@ -8,6 +8,13 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+type Datastore interface {
+	GetErrorReportDB() ErrorReportDB
+	GetLearningDB() LearningDB
+	GetLearningSuggestionDB() LearningSuggestionDB
+	GetUserDB() UserDB
+}
+
 // DBHelper wrapper around the mongo-driver Database type
 type DBHelper interface {
 	Collection(name string) CollectionHelper
@@ -22,13 +29,11 @@ type ClientHelper interface {
 	StartSession() (mongo.Session, error)
 }
 
+type datastore struct{}
+
 // Database main database struct
-type Database struct {
-	db                  *mongo.Database
-	ErrorReports        ErrorReportDB
-	Learning            LearningDB
-	LearningSuggestions LearningSuggestionDB
-	Users               UserDB
+type database struct {
+	db *mongo.Database
 }
 
 type mongoClient struct {
@@ -46,7 +51,9 @@ func NewClient() (ClientHelper, error) {
 }
 
 // NewDatabase grabs a new database
-func NewDatabase(client ClientHelper) DBHelper {
+func NewDatabase() DBHelper {
+	client, _ := NewClient()
+	client.Connect()
 	return client.Database(DBName)
 }
 
@@ -58,7 +65,7 @@ func TestConnection() error {
 
 func (wrapper *mongoClient) Database(dbName string) DBHelper {
 	db := wrapper.dbClient.Database(dbName)
-	return &Database{db: db}
+	return &database{db: db}
 }
 
 func (wrapper *mongoClient) StartSession() (mongo.Session, error) {
@@ -80,18 +87,41 @@ func (wrapper *mongoClient) Connect() error {
 	return nil
 }
 
-func (wrapper *Database) Client() ClientHelper {
+func (wrapper *database) Client() ClientHelper {
 	client := wrapper.db.Client()
 	return &mongoClient{dbClient: client}
 }
 
-func (wrapper *Database) Collection(colName string) CollectionHelper {
+func (wrapper *database) Collection(colName string) CollectionHelper {
 	collection := wrapper.db.Collection(colName)
-	return &mongoCollection{dbCollection: collection}
+	accessor := GetDatabaseAccessor(collection)
+	return GetCollectionHelper(accessor)
 }
 
-func (wrapper *Database) GetCollection(name string) CollectionHelper {
-	client, _ := NewClient()
-	client.Connect()
-	return NewDatabase(client).Collection(name)
+func (wrapper *database) GetCollection(name string) CollectionHelper {
+	return NewDatabase().Collection(name)
+}
+
+func (ds *datastore) GetErrorReportDB() ErrorReportDB {
+	db := NewDatabase()
+	return NewErrorReportDB(&db)
+}
+
+func (ds *datastore) GetLearningDB() LearningDB {
+	db := NewDatabase()
+	return NewLearningDB(&db)
+}
+
+func (ds *datastore) GetLearningSuggestionDB() LearningSuggestionDB {
+	db := NewDatabase()
+	return NewLearningSuggestionDB(&db)
+}
+
+func (ds *datastore) GetUserDB() UserDB {
+	db := NewDatabase()
+	return NewUserDB(&db)
+}
+
+func GetDatastore() Datastore {
+	return &datastore{}
 }

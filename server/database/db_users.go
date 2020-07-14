@@ -1,7 +1,6 @@
 package database
 
 import (
-	"context"
 	"errors"
 
 	"github.com/matthew-j-welte/bit-board/server/models/users"
@@ -22,34 +21,34 @@ type UserDB interface {
 }
 
 type userDB struct {
-	db DBHelper
+	helper DBHelper
 }
 
-func NewUserDB(db DBHelper) UserDB {
+func NewUserDB(helper *DBHelper) UserDB {
 	return &userDB{
-		db: db,
+		helper: *helper,
 	}
 }
 
 // CountUsers counts all users
 func (usr *userDB) CountUsers() (int64, error) {
-	collectionHelper := usr.db.GetCollection(userDBName)
+	collectionHelper := usr.helper.GetCollection(userDBName)
 	return collectionHelper.CountAllRecords()
 }
 
 // CreateUser creates a new user in the database
 func (usr *userDB) CreateUser(user users.User) (string, error) {
-	collectionHelper := usr.db.GetCollection(userDBName)
-	result, err := collectionHelper.InsertOne(context.Background(), user)
+	collectionHelper := usr.helper.GetCollection(userDBName)
+	result, err := collectionHelper.InsertOne(user)
 	if err != nil {
 		return "", err
 	}
-	return collectionHelper.GetInsertID(result), nil
+	return collectionHelper.GetInsertID(result)
 }
 
 // GetUserID gets the users ID based on a subsection of the user model
 func (usr *userDB) GetUserID(user users.User) (string, error) {
-	collectionHelper := usr.db.GetCollection(userDBName)
+	collectionHelper := usr.helper.GetCollection(userDBName)
 	return collectionHelper.GetObjectIDFromFilter(
 		bson.M{
 			"username": user.Username,
@@ -59,14 +58,13 @@ func (usr *userDB) GetUserID(user users.User) (string, error) {
 
 // GetUserSummary gets the name and profile photo of a user
 func (usr *userDB) GetUserSummary(userID string) (users.User, error) {
-	collectionHelper := usr.db.GetCollection(userDBName)
+	collectionHelper := usr.helper.GetCollection(userDBName)
 	usrSummary := bson.M{}
 	userOID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
 		return users.User{}, err
 	}
 	err = collectionHelper.FindOne(
-		context.Background(),
 		bson.M{"_id": userOID},
 		bson.M{"_id": 0, "fname": 1, "lname": 1, "image": 1},
 	).Decode(usrSummary)
@@ -83,13 +81,13 @@ func (usr *userDB) GetUserSummary(userID string) (users.User, error) {
 
 // GetEditorConfigurations retrieve all saved editor configurations for a user
 func (usr *userDB) GetEditorConfigurations(userID string) (interface{}, error) {
-	collectionHelper := usr.db.GetCollection(userDBName)
+	collectionHelper := usr.helper.GetCollection(userDBName)
 	return collectionHelper.GetSubArray(userID, "editorconfs")
 }
 
 // CreateEditorConfiguration creates a new editor configuration for a user
 func (usr *userDB) CreateEditorConfiguration(editorConfig users.CodeEditorConfiguration, documentID string) (string, error) {
-	collectionHelper := usr.db.GetCollection(userDBName)
+	collectionHelper := usr.helper.GetCollection(userDBName)
 	if editorConfig.ID == primitive.NilObjectID {
 		editorConfig.ID = primitive.NewObjectID()
 	}
@@ -99,7 +97,8 @@ func (usr *userDB) CreateEditorConfiguration(editorConfig users.CodeEditorConfig
 		return "", err
 	}
 
-	if collectionHelper.GetModifiedCount(result) == 0 {
+	modifiedCount, err := collectionHelper.GetModifiedCount(result)
+	if err != nil || modifiedCount == 0 {
 		return "", errors.New("Failed to save editor configuration - No documents were modified")
 	}
 	return editorConfig.ID.Hex(), nil
@@ -108,6 +107,6 @@ func (usr *userDB) CreateEditorConfiguration(editorConfig users.CodeEditorConfig
 
 // GetUserSkills retrieve all saved editor configurations for a user
 func (usr *userDB) GetUserSkills(userID string) (interface{}, error) {
-	collectionHelper := usr.db.GetCollection(userDBName)
+	collectionHelper := usr.helper.GetCollection(userDBName)
 	return collectionHelper.GetSubArray(userID, "skills")
 }
