@@ -187,7 +187,7 @@ func (coll *mongoCollection) Find(filter interface{}, projection interface{}) (M
 	var err error
 
 	if projection != nil {
-		cursor, err = coll.accessor.Find(filter, projection.(*options.FindOptions))
+		cursor, err = coll.accessor.Find(filter, options.Find().SetProjection(projection))
 	} else {
 		cursor, err = coll.accessor.Find(filter)
 	}
@@ -203,12 +203,11 @@ func (coll *mongoCollection) GetSubArray(primaryID string, arrayName string) (in
 	if err != nil {
 		return nil, err
 	}
-	var result bson.M
+	result := bson.M{}
 	filter := bson.M{"_id": documentOID}
-	projection := bson.M{"_id": 0, arrayName: 1}
-	options := options.FindOne().SetProjection(projection)
+	projection := options.FindOne().SetProjection(bson.M{"_id": 0, arrayName: 1})
 
-	coll.accessor.FindOne(filter, options).Decode(&result)
+	coll.accessor.FindOne(filter, projection).Decode(&result)
 	return result[arrayName], nil
 }
 

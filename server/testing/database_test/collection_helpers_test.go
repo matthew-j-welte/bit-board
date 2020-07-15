@@ -307,6 +307,77 @@ func (suite *CollectionHelpersSuite) TestGetObjectIDFromFilterFailure() {
 	suite.NotNil(err)
 }
 
+func (suite *CollectionHelpersSuite) TestFind() {
+	filter := bson.M{}
+	projection := bson.M{}
+	suite.MockAccessorFunc("Find", 2, nil, nil)
+
+	collHelper := suite.GetAccessorMockedCollection()
+	result, err := collHelper.Find(filter, projection)
+	called := suite.MockAccessor.(*mocks.MongoCollection).AssertCalled(
+		suite.T(),
+		"Find",
+		filter,
+		options.Find().SetProjection(projection),
+	)
+	suite.True(called)
+	suite.Equal(nil, result)
+	suite.Nil(err)
+}
+
+func (suite *CollectionHelpersSuite) TestFindNoProjection() {
+	filter := bson.M{}
+	suite.MockAccessorFunc("Find", 1, nil, nil)
+
+	collHelper := suite.GetAccessorMockedCollection()
+	result, err := collHelper.Find(filter, nil)
+	called := suite.MockAccessor.(*mocks.MongoCollection).AssertCalled(
+		suite.T(),
+		"Find",
+		filter,
+	)
+	suite.True(called)
+	suite.Equal(nil, result)
+	suite.Nil(err)
+}
+
+func (suite *CollectionHelpersSuite) TestFindFailure() {
+	filter := bson.M{}
+	suite.MockAccessorFunc("Find", 1, nil, errors.New("err"))
+
+	collHelper := suite.GetAccessorMockedCollection()
+	result, err := collHelper.Find(filter, nil)
+	suite.Equal(nil, result)
+	suite.NotNil(err)
+}
+
+func (suite *CollectionHelpersSuite) TestGetSubArray() {
+	suite.MockSingleResult.(*mocks.SingleResultHelper).On("Decode", mock.Anything).Return(nil).Run(func(args mock.Arguments) {
+		arg := args.Get(0).(*bson.M)
+		arr := bson.A{1, 2, 3}
+		(*arg)[suite.MockArrayName] = arr
+	})
+	suite.MockAccessorFunc("FindOne", 2, suite.MockSingleResult)
+	collHelper := suite.GetAccessorMockedCollection()
+	result, err := collHelper.GetSubArray(suite.MockPKString, suite.MockArrayName)
+	suite.Equal(bson.A{1, 2, 3}, result)
+	suite.Nil(err)
+}
+
+func (suite *CollectionHelpersSuite) TestPushToArray() {
+	suite.MockAccessorFunc("UpdateOne", 2, nil, nil)
+	collHelper := suite.GetAccessorMockedCollection()
+	_, err := collHelper.PushToArray(suite.MockPKString, suite.MockArrayName, bson.M{})
+	suite.Nil(err)
+}
+
+func (suite *CollectionHelpersSuite) TestPushToArrayFailure() {
+	collHelper := suite.GetAccessorMockedCollection()
+	result, err := collHelper.PushToArray("invalid", suite.MockArrayName, bson.M{})
+	suite.Equal(nil, result)
+	suite.NotNil(err)
+}
+
 func TestCollectionHelperSuite(t *testing.T) {
 	suite.Run(t, new(CollectionHelpersSuite))
 }
