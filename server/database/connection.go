@@ -26,7 +26,6 @@ type DBHelper interface {
 type ClientHelper interface {
 	Database(string) DBHelper
 	Connect() error
-	StartSession() (mongo.Session, error)
 }
 
 type datastore struct{}
@@ -38,10 +37,6 @@ type database struct {
 
 type mongoClient struct {
 	dbClient *mongo.Client
-}
-
-type mongoSession struct {
-	mongo.Session
 }
 
 // NewClient grabs a new database client
@@ -66,11 +61,6 @@ func TestConnection() error {
 func (wrapper *mongoClient) Database(dbName string) DBHelper {
 	db := wrapper.dbClient.Database(dbName)
 	return &database{db: db}
-}
-
-func (wrapper *mongoClient) StartSession() (mongo.Session, error) {
-	session, err := wrapper.dbClient.StartSession()
-	return &mongoSession{session}, err
 }
 
 func (wrapper *mongoClient) Connect() error {
