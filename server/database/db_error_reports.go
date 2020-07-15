@@ -6,6 +6,7 @@ import (
 
 const errorReportDBName = "error-reports"
 
+// ErrorReportDB wrapper around the error report db
 type ErrorReportDB interface {
 	Create(report reports.ErrorReport) (string, error)
 }
@@ -14,6 +15,7 @@ type errorReportDB struct {
 	helper DBHelper
 }
 
+// NewErrorReportDB return a new error report db
 func NewErrorReportDB(helper *DBHelper) ErrorReportDB {
 	return &errorReportDB{
 		helper: *helper,

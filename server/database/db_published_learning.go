@@ -10,6 +10,7 @@ import (
 
 const resourcesDB = "resources"
 
+// LearningDB the learning resources DB
 type LearningDB interface {
 	GetAll() ([]bson.M, error)
 	AddPostToResource(post resources.ResourcePost, resourceID string) (string, error)
@@ -24,6 +25,7 @@ type learningDB struct {
 	helper DBHelper
 }
 
+// NewLearningDB return a new learning database
 func NewLearningDB(helper *DBHelper) LearningDB {
 	return &learningDB{
 		helper: *helper,

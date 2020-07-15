@@ -37,6 +37,7 @@ type mongoCollection struct {
 	accessor MongoCollection
 }
 
+// GetCollectionHelper grab the current collection helper
 func GetCollectionHelper(accessor MongoCollection) CollectionHelper {
 	return &mongoCollection{
 		accessor: accessor,

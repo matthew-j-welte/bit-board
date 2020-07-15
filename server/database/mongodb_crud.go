@@ -18,12 +18,11 @@ type MongoCollection interface {
 	FindOneAndUpdate(filter interface{}, update interface{}, opts ...*options.FindOneAndUpdateOptions) SingleResultHelper
 }
 
-// The last thing to do would be to find a way to interchangably
-
 type mongoAccessor struct {
 	dbCollection *mongo.Collection
 }
 
+// GetDatabaseAccessor get the database accessor
 func GetDatabaseAccessor(collection *mongo.Collection) MongoCollection {
 	return &mongoAccessor{
 		dbCollection: collection,

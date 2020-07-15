@@ -10,6 +10,7 @@ import (
 
 const userDBName = "users"
 
+// UserDB the user database collection
 type UserDB interface {
 	CountUsers() (int64, error)
 	CreateUser(user users.User) (string, error)
@@ -24,6 +25,7 @@ type userDB struct {
 	helper DBHelper
 }
 
+// NewUserDB return a new UserDB
 func NewUserDB(helper *DBHelper) UserDB {
 	return &userDB{
 		helper: *helper,

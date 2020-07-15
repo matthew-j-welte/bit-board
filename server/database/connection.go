@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+// Datastore top level databse helper
 type Datastore interface {
 	GetErrorReportDB() ErrorReportDB
 	GetLearningDB() LearningDB
@@ -112,6 +113,7 @@ func (ds *datastore) GetUserDB() UserDB {
 	return NewUserDB(&db)
 }
 
+// GetDatastore return the current datastore
 func GetDatastore() Datastore {
 	return &datastore{}
 }

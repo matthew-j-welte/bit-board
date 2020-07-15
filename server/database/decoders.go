@@ -18,6 +18,7 @@ type ManyResultsHelper interface {
 	Decode() ([]bson.M, error)
 }
 
+// MongoCursor wrapper around the mongo cursor
 type MongoCursor interface {
 	Close(context.Context) error
 	Next(context.Context) bool

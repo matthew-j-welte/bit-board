@@ -7,6 +7,7 @@ import (
 
 const resourceSuggestionDB = "suggested-resources"
 
+// LearningSuggestionDB the learning suggestions DB
 type LearningSuggestionDB interface {
 	Create(resource resources.ResourceSuggestion, userID string) (string, error)
 }
@@ -15,6 +16,7 @@ type learningSuggestionDB struct {
 	helper DBHelper
 }
 
+// NewLearningSuggestionDB return a new learning suggestion DB
 func NewLearningSuggestionDB(helper *DBHelper) LearningSuggestionDB {
 	return &learningSuggestionDB{
 		helper: *helper,
